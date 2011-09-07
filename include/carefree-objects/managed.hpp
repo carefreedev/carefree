@@ -35,17 +35,81 @@ namespace cfo
 {
   class basic_manager
   {
+  private:
+    boost::mutex *mutex;
+
+    inline bool lock() const
+    {
+      if (!this->mutex)
+        return false;
+
+      return this->mutex->lock(), true;
+    }
+
+    inline void unlock() const
+    {
+      this->mutex->unlock();
+    }
+
   protected:
     count_and_lock *cnl;
 
     inline basic_manager() :
-      cnl(new count_and_lock)
+      mutex(new boost::mutex),
+      cnl(&++*new count_and_lock)
     {}
+
+    inline basic_manager(const basic_manager &manager) :
+      mutex(new boost::mutex),
+      cnl(NULL)
+    {
+      if (!manager.lock())
+        return;
+
+      this->lock();
+
+      if ((this->cnl = manager.cnl))
+        ++*this->cnl;
+
+      this->unlock();
+      manager.unlock();
+    }
+
+    inline void destroy()
+    {
+      boost::mutex *mutex = this->mutex;
+      mutex->lock();
+
+      if (!--*this->cnl)
+        {
+          delete this->cnl;
+          this->cnl = NULL;
+        }
+
+      this->mutex = NULL;
+
+      mutex->unlock();
+      delete mutex;
+    }
+
+  public:
+    inline operator bool() const
+    {
+      return this->cnl;
+    }
+
+    inline bool operator!() const
+    {
+      return !this->cnl;
+    }
   };
 
   template<typename T>
   class managed : public basic_manager
   {
+    friend class const_accessor<T>;
+    friend class accessor<T>;
+
   private:
     T *obj;
 
@@ -55,32 +119,26 @@ namespace cfo
 
     template<typename... A>
     inline managed(A... args) :
+      basic_manager(),
       obj(new T(args...))
-    {
-      ++*this->cnl;
-    }
+    {}
 
     inline managed(const managed<T> &manager) :
-      obj(manager.obj)
-    {
-      ++*this->cnl;
-    }
+      basic_manager(manager),
+      obj(this->cnl ? manager.obj : NULL)
+    {}
 
     template<typename T_other>
     inline managed(const managed<T_other> &other_manager) :
       basic_manager(other_manager),
-      obj(static_cast<T*>(other_manager.unmanaged()))
-    {
-      ++*this->cnl;
-    }
+      obj(this->cnl ? static_cast<T*>(other_manager.unmanaged()) : NULL)
+    {}
 
     inline ~managed()
     {
-      if (!--*this->cnl)
-        {
-          delete this->obj;
-          delete this->cnl;
-        }
+      this->basic_manager::destroy();
+      if (!this->cnl)
+        delete this->obj;
     }
 
     inline const_accessor caccess() const

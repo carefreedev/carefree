@@ -23,6 +23,9 @@
 
 #include <cstdlib>
 
+#include <boost/thread/mutex.hpp>
+#include <boost/thread/shared_mutex.hpp>
+
 namespace cfo
 {
   class count_and_lock;

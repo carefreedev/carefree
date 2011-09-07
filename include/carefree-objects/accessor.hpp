@@ -36,21 +36,42 @@ namespace cfo
     friend class accessor<T>;
 
   private:
-    T *obj;
+    bool shared;
+    managed<T> manager;
 
   protected:
-    const_accessor(T* obj) :
-      obj(obj)
-    {}
+    inline const_accessor(const managed<T> &manager, bool shared) :
+      shared(shared),
+      manager(manager)
+    {
+      if (manager)
+        manager.cnl->lock();
+    }
 
   public:
-    const_accessor(const managed<T> &manager) :
-      obj(manager.unmanaged())
-    {}
-
-    T* operator->()
+    inline const_accessor(const managed<T> &manager) :
+      shared(true),
+      manager(manager)
     {
-      return this->obj;
+      if (manager)
+        manager.cnl->lock_shared();
+    }
+
+    inline ~const_accessor()
+    {
+      if (!this->manager)
+        return;
+
+      if (this->shared)
+        this->manager.cnl->unlock_shared();
+
+      else
+        this->manager.cnl->unlock();
+    }
+
+    inline const T* operator->() const
+    {
+      return this->manager.obj;
     }
   };
 
@@ -58,9 +79,14 @@ namespace cfo
   class accessor : public const_accessor<T>
   {
   public:
-    accessor(managed<T> &manager) :
-      const_accessor<T>(manager.unmanaged())
+    inline accessor(const managed<T> &manager) :
+      const_accessor<T>(manager, false)
     {}
+
+    inline T* operator->()
+    {
+      return this->manager.obj;
+    }
   };
 }
 

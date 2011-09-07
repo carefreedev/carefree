@@ -25,13 +25,14 @@
 
 namespace cfo
 {
-  class count_and_lock
+  class count_and_lock : public boost::shared_mutex
   {
   private:
     std::size_t counter;
 
   public:
     inline count_and_lock() :
+      boost::shared_mutex(),
       counter(0)
     {}
 
