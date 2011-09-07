@@ -21,89 +21,18 @@
 /* the object manager template
  *
  * wraps any normal c++ class
- * to implement ref counting and synchronized member access
+ * to get managed object ref counting and synchronized object member access
  */
 #ifndef __CFO_MANAGED_HPP
 #define __CFO_MANAGED_HPP
 
 #include "common.hpp"
 
-#include "count_and_lock.hpp"
+#include "basic_manager.hpp"
 #include "accessor.hpp"
 
 namespace cfo
 {
-  class basic_manager
-  {
-  private:
-    boost::mutex *mutex;
-
-    inline bool lock() const
-    {
-      if (!this->mutex)
-        return false;
-
-      return this->mutex->lock(), true;
-    }
-
-    inline void unlock() const
-    {
-      this->mutex->unlock();
-    }
-
-  protected:
-    count_and_lock *cnl;
-
-    inline basic_manager() :
-      mutex(new boost::mutex),
-      cnl(&++*new count_and_lock)
-    {}
-
-    inline basic_manager(const basic_manager &manager) :
-      mutex(new boost::mutex),
-      cnl(NULL)
-    {
-      if (!manager.lock())
-        return;
-
-      this->lock();
-
-      if ((this->cnl = manager.cnl))
-        ++*this->cnl;
-
-      this->unlock();
-      manager.unlock();
-    }
-
-    inline void destroy()
-    {
-      boost::mutex *mutex = this->mutex;
-      mutex->lock();
-
-      if (!--*this->cnl)
-        {
-          delete this->cnl;
-          this->cnl = NULL;
-        }
-
-      this->mutex = NULL;
-
-      mutex->unlock();
-      delete mutex;
-    }
-
-  public:
-    inline operator bool() const
-    {
-      return this->cnl;
-    }
-
-    inline bool operator!() const
-    {
-      return !this->cnl;
-    }
-  };
-
   template<typename T>
   class managed : public basic_manager
   {
