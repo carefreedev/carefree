@@ -38,6 +38,12 @@ namespace cfo
   template<typename T>
   class accessor;
 
+  template<typename T, bool SYNC = true>
+  class const_methods;
+
+  template<typename T, bool SYNC = true>
+  class methods;
+
   class basic_manager;
 
   template<typename T, bool SYNC = true>

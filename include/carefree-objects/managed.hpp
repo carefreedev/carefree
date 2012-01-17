@@ -29,7 +29,7 @@
 #include "common.hpp"
 
 #include "basic_manager.hpp"
-#include "accessor.hpp"
+#include "methods.hpp"
 
 namespace cfo
 {
@@ -43,8 +43,10 @@ namespace cfo
     T *obj;
 
   public:
-    typedef cfo::const_accessor<const T> const_accessor;
-    typedef cfo::accessor<T> accessor;
+    typedef typename T::template cfo_managed_const_methods<const T, true>
+    const_accessor;
+
+    typedef typename T::template cfo_managed_methods<T, true> accessor;
 
     template<typename... A>
     inline managed(A... args) :

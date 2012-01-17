@@ -23,31 +23,60 @@
  * request object references from a manager in a thread-safe way
  * for const or non-const access to the object members
  */
-#ifndef __CFO_ACCESSOR_HPP
-#define __CFO_ACCESSOR_HPP
+#ifndef __CFO_CONST_ACCESSOR_HPP
+#define __CFO_CONST_ACCESSOR_HPP
 
 #include "common.hpp"
-
-#include "const_methods.hpp"
 
 namespace cfo
 {
   template<typename T>
-  class accessor : public T::template cfo_managed_const_methods<T, true>
+  class const_accessor
   {
+    friend class accessor<T>;
+
   private:
-    accessor(accessor<T> &);
+    const bool shared;
+    std::unique_ptr<managed<T> > manager_ptr;
+
+    const_accessor(const_accessor<T> &);
+
+  protected:
+    inline const_accessor(const managed<T> &manager, bool shared) :
+      shared(shared),
+      manager_ptr(new managed<T>(manager))
+    {
+      if (manager)
+        manager.cnl->lock();
+    }
 
   public:
-    inline accessor(const managed<T> &manager) :
-      T::template cfo_managed_const_methods<T, true>(manager, false)
+    inline const_accessor(const managed<T> &manager) :
+      shared(true),
+      manager_ptr(new managed<T>(manager))
+    {
+      if (manager)
+        manager.cnl->lock_shared();
+    }
+
+    inline const_accessor(const_accessor<T> &&access) :
+      shared(access.shared),
+      manager_ptr(access.manager_ptr.release())
     {}
 
-    inline accessor(accessor<T> &&access) :
-      T::template cfo_managed_const_methods<T, true>(static_cast<typename T::template cfo_managed_const_methods<T, true>&&>(access))
-    {}
+    inline ~const_accessor()
+    {
+      if (!this->manager_ptr || !*this->manager_ptr)
+        return;
 
-    inline T* operator->() const
+      if (this->shared)
+        this->manager_ptr->cnl->unlock_shared();
+
+      else
+        this->manager_ptr->cnl->unlock();
+    }
+
+    inline const T* operator->() const
     {
       return this->manager_ptr->obj;
     }
