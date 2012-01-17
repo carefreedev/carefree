@@ -23,6 +23,8 @@
 
 #include <cstdlib>
 
+#include <memory>
+
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/shared_mutex.hpp>
 

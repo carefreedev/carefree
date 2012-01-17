@@ -36,13 +36,15 @@ namespace cfo
     friend class accessor<T>;
 
   private:
-    bool shared;
-    managed<T> manager;
+    const bool shared;
+    std::unique_ptr<managed<T> > manager_ptr;
+
+    const_accessor(const_accessor<T> &);
 
   protected:
     inline const_accessor(const managed<T> &manager, bool shared) :
       shared(shared),
-      manager(manager)
+      manager_ptr(new managed<T>(manager))
     {
       if (manager)
         manager.cnl->lock();
@@ -51,41 +53,53 @@ namespace cfo
   public:
     inline const_accessor(const managed<T> &manager) :
       shared(true),
-      manager(manager)
+      manager_ptr(new managed<T>(manager))
     {
       if (manager)
         manager.cnl->lock_shared();
     }
 
+    inline const_accessor(const_accessor<T> &&access) :
+      shared(access.shared),
+      manager_ptr(access.manager_ptr.release())
+    {}
+
     inline ~const_accessor()
     {
-      if (!this->manager)
+      if (!this->manager_ptr || !*this->manager_ptr)
         return;
 
       if (this->shared)
-        this->manager.cnl->unlock_shared();
+        this->manager_ptr->cnl->unlock_shared();
 
       else
-        this->manager.cnl->unlock();
+        this->manager_ptr->cnl->unlock();
     }
 
     inline const T* operator->() const
     {
-      return this->manager.obj;
+      return this->manager_ptr->obj;
     }
   };
 
   template<typename T>
-  class accessor : public const_accessor<T>
+  class accessor : private const_accessor<T>
   {
+  private:
+    accessor(accessor<T> &);
+
   public:
     inline accessor(const managed<T> &manager) :
       const_accessor<T>(manager, false)
     {}
 
-    inline T* operator->()
+    inline accessor(accessor<T> &&access) :
+      const_accessor<T>(access)
+    {}
+
+    inline T* operator->() const
     {
-      return this->manager.obj;
+      return this->manager_ptr->obj;
     }
   };
 }
