@@ -34,7 +34,7 @@
 namespace cfo
 {
   template<typename T>
-  class managed : public basic_manager
+  class managed<T, true> : public basic_manager
   {
     friend class const_accessor<T>;
     friend class accessor<T>;
@@ -83,6 +83,30 @@ namespace cfo
     inline T* unmanaged() const
     {
       return this->obj;
+    }
+  };
+
+  template<typename T>
+  class managed<T, false> : private std::shared_ptr<T>
+  {
+  public:
+    template<typename... A>
+    inline managed(A... args) :
+      std::shared_ptr<T>(new T(args...))
+    {}
+
+    inline managed(const managed<T, false> &manager) :
+      std::shared_ptr<T>(manager)
+    {}
+
+    inline T* operator->() const
+    {
+      return this->get();
+    }
+
+    inline T* unmanaged() const
+    {
+      return this->get();
     }
   };
 }

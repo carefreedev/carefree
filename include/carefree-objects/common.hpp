@@ -40,7 +40,7 @@ namespace cfo
 
   class basic_manager;
 
-  template<typename T>
+  template<typename T, bool SYNC = true>
   class managed;
 }
 
