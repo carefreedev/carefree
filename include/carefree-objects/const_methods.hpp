@@ -47,6 +47,25 @@ namespace cfo
       const_accessor<T>(static_cast<const_accessor<T>&&>(methods))
     {}
   };
+
+  template<typename T>
+  class const_methods<T, false> : protected std::shared_ptr<T>
+  {
+  protected:
+    inline const_methods(T *obj) :
+      std::shared_ptr<T>(obj)
+    {}
+
+    inline const_methods(const const_methods<T, false> &methods) :
+      std::shared_ptr<T>(methods)
+    {}
+
+  public:
+    inline const T* operator->() const
+    {
+      return this->get();
+    }
+  };
 }
 
 #define cfo_MANAGED_CONST_METHODS(METHODS)                              \
@@ -58,24 +77,28 @@ namespace cfo
       (const cfo_managed_const_methods<T, true>&);                      \
                                                                         \
   protected:                                                            \
-    inline cfo_managed_const_methods                                    \
-      (const cfo::managed<T> &manager, bool shared) :                   \
+    inline cfo_managed_const_methods(T *obj) :                          \
+      cfo::const_methods<T, false>(obj)                                 \
+    {}                                                                  \
                                                                         \
-      cfo::const_methods<T, SYNC>(manager, shared)                      \
+    inline cfo_managed_const_methods                                    \
+      (const cfo::managed<T, true> &manager, bool shared) :             \
+                                                                        \
+      cfo::const_methods<T, true>(manager, shared)                      \
     {}                                                                  \
                                                                         \
   public:                                                               \
     inline cfo_managed_const_methods                                    \
-      (const cfo::managed<T, SYNC> &manager) :                          \
+      (const cfo::managed<T, true> &manager) :                          \
                                                                         \
-      cfo::const_methods<T, SYNC>(manager)                              \
+      cfo::const_methods<T, true>(manager)                              \
     {}                                                                  \
                                                                         \
     inline cfo_managed_const_methods                                    \
-      (cfo_managed_const_methods<T, SYNC> &&methods) :                  \
+      (cfo_managed_const_methods<T, true> &&methods) :                  \
                                                                         \
-      cfo::const_methods<T, SYNC>                                       \
-      (static_cast<cfo::const_methods<T, SYNC>&&>(methods))             \
+      cfo::const_methods<T, true>                                       \
+      (static_cast<cfo::const_methods<T, true>&&>(methods))             \
     {}                                                                  \
                                                                         \
     METHODS                                                             \

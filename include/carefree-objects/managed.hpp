@@ -89,16 +89,17 @@ namespace cfo
   };
 
   template<typename T>
-  class managed<T, false> : private std::shared_ptr<T>
+  class managed<T, false> :
+    public T::template cfo_managed_methods<T, false>
   {
   public:
     template<typename... A>
     inline managed(A... args) :
-      std::shared_ptr<T>(new T(args...))
+      T::template cfo_managed_methods<T, false>(new T(args...))
     {}
 
     inline managed(const managed<T, false> &manager) :
-      std::shared_ptr<T>(manager)
+      T::template cfo_managed_methods<T, false>(manager)
     {}
 
     inline T* operator->() const
