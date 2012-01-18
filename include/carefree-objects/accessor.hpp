@@ -44,7 +44,10 @@ namespace cfo
     {}
 
     inline accessor(accessor<T> &&access) :
-      T::template cfo_managed_const_methods<T, true>(static_cast<typename T::template cfo_managed_const_methods<T, true>&&>(access))
+      T::template cfo_managed_const_methods<T, true>
+      (static_cast
+       <typename T::template cfo_managed_const_methods<T, true>&&>
+       (access))
     {}
 
     inline T* operator->() const
