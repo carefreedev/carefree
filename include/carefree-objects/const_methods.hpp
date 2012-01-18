@@ -49,7 +49,7 @@ namespace cfo
   };
 }
 
-#define cfo_MANAGED_CONST_METHODS(TYPE, METHODS)                        \
+#define cfo_MANAGED_CONST_METHODS(METHODS)                              \
   template<typename T, bool SYNC>                                       \
   class cfo_managed_const_methods : public cfo::const_methods<T, SYNC>  \
   {                                                                     \

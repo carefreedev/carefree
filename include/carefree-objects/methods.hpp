@@ -49,7 +49,7 @@ namespace cfo
   // };
 }
 
-#define cfo_MANAGED_METHODS(TYPE, METHODS)                              \
+#define cfo_MANAGED_METHODS(METHODS)                                    \
   template<typename T, bool SYNC>                                       \
   class cfo_managed_methods : public cfo::methods<T, SYNC>              \
   {                                                                     \
