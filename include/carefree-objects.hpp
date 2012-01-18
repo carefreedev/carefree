@@ -21,7 +21,6 @@
 #ifndef __CAREFREE_OBJECTS_HPP
 #define __CAREFREE_OBJECTS_HPP
 
-#include "accessor.hpp"
-#include "managed.hpp"
+#include "carefree-objects/managed.hpp"
 
 #endif
