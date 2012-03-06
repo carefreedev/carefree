@@ -42,6 +42,12 @@ namespace cfo
   private:
     T *obj;
 
+  protected:
+    inline managed(T *obj) :
+      basic_manager(),
+      obj(obj)
+    {}
+
   public:
     typedef typename T::template cfo_managed_const_methods<const T, true>
     const_accessor;
@@ -92,6 +98,11 @@ namespace cfo
   class managed<T, false> :
     public T::template cfo_managed_methods<T, false>
   {
+  protected:
+    inline managed(T *obj) :
+      T::template cfo_managed_methods<T, false>(obj)
+    {}
+
   public:
     template<typename... A>
     inline managed(A... args) :
