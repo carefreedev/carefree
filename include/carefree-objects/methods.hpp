@@ -65,31 +65,35 @@ namespace cfo
 }
 
 #define cfo_MANAGED_METHODS(METHODS)                                    \
-  template<typename T, bool SYNC>                                       \
-  class cfo_managed_methods : public cfo::methods<T, SYNC>              \
+  template<typename cfo_T, bool cfo_SYNC>                               \
+  class cfo_managed_methods : public cfo::methods<cfo_T, cfo_SYNC>      \
   {                                                                     \
   private:                                                              \
-    cfo_managed_methods(const cfo_managed_methods<T, true>&);           \
+    cfo_managed_methods(const cfo_managed_methods<cfo_T, true>&);       \
                                                                         \
   protected:                                                            \
-    inline cfo_managed_methods(T *obj) :                                \
-      cfo::methods<T, false>(obj)                                       \
-    {}                                                                  \
-                                                                        \
-    cfo_managed_methods(const cfo_managed_methods<T, false> &methods) : \
-      cfo::methods<T, false>(methods)                                   \
-      {}                                                                \
-                                                                        \
-  public:                                                               \
-    inline cfo_managed_methods(const cfo::managed<T, true> &manager) :  \
-      cfo::methods<T, true>(manager)                                    \
+    inline cfo_managed_methods(cfo_T *obj) :                            \
+      cfo::methods<cfo_T, false>(obj)                                   \
     {}                                                                  \
                                                                         \
     inline cfo_managed_methods                                          \
-      (cfo_managed_methods<T, true> &&methods) :                        \
+      (const cfo_managed_methods<cfo_T, false> &methods) :              \
                                                                         \
-      cfo::methods<T, true>                                             \
-      (static_cast<cfo::methods<T, true>&&>(methods))                   \
+      cfo::methods<cfo_T, false>(methods)                               \
+      {}                                                                \
+                                                                        \
+  public:                                                               \
+    inline cfo_managed_methods                                          \
+      (const cfo::managed<cfo_T, true> &manager) :                      \
+                                                                        \
+      cfo::methods<cfo_T, true>(manager)                                \
+    {}                                                                  \
+                                                                        \
+    inline cfo_managed_methods                                          \
+      (cfo_managed_methods<cfo_T, true> &&methods) :                    \
+                                                                        \
+      cfo::methods<cfo_T, true>                                         \
+      (static_cast<cfo::methods<cfo_T, true>&&>(methods))               \
     {}                                                                  \
                                                                         \
     METHODS                                                             \
