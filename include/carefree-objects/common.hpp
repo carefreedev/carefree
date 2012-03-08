@@ -25,6 +25,8 @@
 
 #include <memory>
 
+#include <boost/foreach.hpp>
+
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/shared_mutex.hpp>
 

@@ -54,6 +54,8 @@ namespace cfo
 
     typedef typename T::template cfo_managed_methods<T, true> accessor;
 
+    typedef managed<basic_manager::vector<T, true>, true> vector;
+
     template<typename... A>
     inline managed(A... args) :
       basic_manager(),
@@ -104,6 +106,8 @@ namespace cfo
     {}
 
   public:
+    typedef managed<basic_manager::vector<T, false>, false> vector;
+
     template<typename... A>
     inline managed(A... args) :
       T::template cfo_managed_methods<T, false>(new T(args...))

@@ -92,6 +92,9 @@ namespace cfo
     }
 
   public:
+    template<typename T, bool SYNC, typename M = managed<T, SYNC> >
+    class vector;
+
     inline operator bool() const
     {
       return this->cnl;
@@ -103,5 +106,7 @@ namespace cfo
     }
   };
 }
+
+#include "vector.hpp"
 
 #endif
