@@ -21,8 +21,8 @@
 /* managed vector for managed objects
  */
 
-#ifndef __CFO_COLLECTIONS_HPP
-#define __CFO_COLLECTIONS_HPP
+#ifndef __CFO_VECTOR_HPP
+#define __CFO_VECTOR_HPP
 
 #include "basic_manager.hpp"
 #include "methods.hpp"
