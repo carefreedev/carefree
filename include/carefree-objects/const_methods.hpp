@@ -102,6 +102,7 @@ namespace cfo
       (static_cast<cfo::const_methods<cfo_T, true>&&>(methods))         \
     {}                                                                  \
                                                                         \
+  private:                                                              \
     METHODS                                                             \
   };                                                                    \
 
@@ -140,6 +141,7 @@ namespace cfo
        (methods))                                                       \
     {}                                                                  \
                                                                         \
+  private:                                                              \
     METHODS                                                             \
   };                                                                    \
 

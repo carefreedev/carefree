@@ -96,6 +96,7 @@ namespace cfo
       (static_cast<cfo::methods<cfo_T, true>&&>(methods))               \
     {}                                                                  \
                                                                         \
+  private:                                                              \
     METHODS                                                             \
   };                                                                    \
 
@@ -132,6 +133,7 @@ namespace cfo
       (static_cast<BASE::cfo_managed_methods<cfo_T, true>&&>(methods))  \
     {}                                                                  \
                                                                         \
+  private:                                                              \
     METHODS                                                             \
   };                                                                    \
 

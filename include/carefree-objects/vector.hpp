@@ -63,7 +63,9 @@ namespace cfo
     }
 
     cfo_MANAGED_BASIC_CONST_METHODS
-    (inline std::size_t size() const
+    (public:
+
+     inline std::size_t size() const
      {
        return (*this)->size();
      })
@@ -74,7 +76,9 @@ namespace cfo
      // })
 
     cfo_MANAGED_BASIC_METHODS
-    (template<typename... A>
+    (public:
+
+     template<typename... A>
      inline void push_back(const A &...args)
      {
        (*this)->push_back(args...);
