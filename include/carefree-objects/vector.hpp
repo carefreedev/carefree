@@ -51,6 +51,11 @@ namespace cfo
       return this->vector_type::size();
     }
 
+    inline const M& operator[](std::size_t index) const
+    {
+      return *static_cast<M*>(this->vector_type::operator[](index));
+    }
+
     inline M& operator[](std::size_t index)
     {
       return *static_cast<M*>(this->vector_type::operator[](index));
@@ -68,6 +73,11 @@ namespace cfo
      inline std::size_t size() const
      {
        return (*this)->size();
+     }
+
+     inline const M& operator[](std::size_t index) const
+     {
+       return (*this)->operator[](index);
      })
 
      // const inline M& operator[](std::size_t index) const
@@ -82,12 +92,12 @@ namespace cfo
      inline void push_back(const A &...args)
      {
        (*this)->push_back(args...);
-     }
-
-     inline M& operator[](std::size_t index)
-     {
-       return (*this)->operator[](index);
      })
+
+     // inline M& operator[](std::size_t index)
+     // {
+     //   return (*this)->operator[](index);
+     // })
   };
 }
 
