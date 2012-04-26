@@ -67,6 +67,14 @@ namespace cfo
       this->vector_type::push_back(new M(args...));
     }
 
+    template<typename... A>
+    inline const M& append(const A &...args)
+    {
+      M *obj = new M(args...);
+      this->vector_type::push_back(obj);
+      return *obj;
+    }
+
     cfo_MANAGED_BASIC_CONST_METHODS
     (public:
 
@@ -92,6 +100,12 @@ namespace cfo
      inline void push_back(const A &...args)
      {
        (*this)->push_back(args...);
+     }
+
+     template<typename... A>
+     inline const M& append(const A &...args)
+     {
+       return (*this)->append(args...);
      })
 
      // inline M& operator[](std::size_t index)
