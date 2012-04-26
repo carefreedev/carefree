@@ -36,8 +36,8 @@ namespace cfo
   template<typename T, typename... BASES>
   class managed<T, true, BASES...> : public basic_manager, public BASES...
   {
-    friend class const_accessor<T>;
-    friend class accessor<T>;
+    friend class const_accessor<T, BASES...>;
+    friend class accessor<T, BASES...>;
 
   private:
     T *obj;
@@ -49,12 +49,12 @@ namespace cfo
     {}
 
   public:
-    typedef typename T::template cfo_managed_const_methods<const T, true>
+    typedef typename T::template cfo_managed_const_methods<const T, true, BASES...>
     const_accessor;
 
-    typedef typename T::template cfo_managed_methods<T, true> accessor;
+    typedef typename T::template cfo_managed_methods<T, true, BASES...> accessor;
 
-    typedef managed<basic_manager::vector<T, true>, true> vector;
+    typedef managed<basic_manager::vector<T, true, BASES...>, true> vector;
 
     template<typename... A>
     inline managed(A... args) :
@@ -62,13 +62,15 @@ namespace cfo
       obj(new T(args...))
     {}
 
-    inline managed(const managed<T> &manager) :
+    inline managed(const managed<T, true, BASES...> &manager) :
       basic_manager(manager),
       obj(this->cnl ? manager.obj : NULL)
     {}
 
-    template<typename T_other>
-    inline managed(const managed<T_other> &other_manager) :
+    template<typename T_other, typename... BASES_other>
+    inline managed
+      (const managed<T_other, true, BASES_other...> &other_manager) :
+
       basic_manager(other_manager),
       obj(this->cnl ? static_cast<T*>(other_manager.unmanaged()) : NULL)
     {}
@@ -98,26 +100,26 @@ namespace cfo
 
   template<typename T, typename... BASES>
   class managed<T, false, BASES...> :
-    public T::template cfo_managed_methods<T, false>,
+    public T::template cfo_managed_methods<T, false, BASES...>,
     public BASES...
   {
     friend T;
 
   protected:
     inline managed(T *obj) :
-      T::template cfo_managed_methods<T, false>(obj)
+      T::template cfo_managed_methods<T, false, BASES...>(obj)
     {}
 
   public:
-    typedef managed<basic_manager::vector<T, false>, false> vector;
+    typedef managed<basic_manager::vector<T, false, BASES...>, false> vector;
 
     template<typename... A>
     inline managed(A... args) :
-      T::template cfo_managed_methods<T, false>(new T(args...))
+      T::template cfo_managed_methods<T, false, BASES...>(new T(args...))
     {}
 
     inline managed(const managed<T, false> &manager) :
-      T::template cfo_managed_methods<T, false>(manager)
+      T::template cfo_managed_methods<T, false, BASES...>(manager)
     {}
 
     inline T* operator->() const

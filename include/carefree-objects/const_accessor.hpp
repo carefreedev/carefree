@@ -37,30 +37,30 @@ namespace cfo
 
   private:
     const bool shared;
-    std::unique_ptr<managed<T, BASES...> > manager_ptr;
+    std::unique_ptr<managed<T, true, BASES...> > manager_ptr;
 
     const_accessor(const_accessor<T> &);
 
   protected:
     inline const_accessor
-    (const managed<T, BASES...> &manager, bool shared) :
+    (const managed<T, true, BASES...> &manager, bool shared) :
 
       shared(shared),
-      manager_ptr(new managed<T, BASES...>(manager))
+      manager_ptr(new managed<T, true, BASES...>(manager))
     {
       if (manager)
         manager.cnl->lock();
     }
 
-    inline const managed<T, BASES...>& manager() const
+    inline const managed<T, true, BASES...>& manager() const
     {
       return *this->manager_ptr;
     }
 
   public:
-    inline const_accessor(const managed<T, BASES...> &manager) :
+    inline const_accessor(const managed<T, true, BASES...> &manager) :
       shared(true),
-      manager_ptr(new managed<T, BASES...>(manager))
+      manager_ptr(new managed<T, true, BASES...>(manager))
     {
       if (manager)
         manager.cnl->lock_shared();
