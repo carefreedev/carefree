@@ -27,33 +27,33 @@
 
 namespace cfo
 {
-  template<typename T>
-  class methods<T, true> : public accessor<T>
+  template<typename T, typename... BASES>
+  class methods<T, true, BASES...> : public accessor<T, BASES...>
   {
   private:
-    methods(const methods<T, true>&);
+    methods(const methods<T, true, BASES...>&);
 
   public:
-    inline methods(const managed<T> &manager) :
-      accessor<T>(manager)
+    inline methods(const managed<T, true, BASES...> &manager) :
+      accessor<T, BASES...>(manager)
     {}
 
-    inline methods(methods<T, true> &&methods) :
-      accessor<T>(static_cast<accessor<T>&&>(methods))
+    inline methods(methods<T, true, BASES...> &&methods) :
+      accessor<T>(static_cast<accessor<T, BASES...>&&>(methods))
     {}
   };
 
-  template<typename T>
-  class methods<T, false> :
-    public T::template cfo_managed_const_methods<T, false>
+  template<typename T, typename... BASES>
+  class methods<T, false, BASES...> :
+    public T::template cfo_managed_const_methods<T, false, BASES...>
   {
   protected:
     inline methods(T *obj) :
-      T::template cfo_managed_const_methods<T, false>(obj)
+      T::template cfo_managed_const_methods<T, false, BASES...>(obj)
     {}
 
     inline methods(const methods<T, false> &methods) :
-      T::template cfo_managed_const_methods<T, false>(methods)
+      T::template cfo_managed_const_methods<T, false, BASES...>(methods)
     {}
 
   public:
@@ -65,35 +65,38 @@ namespace cfo
 }
 
 #define cfo_MANAGED_BASIC_METHODS(METHODS)                              \
-  template<typename cfo_T, bool cfo_SYNC>                               \
-  class cfo_managed_methods : public cfo::methods<cfo_T, cfo_SYNC>      \
+  template<typename cfo_T, bool cfo_SYNC, typename... cfo_BASES>        \
+  class cfo_managed_methods :                                           \
+    public cfo::methods<cfo_T, cfo_SYNC, cfo_BASES...>                  \
   {                                                                     \
   private:                                                              \
-    cfo_managed_methods(const cfo_managed_methods<cfo_T, true>&);       \
+    cfo_managed_methods                                                 \
+      (const cfo_managed_methods<cfo_T, true, cfo_BASES...>&);          \
                                                                         \
   protected:                                                            \
     inline cfo_managed_methods(cfo_T *obj) :                            \
-      cfo::methods<cfo_T, false>(obj)                                   \
+      cfo::methods<cfo_T, false, cfo_BASES...>(obj)                     \
     {}                                                                  \
                                                                         \
     inline cfo_managed_methods                                          \
-      (const cfo_managed_methods<cfo_T, false> &methods) :              \
+      (const cfo_managed_methods<cfo_T, false, cfo_BASES...>            \
+       &methods) :                                                      \
                                                                         \
-      cfo::methods<cfo_T, false>(methods)                               \
+      cfo::methods<cfo_T, false, cfo_BASES...>(methods)                 \
       {}                                                                \
                                                                         \
   public:                                                               \
     inline cfo_managed_methods                                          \
-      (const cfo::managed<cfo_T, true> &manager) :                      \
+      (const cfo::managed<cfo_T, true, cfo_BASES...> &manager) :        \
                                                                         \
-      cfo::methods<cfo_T, true>(manager)                                \
+      cfo::methods<cfo_T, true, cfo_BASES...>(manager)                  \
     {}                                                                  \
                                                                         \
     inline cfo_managed_methods                                          \
-      (cfo_managed_methods<cfo_T, true> &&methods) :                    \
+      (cfo_managed_methods<cfo_T, true, cfo_BASES...> &&methods) :      \
                                                                         \
-      cfo::methods<cfo_T, true>                                         \
-      (static_cast<cfo::methods<cfo_T, true>&&>(methods))               \
+      cfo::methods<cfo_T, true, cfo_BASES...>                           \
+      (static_cast<cfo::methods<cfo_T, true, cfo_BASES...>&&>(methods)) \
     {}                                                                  \
                                                                         \
   private:                                                              \
@@ -101,36 +104,40 @@ namespace cfo
   };                                                                    \
 
 #define cfo_MANAGED_METHODS(BASE, METHODS)                              \
-  template<typename cfo_T, bool cfo_SYNC>                               \
+  template<typename cfo_T, bool cfo_SYNC, typename... cfo_BASES>        \
   class cfo_managed_methods :                                           \
-    public BASE::cfo_managed_methods<cfo_T, cfo_SYNC>                   \
+    public BASE::cfo_managed_methods<cfo_T, cfo_SYNC, cfo_BASES...>     \
   {                                                                     \
   private:                                                              \
-    cfo_managed_methods(const cfo_managed_methods<cfo_T, true>&);       \
+    cfo_managed_methods                                                 \
+      (const cfo_managed_methods<cfo_T, true, cfo_BASES...>&);          \
                                                                         \
   protected:                                                            \
     inline cfo_managed_methods(cfo_T *obj) :                            \
-      BASE::cfo_managed_methods<cfo_T, false>(obj)                      \
+      BASE::cfo_managed_methods<cfo_T, false, cfo_BASES...>(obj)        \
     {}                                                                  \
                                                                         \
     inline cfo_managed_methods                                          \
-      (const cfo_managed_methods<cfo_T, false> &methods) :              \
+      (const cfo_managed_methods<cfo_T, false, cfo_BASES...>            \
+       &methods) :                                                      \
                                                                         \
-      BASE::cfo_managed_methods<cfo_T, false>(methods)                  \
+      BASE::cfo_managed_methods<cfo_T, false, cfo_BASES...>(methods)    \
     {}                                                                  \
                                                                         \
   public:                                                               \
     inline cfo_managed_methods                                          \
-      (const cfo::managed<cfo_T, true> &manager) :                      \
+      (const cfo::managed<cfo_T, true, cfo_BASES...> &manager) :        \
                                                                         \
-      BASE::cfo_managed_methods<cfo_T, true>(manager)                   \
+      BASE::cfo_managed_methods<cfo_T, true, cfo_BASES...>(manager)     \
     {}                                                                  \
                                                                         \
     inline cfo_managed_methods                                          \
-      (cfo_managed_methods<cfo_T, true> &&methods) :                    \
+      (cfo_managed_methods<cfo_T, true, cfo_BASES...> &&methods) :      \
                                                                         \
-      BASE::cfo_managed_methods<cfo_T, true>                            \
-      (static_cast<BASE::cfo_managed_methods<cfo_T, true>&&>(methods))  \
+      BASE::cfo_managed_methods<cfo_T, true, cfo_BASES...>              \
+      (static_cast                                                      \
+       <BASE::cfo_managed_methods<cfo_T, true, cfo_BASES...>&&>         \
+       (methods))                                                       \
     {}                                                                  \
                                                                         \
   private:                                                              \

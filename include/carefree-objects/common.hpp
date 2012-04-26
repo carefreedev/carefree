@@ -34,21 +34,21 @@ namespace cfo
 {
   class count_and_lock;
 
-  template<typename T>
+  template<typename T, typename... BASES>
   class const_accessor;
 
-  template<typename T>
+  template<typename T, typename... BASES>
   class accessor;
 
-  template<typename T, bool SYNC = true>
+  template<typename T, bool SYNC = true, typename... BASES>
   class const_methods;
 
-  template<typename T, bool SYNC = true>
+  template<typename T, bool SYNC = true, typename... BASES>
   class methods;
 
   class basic_manager;
 
-  template<typename T, bool SYNC = true>
+  template<typename T, bool SYNC = true, typename... BASES>
   class managed;
 }
 

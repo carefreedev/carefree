@@ -33,8 +33,8 @@
 
 namespace cfo
 {
-  template<typename T>
-  class managed<T, true> : public basic_manager
+  template<typename T, typename... BASES>
+  class managed<T, true, BASES...> : public basic_manager, public BASES...
   {
     friend class const_accessor<T>;
     friend class accessor<T>;
@@ -96,10 +96,13 @@ namespace cfo
     }
   };
 
-  template<typename T>
-  class managed<T, false> :
-    public T::template cfo_managed_methods<T, false>
+  template<typename T, typename... BASES>
+  class managed<T, false, BASES...> :
+    public T::template cfo_managed_methods<T, false>,
+    public BASES...
   {
+    friend T;
+
   protected:
     inline managed(T *obj) :
       T::template cfo_managed_methods<T, false>(obj)
