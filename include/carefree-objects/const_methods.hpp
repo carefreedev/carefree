@@ -66,6 +66,13 @@ namespace cfo
       std::shared_ptr<T>(methods)
     {}
 
+    template<typename T_other, typename... BASES_other>
+    inline const_methods
+    (const const_methods<T_other, false, BASES_other...> &methods) :
+
+      std::shared_ptr<T>(methods)
+    {}
+
     inline const managed<T, false, BASES...>& manager() const
     {
       return static_cast<const managed<T, false, BASES...>&>(*this);
@@ -92,6 +99,22 @@ namespace cfo
     inline cfo_managed_const_methods(cfo_T *obj) :                      \
       cfo::const_methods<cfo_T, false, cfo_BASES...>(obj)               \
     {}                                                                  \
+                                                                        \
+    inline cfo_managed_const_methods                                    \
+      (const cfo_managed_const_methods<cfo_T, false, cfo_BASES...>      \
+       &methods) :                                                      \
+                                                                        \
+      cfo::const_methods<cfo_T, false, cfo_BASES...>(methods)           \
+      {}                                                                \
+                                                                        \
+    template<typename cfo_T_other, typename... cfo_BASES_other>         \
+      inline cfo_managed_const_methods                                  \
+      (const cfo_managed_const_methods                                  \
+       <cfo_T_other, false, cfo_BASES_other...>                         \
+       &methods) :                                                      \
+                                                                        \
+      cfo::const_methods<cfo_T, false, cfo_BASES...>(methods)           \
+      {}                                                                \
                                                                         \
     inline cfo_managed_const_methods                                    \
       (const cfo::managed<cfo_T, true, cfo_BASES...> &manager,          \
@@ -133,6 +156,24 @@ namespace cfo
   protected:                                                            \
     inline cfo_managed_const_methods(cfo_T *obj) :                      \
       BASE::cfo_managed_const_methods<cfo_T, false, cfo_BASES...>(obj)  \
+    {}                                                                  \
+                                                                        \
+    inline cfo_managed_const_methods                                    \
+      (const cfo_managed_const_methods<cfo_T, false, cfo_BASES...>      \
+       &methods) :                                                      \
+                                                                        \
+      BASE::cfo_managed_const_methods<cfo_T, false, cfo_BASES...>       \
+      (methods)                                                         \
+    {}                                                                  \
+                                                                        \
+    template<typename cfo_T_other, typename... cfo_BASES_other>         \
+      inline cfo_managed_const_methods                                  \
+      (const cfo_managed_const_methods                                  \
+       <cfo_T_other, false, cfo_BASES_other...>                         \
+       &methods) :                                                      \
+                                                                        \
+      BASE::cfo_managed_const_methods<cfo_T, false, cfo_BASES...>       \
+      (methods)                                                         \
     {}                                                                  \
                                                                         \
     inline cfo_managed_const_methods                                    \

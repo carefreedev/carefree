@@ -52,7 +52,14 @@ namespace cfo
       T::template cfo_managed_const_methods<T, false, BASES...>(obj)
     {}
 
-    inline methods(const methods<T, false> &methods) :
+    inline methods(const methods<T, false, BASES...> &methods) :
+      T::template cfo_managed_const_methods<T, false, BASES...>(methods)
+    {}
+
+    template<typename T_other, typename... BASES_other>
+    inline methods
+    (const methods<T_other, false, BASES_other...> &methods) :
+
       T::template cfo_managed_const_methods<T, false, BASES...>(methods)
     {}
 
@@ -80,6 +87,15 @@ namespace cfo
                                                                         \
     inline cfo_managed_methods                                          \
       (const cfo_managed_methods<cfo_T, false, cfo_BASES...>            \
+       &methods) :                                                      \
+                                                                        \
+      cfo::methods<cfo_T, false, cfo_BASES...>(methods)                 \
+      {}                                                                \
+                                                                        \
+    template<typename cfo_T_other, typename... cfo_BASES_other>         \
+    inline cfo_managed_methods                                          \
+      (const cfo_managed_methods                                        \
+       <cfo_T_other, false, cfo_BASES_other...>                         \
        &methods) :                                                      \
                                                                         \
       cfo::methods<cfo_T, false, cfo_BASES...>(methods)                 \
@@ -119,6 +135,15 @@ namespace cfo
                                                                         \
     inline cfo_managed_methods                                          \
       (const cfo_managed_methods<cfo_T, false, cfo_BASES...>            \
+       &methods) :                                                      \
+                                                                        \
+      BASE::cfo_managed_methods<cfo_T, false, cfo_BASES...>(methods)    \
+    {}                                                                  \
+                                                                        \
+    template<typename cfo_T_other, typename... cfo_BASES_other>         \
+    inline cfo_managed_methods                                          \
+      (const cfo_managed_methods                                        \
+       <cfo_T_other, false, cfo_BASES_other...>                         \
        &methods) :                                                      \
                                                                         \
       BASE::cfo_managed_methods<cfo_T, false, cfo_BASES...>(methods)    \

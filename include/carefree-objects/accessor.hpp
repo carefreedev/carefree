@@ -41,7 +41,8 @@ namespace cfo
 
   public:
     inline accessor(const managed<T, true, BASES...> &manager) :
-      T::template cfo_managed_const_methods<T, true, BASES...>(manager, false)
+      T::template cfo_managed_const_methods<T, true, BASES...>
+      (manager, false)
     {}
 
     inline accessor(accessor<T, BASES...> &&access) :

@@ -122,6 +122,13 @@ namespace cfo
       T::template cfo_managed_methods<T, false, BASES...>(manager)
     {}
 
+    template<typename T_other, typename... BASES_other>
+    inline managed
+      (const managed<T_other, false, BASES_other...> &other_manager) :
+
+      T::template cfo_managed_methods<T, false, BASES...>(other_manager)
+    {}
+
     inline T* operator->() const
     {
       return this->get();
