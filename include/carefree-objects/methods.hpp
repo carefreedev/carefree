@@ -122,7 +122,8 @@ namespace cfo
 #define cfo_MANAGED_METHODS(BASE, METHODS)                              \
   template<typename cfo_T, bool cfo_SYNC, typename... cfo_BASES>        \
   class cfo_managed_methods :                                           \
-    public BASE::cfo_managed_methods<cfo_T, cfo_SYNC, cfo_BASES...>     \
+    public BASE::template cfo_managed_methods                           \
+      <cfo_T, cfo_SYNC, cfo_BASES...>                                   \
   {                                                                     \
   private:                                                              \
     cfo_managed_methods                                                 \
@@ -130,14 +131,16 @@ namespace cfo
                                                                         \
   protected:                                                            \
     inline cfo_managed_methods(cfo_T *obj) :                            \
-      BASE::cfo_managed_methods<cfo_T, false, cfo_BASES...>(obj)        \
+      BASE::template cfo_managed_methods                                \
+      <cfo_T, false, cfo_BASES...>(obj)                                 \
     {}                                                                  \
                                                                         \
     inline cfo_managed_methods                                          \
       (const cfo_managed_methods<cfo_T, false, cfo_BASES...>            \
        &methods) :                                                      \
                                                                         \
-      BASE::cfo_managed_methods<cfo_T, false, cfo_BASES...>(methods)    \
+      BASE::template cfo_managed_methods<cfo_T, false, cfo_BASES...>    \
+      (methods)                                                         \
     {}                                                                  \
                                                                         \
     template<typename cfo_T_other, typename... cfo_BASES_other>         \
@@ -146,22 +149,26 @@ namespace cfo
        <cfo_T_other, false, cfo_BASES_other...>                         \
        &methods) :                                                      \
                                                                         \
-      BASE::cfo_managed_methods<cfo_T, false, cfo_BASES...>(methods)    \
+      BASE::template cfo_managed_methods<cfo_T, false, cfo_BASES...>    \
+      (methods)                                                         \
     {}                                                                  \
                                                                         \
   public:                                                               \
     inline cfo_managed_methods                                          \
       (const cfo::managed<cfo_T, true, cfo_BASES...> &manager) :        \
                                                                         \
-      BASE::cfo_managed_methods<cfo_T, true, cfo_BASES...>(manager)     \
+      BASE::template cfo_managed_methods<cfo_T, true, cfo_BASES...>     \
+      (manager)                                                         \
     {}                                                                  \
                                                                         \
     inline cfo_managed_methods                                          \
       (cfo_managed_methods<cfo_T, true, cfo_BASES...> &&methods) :      \
                                                                         \
-      BASE::cfo_managed_methods<cfo_T, true, cfo_BASES...>              \
+      BASE::template cfo_managed_methods<cfo_T, true, cfo_BASES...>     \
       (static_cast                                                      \
-       <BASE::cfo_managed_methods<cfo_T, true, cfo_BASES...>&&>         \
+       <typename BASE::template cfo_managed_methods                     \
+       <cfo_T, true, cfo_BASES...>                                      \
+       &&>                                                              \
        (methods))                                                       \
     {}                                                                  \
                                                                         \

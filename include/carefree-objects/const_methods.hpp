@@ -146,7 +146,7 @@ namespace cfo
 #define cfo_MANAGED_CONST_METHODS(BASE, METHODS)                        \
   template<typename cfo_T, bool cfo_SYNC, typename... cfo_BASES>        \
   class cfo_managed_const_methods :                                     \
-    public BASE::cfo_managed_const_methods                              \
+    public BASE::template cfo_managed_const_methods                     \
       <cfo_T, cfo_SYNC, cfo_BASES...>                                   \
   {                                                                     \
   private:                                                              \
@@ -155,14 +155,17 @@ namespace cfo
                                                                         \
   protected:                                                            \
     inline cfo_managed_const_methods(cfo_T *obj) :                      \
-      BASE::cfo_managed_const_methods<cfo_T, false, cfo_BASES...>(obj)  \
+      BASE::template cfo_managed_const_methods                          \
+      <cfo_T, false, cfo_BASES...>                                      \
+      (obj)                                                             \
     {}                                                                  \
                                                                         \
     inline cfo_managed_const_methods                                    \
       (const cfo_managed_const_methods<cfo_T, false, cfo_BASES...>      \
        &methods) :                                                      \
                                                                         \
-      BASE::cfo_managed_const_methods<cfo_T, false, cfo_BASES...>       \
+      BASE::template cfo_managed_const_methods                          \
+      <cfo_T, false, cfo_BASES...>                                      \
       (methods)                                                         \
     {}                                                                  \
                                                                         \
@@ -172,7 +175,8 @@ namespace cfo
        <cfo_T_other, false, cfo_BASES_other...>                         \
        &methods) :                                                      \
                                                                         \
-      BASE::cfo_managed_const_methods<cfo_T, false, cfo_BASES...>       \
+      BASE::template cfo_managed_const_methods                          \
+      <cfo_T, false, cfo_BASES...>                                      \
       (methods)                                                         \
     {}                                                                  \
                                                                         \
@@ -180,7 +184,8 @@ namespace cfo
       (const cfo::managed<cfo_T, true, cfo_BASES...> &manager,          \
        bool shared) :                                                   \
                                                                         \
-      BASE::cfo_managed_const_methods<cfo_T, true, cfo_BASES...>        \
+      BASE::template cfo_managed_const_methods                          \
+      <cfo_T, true, cfo_BASES...>                                       \
       (manager, shared)                                                 \
     {}                                                                  \
                                                                         \
@@ -188,7 +193,8 @@ namespace cfo
     inline cfo_managed_const_methods                                    \
       (const cfo::managed<cfo_T, true, cfo_BASES...> &manager) :        \
                                                                         \
-      BASE::cfo_managed_const_methods<cfo_T, true, cfo_BASES...>        \
+      BASE::template cfo_managed_const_methods                          \
+      <cfo_T, true, cfo_BASES...>                                       \
       (manager)                                                         \
     {}                                                                  \
                                                                         \
@@ -196,9 +202,11 @@ namespace cfo
       (cfo_managed_const_methods<cfo_T, true, cfo_BASES...>             \
        &&methods) :                                                     \
                                                                         \
-      BASE::cfo_managed_const_methods<cfo_T, true, cfo_BASES...>        \
-      (static_cast<BASE::cfo_managed_const_methods                      \
-       <cfo_T, true, cfo_BASES...>&&>                                   \
+      BASE::template cfo_managed_const_methods                          \
+      <cfo_T, true, cfo_BASES...>                                       \
+      (static_cast<typename BASE::template cfo_managed_const_methods    \
+       <cfo_T, true, cfo_BASES...>                                      \
+       &&>                                                              \
        (methods))                                                       \
     {}                                                                  \
                                                                         \
