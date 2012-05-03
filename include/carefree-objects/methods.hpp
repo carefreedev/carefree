@@ -52,14 +52,11 @@ namespace cfo
       T::template cfo_managed_const_methods<T, false, BASES...>(obj)
     {}
 
-    inline methods(const methods<T, false, BASES...> &methods) :
-      T::template cfo_managed_const_methods<T, false, BASES...>(methods)
+    inline methods(const std::shared_ptr<T> &manager) :
+      T::template cfo_managed_const_methods<T, false, BASES...>(manager)
     {}
 
-    template<typename T_other, typename... BASES_other>
-    inline methods
-    (const methods<T_other, false, BASES_other...> &methods) :
-
+    inline methods(const methods<T, false, BASES...> &methods) :
       T::template cfo_managed_const_methods<T, false, BASES...>(methods)
     {}
 
@@ -85,17 +82,12 @@ namespace cfo
       cfo::methods<cfo_T, false, cfo_BASES...>(obj)                     \
     {}                                                                  \
                                                                         \
+    inline cfo_managed_methods(const std::shared_ptr<cfo_T> &manager) : \
+      cfo::methods<cfo_T, false, cfo_BASES...>(manager)                 \
+    {}                                                                  \
+                                                                        \
     inline cfo_managed_methods                                          \
       (const cfo_managed_methods<cfo_T, false, cfo_BASES...>            \
-       &methods) :                                                      \
-                                                                        \
-      cfo::methods<cfo_T, false, cfo_BASES...>(methods)                 \
-      {}                                                                \
-                                                                        \
-    template<typename cfo_T_other, typename... cfo_BASES_other>         \
-    inline cfo_managed_methods                                          \
-      (const cfo_managed_methods                                        \
-       <cfo_T_other, false, cfo_BASES_other...>                         \
        &methods) :                                                      \
                                                                         \
       cfo::methods<cfo_T, false, cfo_BASES...>(methods)                 \
@@ -135,18 +127,13 @@ namespace cfo
       <cfo_T, false, cfo_BASES...>(obj)                                 \
     {}                                                                  \
                                                                         \
-    inline cfo_managed_methods                                          \
-      (const cfo_managed_methods<cfo_T, false, cfo_BASES...>            \
-       &methods) :                                                      \
-                                                                        \
+    inline cfo_managed_methods(const std::shared_ptr<cfo_T> &manager) : \
       BASE::template cfo_managed_methods<cfo_T, false, cfo_BASES...>    \
-      (methods)                                                         \
+      (manager)                                                         \
     {}                                                                  \
                                                                         \
-    template<typename cfo_T_other, typename... cfo_BASES_other>         \
     inline cfo_managed_methods                                          \
-      (const cfo_managed_methods                                        \
-       <cfo_T_other, false, cfo_BASES_other...>                         \
+      (const cfo_managed_methods<cfo_T, false, cfo_BASES...>            \
        &methods) :                                                      \
                                                                         \
       BASE::template cfo_managed_methods<cfo_T, false, cfo_BASES...>    \

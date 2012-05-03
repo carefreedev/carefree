@@ -105,6 +105,9 @@ namespace cfo
   {
     friend T;
 
+    template<typename T_other, bool SYNC, typename... BASES_other>
+    friend class managed;
+
   protected:
     inline managed(T *obj) :
       T::template cfo_managed_methods<T, false, BASES...>(obj)
@@ -126,7 +129,9 @@ namespace cfo
     inline managed
       (const managed<T_other, false, BASES_other...> &other_manager) :
 
-      T::template cfo_managed_methods<T, false, BASES...>(other_manager)
+      T::template cfo_managed_methods<T, false, BASES...>
+      (std::static_pointer_cast<T>
+       (static_cast<const std::shared_ptr<T_other>&>(other_manager)))
     {}
 
     inline T* operator->() const
