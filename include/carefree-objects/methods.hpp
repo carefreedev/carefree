@@ -71,7 +71,7 @@ namespace cfo
   };
 }
 
-#define cfo_MANAGED_BASIC_METHODS(METHODS)                              \
+#define cfo_MANAGED_BASIC_METHODS(TYPE, METHODS)                        \
   template<typename cfo_T, bool cfo_SYNC, typename... cfo_BASES>        \
   class cfo_managed_methods :                                           \
     public cfo::methods<cfo_T, cfo_SYNC, cfo_BASES...>                  \
@@ -116,10 +116,27 @@ namespace cfo
     {}                                                                  \
                                                                         \
   private:                                                              \
+    inline const TYPE* operator->() const                               \
+    {                                                                   \
+      return static_cast<TYPE*>                                         \
+        (this->cfo::methods<cfo_T, cfo_SYNC, cfo_BASES...>              \
+         ::operator->());                                               \
+    }                                                                   \
+                                                                        \
+    inline TYPE* operator->()                                           \
+    {                                                                   \
+      return static_cast<TYPE*>                                         \
+        (this->cfo::methods<cfo_T, cfo_SYNC, cfo_BASES...>              \
+         ::operator->());                                               \
+    }                                                                   \
+                                                                        \
     METHODS                                                             \
   };                                                                    \
+                                                                        \
+  template<typename cfo_T, bool cfo_SYNC, typename... cfo_BASES>        \
+  friend class TYPE::cfo_managed_methods;                               \
 
-#define cfo_MANAGED_METHODS(BASE, METHODS)                              \
+#define cfo_MANAGED_METHODS(TYPE, BASE, METHODS)                        \
   template<typename cfo_T, bool cfo_SYNC, typename... cfo_BASES>        \
   class cfo_managed_methods :                                           \
     public BASE::template cfo_managed_methods                           \
@@ -173,7 +190,26 @@ namespace cfo
     {}                                                                  \
                                                                         \
   private:                                                              \
+    inline const TYPE* operator->() const                               \
+    {                                                                   \
+      return static_cast<TYPE*>                                         \
+        (this->BASE::template cfo_managed_methods                       \
+         <cfo_T, cfo_SYNC, cfo_BASES...>                                \
+         ::operator->());                                               \
+    }                                                                   \
+                                                                        \
+    inline TYPE* operator->()                                           \
+    {                                                                   \
+      return static_cast<TYPE*>                                         \
+        (this->BASE::template cfo_managed_methods                       \
+         <cfo_T, cfo_SYNC, cfo_BASES...>                                \
+         ::operator->());                                               \
+    }                                                                   \
+                                                                        \
     METHODS                                                             \
   };                                                                    \
+                                                                        \
+  template<typename cfo_T, bool cfo_SYNC, typename... cfo_BASES>        \
+  friend class TYPE::cfo_managed_methods;                               \
 
 #endif

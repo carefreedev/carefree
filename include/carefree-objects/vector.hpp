@@ -76,7 +76,9 @@ namespace cfo
     }
 
     cfo_MANAGED_BASIC_CONST_METHODS
-    (public:
+    (vector,
+
+     public:
 
      inline std::size_t size() const
      {
@@ -94,7 +96,9 @@ namespace cfo
      // })
 
     cfo_MANAGED_BASIC_METHODS
-    (public:
+    (vector,
+
+     public:
 
      template<typename... A>
      inline void push_back(const A &...args)
