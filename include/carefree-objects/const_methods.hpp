@@ -88,6 +88,12 @@ namespace cfo
   class cfo_managed_const_methods :                                     \
     public cfo::const_methods<cfo_T, cfo_SYNC, cfo_BASES...>            \
   {                                                                     \
+    template                                                            \
+      <typename cfo_T_other, bool cfo_SYNC_other,                       \
+       typename... cfo_BASES_other                                      \
+       >                                                                \
+      friend class cfo_managed_const_methods;                           \
+                                                                        \
   private:                                                              \
     cfo_managed_const_methods                                           \
       (const cfo_managed_const_methods<cfo_T, true, cfo_BASES...>&);    \
@@ -143,6 +149,12 @@ namespace cfo
     public BASE::template cfo_managed_const_methods                     \
       <cfo_T, cfo_SYNC, cfo_BASES...>                                   \
   {                                                                     \
+    template                                                            \
+      <typename cfo_T_other, bool cfo_SYNC_other,                       \
+       typename... cfo_BASES_other                                      \
+       >                                                                \
+      friend class cfo_managed_const_methods;                           \
+                                                                        \
   private:                                                              \
     cfo_managed_const_methods                                           \
       (const cfo_managed_const_methods<cfo_T, true, cfo_BASES...>&);    \
