@@ -2,7 +2,7 @@
  *
  * a thread-safe object manager extension for c++
  *
- * Copyright (C) 2011 Stefan Zimmermann <zimmermann.code@googlemail.com>
+ * Copyright (C) 2011-2012 Stefan Zimmermann <zimmermann.code@googlemail.com>
  *
  * carefree-objects is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
