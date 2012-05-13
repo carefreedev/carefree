@@ -30,7 +30,7 @@
 
 #include "count_and_lock.hpp"
 
-namespace cfo
+namespace cfo { namespace intern
 {
   class basic_manager
   {
@@ -105,7 +105,7 @@ namespace cfo
       return !this->cnl;
     }
   };
-}
+} }
 
 #include "vector.hpp"
 

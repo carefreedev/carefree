@@ -30,7 +30,7 @@
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/shared_mutex.hpp>
 
-namespace cfo
+namespace cfo { namespace intern
 {
   class count_and_lock;
 
@@ -48,8 +48,9 @@ namespace cfo
 
   class basic_manager;
 
-  template<typename T, bool SYNC = true, typename... BASES>
+  template
+  <typename T, bool SYNC = true, bool INIT_NULL = false, typename... BASES>
   class managed;
-}
+} }
 
 #endif

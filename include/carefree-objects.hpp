@@ -23,4 +23,10 @@
 
 #include "carefree-objects/managed.hpp"
 
+namespace cfo
+{
+  template<typename T, bool SYNC, typename... BASES>
+  using managed = intern::managed<T, SYNC, false, BASES...>;
+}
+
 #endif

@@ -27,7 +27,7 @@
 #include "basic_manager.hpp"
 #include "methods.hpp"
 
-namespace cfo
+namespace cfo { namespace intern
 {
   template<typename T, bool SYNC, typename M>
   class basic_manager::vector
@@ -113,6 +113,6 @@ namespace cfo
      //   return (*this)->operator[](index);
      // })
   };
-}
+} }
 
 #endif

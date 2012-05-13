@@ -30,7 +30,7 @@
 
 #include "const_methods.hpp"
 
-namespace cfo
+namespace cfo { namespace intern
 {
   template<typename T, typename... BASES>
   class accessor :
@@ -40,7 +40,7 @@ namespace cfo
     accessor(accessor<T, BASES...> &);
 
   public:
-    inline accessor(const managed<T, true, BASES...> &manager) :
+    inline accessor(const managed<T, true, false, BASES...> &manager) :
       T::template cfo_managed_const_methods<T, true, BASES...>
       (manager, false)
     {}
@@ -58,6 +58,6 @@ namespace cfo
       return this->manager_ptr->obj;
     }
   };
-}
+} }
 
 #endif

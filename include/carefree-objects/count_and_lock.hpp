@@ -23,7 +23,7 @@
 
 #include "common.hpp"
 
-namespace cfo
+namespace cfo { namespace intern
 {
   class count_and_lock : public boost::shared_mutex
   {
@@ -51,6 +51,6 @@ namespace cfo
       return this->counter;
     }
   };
-}
+} }
 
 #endif
