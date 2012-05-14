@@ -25,7 +25,7 @@
 
 namespace cfo
 {
-  template<typename T, bool SYNC, typename... BASES>
+  template<typename T, bool SYNC = true, typename... BASES>
   using managed = intern::managed<T, SYNC, false, BASES...>;
 }
 
