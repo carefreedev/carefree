@@ -86,6 +86,11 @@ namespace cfo { namespace intern
      inline const M& operator[](std::size_t index) const
      {
        return (*this)->operator[](index);
+     }
+
+     inline const M& last() const
+     {
+       return (*this)[this->size() - 1];
      })
 
      // const inline M& operator[](std::size_t index) const
