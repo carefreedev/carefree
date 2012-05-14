@@ -80,6 +80,16 @@ namespace cfo { namespace intern
     {
       return this->get();
     }
+
+    inline operator bool() const
+    {
+      return this->get();
+    }
+
+    inline bool operator!() const
+    {
+      return !this->get();
+    }
   };
 } }
 

@@ -73,6 +73,11 @@ namespace cfo { namespace intern
       obj(new T(args...))
     {}
 
+    inline managed(const managed<T, true, true, BASES...> &manager) :
+      basic_manager(),
+      obj(NULL)
+    {}
+
     inline managed(const managed<T, true, false, BASES...> &manager) :
       basic_manager(manager),
       obj(this->cnl ? manager.obj : NULL)
@@ -108,6 +113,16 @@ namespace cfo { namespace intern
     {
       return this->obj;
     }
+
+    inline operator bool() const
+    {
+      return this->obj;
+    }
+
+    inline bool operator!() const
+    {
+      return !this->obj;
+    }
   };
 
   template<typename T, bool INIT_NULL, typename... BASES>
@@ -142,6 +157,10 @@ namespace cfo { namespace intern
     template<typename... A>
     inline managed(A... args) :
       T::template cfo_managed_methods<T, false, BASES...>(new T(args...))
+    {}
+
+    inline managed(const managed<T, false, true, BASES...> &manager) :
+      T::template cfo_managed_methods<T, false, BASES...>(NULL)
     {}
 
     inline managed(const managed<T, false, false, BASES...> &manager) :
