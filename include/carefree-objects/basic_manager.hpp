@@ -95,6 +95,12 @@ namespace cfo { namespace intern
     template<typename T, bool SYNC, typename M = managed<T, SYNC> >
     class vector;
 
+    template
+    <typename I, typename T, bool SYNC, typename M = managed<T, SYNC>,
+     typename... E
+     >
+    class map;
+
     inline operator bool() const
     {
       return this->cnl;
@@ -108,5 +114,6 @@ namespace cfo { namespace intern
 } }
 
 #include "vector.hpp"
+#include "map.hpp"
 
 #endif

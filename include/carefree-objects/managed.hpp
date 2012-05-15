@@ -60,7 +60,18 @@ namespace cfo { namespace intern
 
     typedef managed<T, true, true, BASES...> null;
 
-    typedef managed<basic_manager::vector<T, true, BASES...>, true> vector;
+    typedef managed
+      <basic_manager::vector<T, true, managed<T, true, false, BASES...> >,
+       true
+       >
+      vector;
+
+    template<typename I, typename... E>
+      using map = managed
+      <basic_manager::map
+       <I, T, true, managed<T, true, false, BASES...>, E...>,
+
+       true>;
 
     inline managed() :
       basic_manager(),
@@ -73,7 +84,9 @@ namespace cfo { namespace intern
       obj(new T(args...))
     {}
 
-    inline managed(const managed<T, true, true, BASES...> &manager) :
+    inline managed
+      (const managed<T, true, true, BASES...> &/*nullmanager*/) :
+
       basic_manager(),
       obj(NULL)
     {}
@@ -146,8 +159,20 @@ namespace cfo { namespace intern
   public:
     typedef managed<T, false, true, BASES...> null;
 
-    typedef managed<basic_manager::vector<T, false, BASES...>, false>
+    typedef managed
+      <basic_manager::vector
+       <T, false, managed<T, false, false, BASES...> >,
+
+       false
+       >
       vector;
+
+    template<typename I, typename... E>
+      using map = managed
+      <basic_manager::map
+       <I, T, false, managed<T, false, false, BASES...>, E...>,
+
+       false>;
 
     inline managed() :
       T::template cfo_managed_methods<T, false, BASES...>
@@ -159,7 +184,9 @@ namespace cfo { namespace intern
       T::template cfo_managed_methods<T, false, BASES...>(new T(args...))
     {}
 
-    inline managed(const managed<T, false, true, BASES...> &manager) :
+    inline managed
+      (const managed<T, false, true, BASES...> &/*nullmanager*/) :
+
       T::template cfo_managed_methods<T, false, BASES...>(NULL)
     {}
 
