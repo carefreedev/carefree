@@ -84,21 +84,23 @@ namespace cfo { namespace intern
       obj(new T(args...))
     {}
 
-    inline managed
-      (const managed<T, true, true, BASES...> &/*nullmanager*/) :
+    // template<typename... BASES_other>
+    // inline managed
+    //   (const managed<T, true, true, BASES_other...> &/*nullmanager*/) :
 
-      basic_manager(),
-      obj(NULL)
-    {}
+    //   basic_manager(),
+    //   obj(NULL)
+    // {}
 
     inline managed(const managed<T, true, false, BASES...> &manager) :
       basic_manager(manager),
       obj(this->cnl ? manager.obj : NULL)
     {}
 
-    template<typename T_other, typename... BASES_other>
+    template
+      <typename T_other, bool INIT_NULL_other, typename... BASES_other>
     inline managed
-      (const managed<T_other, true, false, BASES_other...>
+      (const managed<T_other, true, INIT_NULL_other, BASES_other...>
        &other_manager) :
 
       basic_manager(other_manager),
@@ -184,19 +186,22 @@ namespace cfo { namespace intern
       T::template cfo_managed_methods<T, false, BASES...>(new T(args...))
     {}
 
-    inline managed
-      (const managed<T, false, true, BASES...> &/*nullmanager*/) :
+    // template<typename... BASES_other>
+    // inline managed
+    //   (const managed<T, false, true, BASES_other...> &/*nullmanager*/) :
 
-      T::template cfo_managed_methods<T, false, BASES...>(NULL)
-    {}
+    //   T::template cfo_managed_methods<T, false, BASES...>(NULL)
+    // {}
 
     inline managed(const managed<T, false, false, BASES...> &manager) :
       T::template cfo_managed_methods<T, false, BASES...>(manager)
     {}
 
-    template<typename T_other, typename... BASES_other>
+    template
+      <typename T_other, bool INIT_NULL_other, typename... BASES_other>
+
     inline managed
-      (const managed<T_other, false, false, BASES_other...>
+      (const managed<T_other, false, INIT_NULL_other, BASES_other...>
        &other_manager) :
 
       T::template cfo_managed_methods<T, false, BASES...>

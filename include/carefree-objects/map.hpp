@@ -39,12 +39,12 @@ namespace cfo { namespace intern
     typedef M manager_type;
     typedef std::map<I, manager_type*, E...> map_type;
 
-    // M nullmanager;
+    M nullmanager;
 
   public:
-    // inline map() :
-    //   nullmanager(typename managed<T, SYNC>::null())
-    // {}
+    inline map() :
+      nullmanager(typename managed<T, SYNC>::null())
+    {}
 
     inline ~map()
     {
@@ -62,7 +62,13 @@ namespace cfo { namespace intern
 
     inline const M& operator[](const I &index) const
     {
-      return *static_cast<M*>(this->map_type::at(index));
+      typename map_type::const_iterator i = this->map_type::find(index);
+      if (i == this->map_type::end())
+        return this->nullmanager;
+
+      return *static_cast<M*>(i->second);
+
+      // return *static_cast<M*>(this->map_type::at(index));
     }
 
     inline M& operator[](const I &index)
