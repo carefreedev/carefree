@@ -51,6 +51,10 @@ namespace cfo { namespace intern
   template
   <typename T, bool SYNC = true, bool INIT_NULL = false, typename... BASES>
   class managed;
+
+  template
+  <typename T, bool SYNC = true, bool INIT_NULL = false, typename... BASES>
+  class forward;
 } }
 
 #endif

@@ -22,11 +22,15 @@
 #define __CAREFREE_OBJECTS_HPP
 
 #include "carefree-objects/managed.hpp"
+#include "carefree-objects/forward.hpp"
 
 namespace cfo
 {
   template<typename T, bool SYNC = true, typename... BASES>
   using managed = intern::managed<T, SYNC, false, BASES...>;
+
+  template<typename T, bool SYNC = true, typename... BASES>
+  using managed_forward = intern::forward<T, SYNC, false, BASES...>;
 }
 
 #endif
