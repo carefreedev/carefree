@@ -63,6 +63,7 @@ namespace cfo { namespace intern
   public:
     inline T* operator->()
     {
+      assert(this->get());
       return this->get();
     }
   };

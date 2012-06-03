@@ -78,6 +78,7 @@ namespace cfo { namespace intern
   public:
     inline const T* operator->() const
     {
+      assert(this->get());
       return this->get();
     }
 

@@ -98,10 +98,10 @@ namespace cfo { namespace intern
     {}
 
     template
-      <typename T_other, bool INIT_NULL_other, typename... BASES_other>
+    <typename T_other, bool INIT_NULL_other, typename... BASES_other>
     inline managed
-      (const managed<T_other, true, INIT_NULL_other, BASES_other...>
-       &other_manager) :
+    (const managed<T_other, true, INIT_NULL_other, BASES_other...>
+     &other_manager) :
 
       basic_manager(other_manager),
       obj(this->cnl ? static_cast<T*>(other_manager.unmanaged()) : NULL)
@@ -209,13 +209,20 @@ namespace cfo { namespace intern
        (static_cast<const std::shared_ptr<T_other>&>(other_manager)))
     {}
 
+    inline std::size_t refcount() const
+    {
+      return this->use_count();
+    }
+
     inline T* operator->() const
     {
+      assert(this->get());
       return this->get();
     }
 
     inline T* unmanaged() const
     {
+      assert(this->get());
       return this->get();
     }
   };
