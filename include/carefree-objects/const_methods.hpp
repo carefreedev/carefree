@@ -70,12 +70,22 @@ namespace cfo { namespace intern
       std::shared_ptr<T>(methods)
     {}
 
-    inline const managed<T, false, false, BASES...>& manager() const
+  public:
+    inline managed<T, false, false, BASES...>& manager()
     {
       return static_cast<const managed<T, false, false, BASES...>&>(*this);
     }
 
-  public:
+    // inline const managed<T, false, false, BASES...>& manager() const
+    // {
+    //   return static_cast<const managed<T, false, false, BASES...>&>(*this);
+    // }
+
+    inline const managed<T, false, false, BASES...>& const_manager() const
+    {
+      return static_cast<const managed<T, false, false, BASES...>&>(*this);
+    }
+
     inline const T* operator->() const
     {
       assert(this->get());

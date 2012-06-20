@@ -51,14 +51,20 @@ namespace cfo { namespace intern
     {}
 
   public:
+    typedef T managed_type;
+    typedef T* managed_ptr_type;
+    typedef const T* managed_const_ptr_type;
+
+    typedef managed<T, true, INIT_NULL, BASES...> manager_type;
+
+    typedef managed<T, true, true, BASES...> null;
+
     typedef typename T::template cfo_managed_const_methods
       <const T, true, BASES...>
       const_accessor;
 
     typedef typename T::template cfo_managed_methods<T, true, BASES...>
       accessor;
-
-    typedef managed<T, true, true, BASES...> null;
 
     typedef managed
       <basic_manager::vector<T, true, managed<T, true, false, BASES...> >,
@@ -159,6 +165,12 @@ namespace cfo { namespace intern
     {}
 
   public:
+    typedef T managed_type;
+    typedef T* managed_ptr_type;
+    typedef const T* managed_const_ptr_type;
+
+    typedef managed<T, false, INIT_NULL, BASES...> manager_type;
+
     typedef managed<T, false, true, BASES...> null;
 
     typedef managed
