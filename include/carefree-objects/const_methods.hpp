@@ -101,6 +101,15 @@ namespace cfo { namespace intern
     {
       return !this->get();
     }
+
+    // template<bool INIT_NULL>
+    // inline bool operator==
+    // (const managed<T, false, INIT_NULL, BASES...> &manager)
+    //   const
+    // {
+    //   assert(this->get());
+    //   return this->get() == manager.unmanaged();
+    // }
   };
 } }
 
@@ -118,6 +127,9 @@ namespace cfo { namespace intern
   private:                                                              \
     cfo_managed_const_methods                                           \
       (const cfo_managed_const_methods<cfo_T, true, cfo_BASES...>&);    \
+                                                                        \
+    typedef cfo::intern::const_methods<cfo_T, cfo_SYNC, cfo_BASES...>   \
+      basic_type;                                                       \
                                                                         \
   protected:                                                            \
     inline cfo_managed_const_methods(cfo_T *obj) :                      \

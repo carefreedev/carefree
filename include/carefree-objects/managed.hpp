@@ -159,6 +159,9 @@ namespace cfo { namespace intern
        >
       friend class managed;
 
+    typedef typename T::template cfo_managed_methods<T, false, BASES...>
+      basic_type;
+
   protected:
     inline managed(T *obj) :
       T::template cfo_managed_methods<T, false, BASES...>(obj)
@@ -224,6 +227,53 @@ namespace cfo { namespace intern
     inline std::size_t refcount() const
     {
       return this->use_count();
+    }
+
+    inline bool operator==
+      (const managed<T, false, INIT_NULL, BASES...> &manager)
+      const
+    {
+      assert(this->get() && manager.get());
+      return this->get() == manager.get()
+        || *this->get() == *manager.get();
+
+      // return this->basic_type::operator==(manager);
+    }
+
+    inline bool operator!=
+      (const managed<T, false, INIT_NULL, BASES...> &manager)
+      const
+    {
+      assert(this->get() && manager.get());
+      return this->get() != manager.get()
+        && *this->get() != *manager.get();
+    }
+
+    template
+      <typename T_other, bool INIT_NULL_other, typename... BASES_other>
+
+    inline bool operator==
+      (const managed<T_other, false, INIT_NULL_other, BASES_other...>
+       &other_manager)
+      const
+    {
+      return this->operator==
+        (managed<T, false, INIT_NULL, BASES...>(other_manager));
+
+      // return this->basic_type::operator==
+      //   (managed<T, false, false, BASES...>(other_manager));
+    }
+
+    template
+      <typename T_other, bool INIT_NULL_other, typename... BASES_other>
+
+    inline bool operator!=
+      (const managed<T_other, false, INIT_NULL_other, BASES_other...>
+       &other_manager)
+      const
+    {
+      return this->operator!=
+        (managed<T, false, INIT_NULL, BASES...>(other_manager));
     }
 
     inline T* operator->() const
