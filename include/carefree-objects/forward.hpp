@@ -98,6 +98,16 @@ namespace cfo { namespace intern
       return !*this;
     }
 
+    inline const manager_type& const_manager() const
+    {
+      return **this;
+    }
+
+    inline manager_type& manager()
+    {
+      return **this;
+    }
+
     inline operator const manager_type&() const
     {
       return **this;
@@ -165,6 +175,16 @@ namespace cfo { namespace intern
     inline T* unmanaged() const
     {
       return (**this).unmanaged();
+    }
+
+    inline const manager_type& const_manager() const
+    {
+      return **this;
+    }
+
+    inline manager_type& manager()
+    {
+      return **this;
     }
 
     inline operator const manager_type&() const
