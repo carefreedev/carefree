@@ -2,7 +2,7 @@
  *
  * a thread-safe object manager extension for c++
  *
- * Copyright (C) 2011 Stefan Zimmermann <zimmermann.code@googlemail.com>
+ * Copyright (C) 2011-2012 Stefan Zimmermann <zimmermann.code@googlemail.com>
  *
  * carefree-objects is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -30,7 +30,7 @@
 
 #include "count_and_lock.hpp"
 
-namespace cfo
+namespace cfo { namespace intern
 {
   class basic_manager
   {
@@ -95,6 +95,12 @@ namespace cfo
     template<typename T, bool SYNC, typename M = managed<T, SYNC> >
     class vector;
 
+    template
+    <typename I, typename T, bool SYNC, typename M = managed<T, SYNC>,
+     typename... E
+     >
+    class map;
+
     inline operator bool() const
     {
       return this->cnl;
@@ -105,8 +111,9 @@ namespace cfo
       return !this->cnl;
     }
   };
-}
+} }
 
 #include "vector.hpp"
+#include "map.hpp"
 
 #endif

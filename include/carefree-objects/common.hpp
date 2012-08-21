@@ -2,7 +2,7 @@
  *
  * a thread-safe object manager extension for c++
  *
- * Copyright (C) 2011 Stefan Zimmermann <zimmermann.code@googlemail.com>
+ * Copyright (C) 2011-2012 Stefan Zimmermann <zimmermann.code@googlemail.com>
  *
  * carefree-objects is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -30,7 +30,7 @@
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/shared_mutex.hpp>
 
-namespace cfo
+namespace cfo { namespace intern
 {
   class count_and_lock;
 
@@ -48,8 +48,13 @@ namespace cfo
 
   class basic_manager;
 
-  template<typename T, bool SYNC = true, typename... BASES>
+  template
+  <typename T, bool SYNC = true, bool INIT_NULL = false, typename... BASES>
   class managed;
-}
+
+  template
+  <typename T, bool SYNC = true, bool INIT_NULL = false, typename... BASES>
+  class forward;
+} }
 
 #endif

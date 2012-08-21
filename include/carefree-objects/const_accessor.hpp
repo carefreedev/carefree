@@ -2,7 +2,7 @@
  *
  * a thread-safe object manager extension for c++
  *
- * Copyright (C) 2011 Stefan Zimmermann <zimmermann.code@googlemail.com>
+ * Copyright (C) 2011-2012 Stefan Zimmermann <zimmermann.code@googlemail.com>
  *
  * carefree-objects is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -28,7 +28,7 @@
 
 #include "common.hpp"
 
-namespace cfo
+namespace cfo { namespace intern
 {
   template<typename T, typename... BASES>
   class const_accessor
@@ -37,30 +37,30 @@ namespace cfo
 
   private:
     const bool shared;
-    std::unique_ptr<managed<T, true, BASES...> > manager_ptr;
+    std::unique_ptr<managed<T, true, false, BASES...> > manager_ptr;
 
     const_accessor(const_accessor<T> &);
 
   protected:
     inline const_accessor
-    (const managed<T, true, BASES...> &manager, bool shared) :
+    (const managed<T, true, false, BASES...> &manager, bool shared) :
 
       shared(shared),
-      manager_ptr(new managed<T, true, BASES...>(manager))
+      manager_ptr(new managed<T, true, false, BASES...>(manager))
     {
       if (manager)
         manager.cnl->lock();
     }
 
-    inline const managed<T, true, BASES...>& manager() const
+    inline const managed<T, true, false, BASES...>& manager() const
     {
       return *this->manager_ptr;
     }
 
   public:
-    inline const_accessor(const managed<T, true, BASES...> &manager) :
+    inline const_accessor(const managed<T, true, false, BASES...> &manager) :
       shared(true),
-      manager_ptr(new managed<T, true, BASES...>(manager))
+      manager_ptr(new managed<T, true, false, BASES...>(manager))
     {
       if (manager)
         manager.cnl->lock_shared();
@@ -88,6 +88,6 @@ namespace cfo
       return this->manager_ptr->obj;
     }
   };
-}
+} }
 
 #endif

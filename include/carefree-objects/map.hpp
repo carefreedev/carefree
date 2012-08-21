@@ -21,108 +21,102 @@
 /* managed vector for managed objects
  */
 
-#ifndef __CFO_VECTOR_HPP
-#define __CFO_VECTOR_HPP
+#ifndef __CFO_MAP_HPP
+#define __CFO_MAP_HPP
 
 #include "basic_manager.hpp"
 #include "methods.hpp"
 
 namespace cfo { namespace intern
 {
-  template<typename T, bool SYNC, typename M>
-  class basic_manager::vector
-    // : private std::vector<managed<T, SYNC>*>
-    : private std::vector<M*>
+  template<typename I, typename T, bool SYNC, typename M, typename... E>
+  class basic_manager::map
+    // : private std::map<I, managed<T, SYNC>*, E...>
+    : private std::map<I, M*, E...>
   {
   private:
     // typedef managed<T, SYNC> manager_type;
     typedef M manager_type;
-    typedef std::vector<manager_type*> vector_type;
+    typedef std::map<I, manager_type*, E...> map_type;
+
+    M nullmanager;
 
   public:
-    inline ~vector()
+    inline map() :
+      nullmanager(typename managed<T, SYNC>::null())
+    {}
+
+    inline ~map()
     {
       BOOST_FOREACH
-        (manager_type *manager_ptr, *static_cast<vector_type*>(this))
+        (typename map_type::value_type &value,
+         *static_cast<map_type*>(this))
 
-        delete manager_ptr;
+        delete value.second;
     }
 
     inline std::size_t size() const
     {
-      return this->vector_type::size();
+      return this->map_type::size();
     }
 
-    inline const M& operator[](std::size_t index) const
+    inline const M& operator[](const I &index) const
     {
-      return *static_cast<M*>(this->vector_type::operator[](index));
+      typename map_type::const_iterator i = this->map_type::find(index);
+      if (i == this->map_type::end())
+        return this->nullmanager;
+
+      return *static_cast<M*>(i->second);
+
+      // return *static_cast<M*>(this->map_type::at(index));
     }
 
-    inline M& operator[](std::size_t index)
+    inline M& operator[](const I &index)
     {
-      return *static_cast<M*>(this->vector_type::operator[](index));
+      return *static_cast<M*>(this->map_type::operator[](index));
     }
 
     template<typename... A>
-    inline void push_back(const A &...args)
+    inline void insert(const I &index, const A &...args)
     {
-      this->vector_type::push_back(new M(args...));
+      this->map_type::insert({ index, new M(args...) });
     }
 
     template<typename... A>
-    inline const M& append(const A &...args)
+    inline const M& add(const I &index, const A &...args)
     {
       M *obj = new M(args...);
-      this->vector_type::push_back(obj);
+      this->map_type::insert({ index, obj });
       return *obj;
     }
 
     cfo_MANAGED_BASIC_CONST_METHODS
-    (vector,
-
-     public:
+    (public:
 
      inline std::size_t size() const
      {
        return (*this)->size();
      }
 
-     inline const M& operator[](std::size_t index) const
+     inline const M& operator[](const I &index) const
      {
        return (*this)->operator[](index);
-     }
-
-     inline const M& last() const
-     {
-       return (*this)[this->size() - 1];
      })
-
-     // const inline M& operator[](std::size_t index) const
-     // {
-     //   return *static_cast<M*>(this->vector_type::operator[](index));
-     // })
 
     cfo_MANAGED_BASIC_METHODS
-    (vector,
-
-     public:
+    (public:
 
      template<typename... A>
-     inline void push_back(const A &...args)
+     inline void insert(const I &index, const A &...args)
      {
-       (*this)->push_back(args...);
+       (*this)->insert(index, args...);
      }
 
      template<typename... A>
-     inline const M& append(const A &...args)
+     inline const M& add(const I &index, const A &...args)
      {
-       return (*this)->append(args...);
+       return (*this)->add(index, args...);
      })
-
-     // inline M& operator[](std::size_t index)
-     // {
-     //   return (*this)->operator[](index);
-     // })
   };
 } }
 

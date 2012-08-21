@@ -2,7 +2,7 @@
  *
  * a thread-safe object manager extension for c++
  *
- * Copyright (C) 2011 Stefan Zimmermann <zimmermann.code@googlemail.com>
+ * Copyright (C) 2011-2012 Stefan Zimmermann <zimmermann.code@googlemail.com>
  *
  * carefree-objects is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -31,10 +31,12 @@
 #include "basic_manager.hpp"
 #include "methods.hpp"
 
-namespace cfo
+namespace cfo { namespace intern
 {
-  template<typename T, typename... BASES>
-  class managed<T, true, BASES...> : public basic_manager, public BASES...
+  template<typename T, bool INIT_NULL, typename... BASES>
+  class managed<T, true, INIT_NULL, BASES...> :
+    public basic_manager,
+    public BASES...
   {
     friend class const_accessor<T, BASES...>;
     friend class accessor<T, BASES...>;
@@ -49,12 +51,38 @@ namespace cfo
     {}
 
   public:
-    typedef typename T::template cfo_managed_const_methods<const T, true, BASES...>
-    const_accessor;
+    typedef T managed_type;
+    typedef T* managed_ptr_type;
+    typedef const T* managed_const_ptr_type;
 
-    typedef typename T::template cfo_managed_methods<T, true, BASES...> accessor;
+    typedef managed<T, true, INIT_NULL, BASES...> manager_type;
 
-    typedef managed<basic_manager::vector<T, true, BASES...>, true> vector;
+    typedef managed<T, true, true, BASES...> null;
+
+    typedef typename T::template cfo_managed_const_methods
+      <const T, true, BASES...>
+      const_accessor;
+
+    typedef typename T::template cfo_managed_methods<T, true, BASES...>
+      accessor;
+
+    typedef managed
+      <basic_manager::vector<T, true, managed<T, true, false, BASES...> >,
+       true
+       >
+      vector;
+
+    template<typename I, typename... E>
+      using map = managed
+      <basic_manager::map
+       <I, T, true, managed<T, true, false, BASES...>, E...>,
+
+       true>;
+
+    inline managed() :
+      basic_manager(),
+      obj(INIT_NULL ? NULL : new T)
+    {}
 
     template<typename... A>
     inline managed(A... args) :
@@ -62,14 +90,24 @@ namespace cfo
       obj(new T(args...))
     {}
 
-    inline managed(const managed<T, true, BASES...> &manager) :
+    // template<typename... BASES_other>
+    // inline managed
+    //   (const managed<T, true, true, BASES_other...> &/*nullmanager*/) :
+
+    //   basic_manager(),
+    //   obj(NULL)
+    // {}
+
+    inline managed(const managed<T, true, false, BASES...> &manager) :
       basic_manager(manager),
       obj(this->cnl ? manager.obj : NULL)
     {}
 
-    template<typename T_other, typename... BASES_other>
+    template
+    <typename T_other, bool INIT_NULL_other, typename... BASES_other>
     inline managed
-      (const managed<T_other, true, BASES_other...> &other_manager) :
+    (const managed<T_other, true, INIT_NULL_other, BASES_other...>
+     &other_manager) :
 
       basic_manager(other_manager),
       obj(this->cnl ? static_cast<T*>(other_manager.unmanaged()) : NULL)
@@ -96,14 +134,33 @@ namespace cfo
     {
       return this->obj;
     }
+
+    inline operator bool() const
+    {
+      return this->obj;
+    }
+
+    inline bool operator!() const
+    {
+      return !this->obj;
+    }
   };
 
-  template<typename T, typename... BASES>
-  class managed<T, false, BASES...> :
+  template<typename T, bool INIT_NULL, typename... BASES>
+  class managed<T, false, INIT_NULL, BASES...> :
     public T::template cfo_managed_methods<T, false, BASES...>,
     public BASES...
   {
     friend T;
+
+    template
+      <typename T_other, bool SYNC, bool INIT_NULL_other,
+       typename... BASES_other
+       >
+      friend class managed;
+
+    typedef typename T::template cfo_managed_methods<T, false, BASES...>
+      basic_type;
 
   protected:
     inline managed(T *obj) :
@@ -111,34 +168,126 @@ namespace cfo
     {}
 
   public:
-    typedef managed<basic_manager::vector<T, false, BASES...>, false> vector;
+    typedef T managed_type;
+    typedef T* managed_ptr_type;
+    typedef const T* managed_const_ptr_type;
+
+    typedef managed<T, false, INIT_NULL, BASES...> manager_type;
+
+    typedef managed<T, false, true, BASES...> null;
+
+    typedef managed
+      <basic_manager::vector
+       <T, false, managed<T, false, false, BASES...> >,
+
+       false
+       >
+      vector;
+
+    template<typename I, typename... E>
+      using map = managed
+      <basic_manager::map
+       <I, T, false, managed<T, false, false, BASES...>, E...>,
+
+       false>;
+
+    inline managed() :
+      T::template cfo_managed_methods<T, false, BASES...>
+      (INIT_NULL ? NULL : new T)
+    {}
 
     template<typename... A>
     inline managed(A... args) :
       T::template cfo_managed_methods<T, false, BASES...>(new T(args...))
     {}
 
-    inline managed(const managed<T, false> &manager) :
+    // template<typename... BASES_other>
+    // inline managed
+    //   (const managed<T, false, true, BASES_other...> &/*nullmanager*/) :
+
+    //   T::template cfo_managed_methods<T, false, BASES...>(NULL)
+    // {}
+
+    inline managed(const managed<T, false, false, BASES...> &manager) :
       T::template cfo_managed_methods<T, false, BASES...>(manager)
     {}
 
-    template<typename T_other, typename... BASES_other>
-    inline managed
-      (const managed<T_other, false, BASES_other...> &other_manager) :
+    template
+      <typename T_other, bool INIT_NULL_other, typename... BASES_other>
 
-      T::template cfo_managed_methods<T, false, BASES...>(other_manager)
+    inline managed
+      (const managed<T_other, false, INIT_NULL_other, BASES_other...>
+       &other_manager) :
+
+      T::template cfo_managed_methods<T, false, BASES...>
+      (std::static_pointer_cast<T>
+       (static_cast<const std::shared_ptr<T_other>&>(other_manager)))
     {}
+
+    inline std::size_t refcount() const
+    {
+      return this->use_count();
+    }
+
+    inline bool operator==
+      (const managed<T, false, INIT_NULL, BASES...> &manager)
+      const
+    {
+      assert(this->get() && manager.get());
+      return this->get() == manager.get()
+        || *this->get() == *manager.get();
+
+      // return this->basic_type::operator==(manager);
+    }
+
+    inline bool operator!=
+      (const managed<T, false, INIT_NULL, BASES...> &manager)
+      const
+    {
+      assert(this->get() && manager.get());
+      return this->get() != manager.get()
+        && *this->get() != *manager.get();
+    }
+
+    template
+      <typename T_other, bool INIT_NULL_other, typename... BASES_other>
+
+    inline bool operator==
+      (const managed<T_other, false, INIT_NULL_other, BASES_other...>
+       &other_manager)
+      const
+    {
+      return this->operator==
+        (managed<T, false, INIT_NULL, BASES...>(other_manager));
+
+      // return this->basic_type::operator==
+      //   (managed<T, false, false, BASES...>(other_manager));
+    }
+
+    template
+      <typename T_other, bool INIT_NULL_other, typename... BASES_other>
+
+    inline bool operator!=
+      (const managed<T_other, false, INIT_NULL_other, BASES_other...>
+       &other_manager)
+      const
+    {
+      return this->operator!=
+        (managed<T, false, INIT_NULL, BASES...>(other_manager));
+    }
 
     inline T* operator->() const
     {
+      assert(this->get());
       return this->get();
     }
 
     inline T* unmanaged() const
     {
+      assert(this->get());
       return this->get();
     }
   };
-}
+} }
 
 #endif
