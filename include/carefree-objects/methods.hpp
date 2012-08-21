@@ -116,18 +116,18 @@ namespace cfo { namespace intern
        (methods))                                                       \
     {}                                                                  \
                                                                         \
-  private:                                                              \
+  protected:                                                            \
     inline const TYPE* operator->() const                               \
     {                                                                   \
-      return static_cast<TYPE*>                                         \
-        (this->cfo::methods<cfo_T, cfo_SYNC, cfo_BASES...>              \
+      return static_cast<const TYPE*>                                   \
+        (this->cfo::intern::methods<cfo_T, cfo_SYNC, cfo_BASES...>      \
          ::operator->());                                               \
     }                                                                   \
                                                                         \
     inline TYPE* operator->()                                           \
     {                                                                   \
       return static_cast<TYPE*>                                         \
-        (this->cfo::methods<cfo_T, cfo_SYNC, cfo_BASES...>              \
+        (this->cfo::intern::methods<cfo_T, cfo_SYNC, cfo_BASES...>      \
          ::operator->());                                               \
     }                                                                   \
                                                                         \
@@ -192,10 +192,10 @@ namespace cfo { namespace intern
        (methods))                                                       \
     {}                                                                  \
                                                                         \
-  private:                                                              \
+  protected:                                                            \
     inline const TYPE* operator->() const                               \
     {                                                                   \
-      return static_cast<TYPE*>                                         \
+      return static_cast<const TYPE*>                                   \
         (this->BASE::template cfo_managed_methods                       \
          <cfo_T, cfo_SYNC, cfo_BASES...>                                \
          ::operator->());                                               \

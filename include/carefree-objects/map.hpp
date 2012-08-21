@@ -90,8 +90,13 @@ namespace cfo { namespace intern
       return *obj;
     }
 
+#define _cfo_MANAGED_MAP_TEMPLATE_ARGS       \
+    I, T, SYNC, M, E...                         \
+
     cfo_MANAGED_BASIC_CONST_METHODS
-    (public:
+    (map<_cfo_MANAGED_MAP_TEMPLATE_ARGS>,
+
+     public:
 
      inline std::size_t size() const
      {
@@ -104,7 +109,9 @@ namespace cfo { namespace intern
      })
 
     cfo_MANAGED_BASIC_METHODS
-    (public:
+    (map<_cfo_MANAGED_MAP_TEMPLATE_ARGS>,
+
+     public:
 
      template<typename... A>
      inline void insert(const I &index, const A &...args)

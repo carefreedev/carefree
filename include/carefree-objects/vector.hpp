@@ -77,8 +77,11 @@ namespace cfo { namespace intern
       return *obj;
     }
 
+#define _cfo_MANAGED_VECTOR_TEMPLATE_ARGS    \
+    T, SYNC, M                                  \
+
     cfo_MANAGED_BASIC_CONST_METHODS
-    (vector,
+    (vector<_cfo_MANAGED_VECTOR_TEMPLATE_ARGS>,
 
      public:
 
@@ -103,7 +106,7 @@ namespace cfo { namespace intern
      // })
 
     cfo_MANAGED_BASIC_METHODS
-    (vector,
+    (vector<_cfo_MANAGED_VECTOR_TEMPLATE_ARGS>,
 
      public:
 
