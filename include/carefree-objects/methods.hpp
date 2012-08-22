@@ -84,6 +84,12 @@ namespace cfo { namespace intern
     cfo_managed_methods                                                 \
       (const cfo_managed_methods<cfo_T, true, cfo_BASES...>&);          \
                                                                         \
+    typedef                                                             \
+      typename TYPE::template cfo_managed_const_methods                 \
+      <cfo_T, cfo_SYNC, cfo_BASES...>                                   \
+                                                                        \
+      const_methods;                                                    \
+                                                                        \
   protected:                                                            \
     inline cfo_managed_methods(cfo_T *obj) :                            \
       cfo::intern::methods<cfo_T, false, cfo_BASES...>(obj)             \
@@ -152,6 +158,12 @@ namespace cfo { namespace intern
   private:                                                              \
     cfo_managed_methods                                                 \
       (const cfo_managed_methods<cfo_T, true, cfo_BASES...>&);          \
+                                                                        \
+    typedef                                                             \
+      typename TYPE::template cfo_managed_const_methods                 \
+      <cfo_T, cfo_SYNC, cfo_BASES...>                                   \
+                                                                        \
+      const_methods;                                                    \
                                                                         \
   protected:                                                            \
     inline cfo_managed_methods(cfo_T *obj) :                            \
