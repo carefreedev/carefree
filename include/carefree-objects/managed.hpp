@@ -233,20 +233,30 @@ namespace cfo { namespace intern
       (const managed<T, false, INIT_NULL, BASES...> &manager)
       const
     {
-      assert(this->get() && manager.get());
-      return this->get() == manager.get()
-        || *this->get() == *manager.get();
+      assert
+        (this->std::shared_ptr<T>::get()
+         && manager.std::shared_ptr<T>::get());
 
-      // return this->basic_type::operator==(manager);
+      return this->std::shared_ptr<T>::get()
+        == manager.std::shared_ptr<T>::get()
+
+        || this->std::shared_ptr<T>::operator*()
+        == manager.std::shared_ptr<T>::operator*();
     }
 
     inline bool operator!=
       (const managed<T, false, INIT_NULL, BASES...> &manager)
       const
     {
-      assert(this->get() && manager.get());
-      return this->get() != manager.get()
-        && *this->get() != *manager.get();
+      assert
+        (this->std::shared_ptr<T>::get()
+         && manager.std::shared_ptr<T>::get());
+
+      return this->std::shared_ptr<T>::get()
+        != manager.std::shared_ptr<T>::get()
+
+        && this->std::shared_ptr<T>::operator*()
+        != manager.std::shared_ptr<T>::operator*();
     }
 
     template
@@ -259,9 +269,6 @@ namespace cfo { namespace intern
     {
       return this->operator==
         (managed<T, false, INIT_NULL, BASES...>(other_manager));
-
-      // return this->basic_type::operator==
-      //   (managed<T, false, false, BASES...>(other_manager));
     }
 
     template
