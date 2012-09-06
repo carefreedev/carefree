@@ -100,11 +100,6 @@ namespace cfo { namespace intern
        return (*this)[this->size() - 1];
      })
 
-     // const inline M& operator[](std::size_t index) const
-     // {
-     //   return *static_cast<M*>(this->vector_type::operator[](index));
-     // })
-
     cfo_MANAGED_BASIC_METHODS
     (vector<_cfo_MANAGED_VECTOR_TEMPLATE_ARGS>,
 
@@ -120,12 +115,27 @@ namespace cfo { namespace intern
      inline const M& append(const A &...args)
      {
        return (*this)->append(args...);
-     })
+     }
 
-     // inline M& operator[](std::size_t index)
-     // {
-     //   return (*this)->operator[](index);
-     // })
+     inline M& operator[](std::size_t index)
+     {
+       return (*this)->operator[](index);
+     }
+
+     inline const M& operator[](std::size_t index) const
+     {
+       return this->const_methods::operator[](index);
+     }
+
+     inline M& last()
+     {
+       return (*this)[this->size() - 1];
+     }
+
+     inline const M& last() const
+     {
+       return this->const_methods::last();
+     })
   };
 } }
 
