@@ -33,4 +33,61 @@ namespace cfo
   using managed_forward = intern::forward<T, SYNC, false, BASES...>;
 }
 
+#define cfo_MANAGER_CONSTRUCTORS(NAME)                                \
+  inline NAME(const NAME &manager) :                                  \
+     manager_type(manager.const_manager())                            \
+  {}                                                                  \
+                                                                      \
+  inline NAME(const manager_type &manager) :                          \
+    manager_type(manager)                                             \
+  {}                                                                  \
+                                                                      \
+  inline NAME(const manager_type::null &nullmanager) :                \
+    manager_type(nullmanager)                                         \
+  {}                                                                  \
+
+#define cfo_MANAGER_MANAGED_PTR_CONSTRUCTOR(NAME)                     \
+  inline NAME(managed_ptr_type obj_ptr) :                             \
+    manager_type(obj_ptr)                                             \
+  {}                                                                  \
+
+#define cfo_MANAGER_VARIADIC_CONSTRUCTOR(NAME)                        \
+  template<typename... ARGS>                                          \
+  inline NAME(const ARGS &...args) :                                  \
+    manager_type(new managed_type(args...))                           \
+  {}                                                                  \
+
+#define cfo_MANAGER_CAST_CONSTRUCTOR(NAME, MANAGER)                   \
+  inline NAME(const MANAGER &manager) :                               \
+    manager_type(manager.const_manager())                             \
+  {}                                                                  \
+
+#define cfo_MANAGER_EQUAL_OPERATORS(NAME)                             \
+  inline bool operator==(const NAME &manager) const                   \
+  {                                                                   \
+    return this->manager_type::operator==(manager.const_manager());   \
+  }                                                                   \
+                                                                      \
+  inline bool operator==(const manager_type &manager) const           \
+  {                                                                   \
+    return this->manager_type::operator==(manager);                   \
+  }                                                                   \
+                                                                      \
+  inline bool operator==(const manager_type::null &nullmanager) const \
+  {                                                                   \
+    return this->manager_type::operator==(nullmanager);               \
+  }                                                                   \
+                                                                      \
+  template<typename A>                                                \
+  inline bool operator!=(const A &arg) const                          \
+  {                                                                   \
+    return !this->operator==(arg);                                    \
+  }                                                                   \
+
+#define cfo_MANAGER_CAST_EQUAL_OPERATOR(NAME, MANAGER)                \
+  inline bool operator==(const MANAGER &manager) const                \
+  {                                                                   \
+    return this->manager_type::operator==(manager.const_manager());   \
+  }                                                                   \
+
 #endif

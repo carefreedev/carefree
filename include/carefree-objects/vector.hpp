@@ -77,8 +77,13 @@ namespace cfo { namespace intern
       return *obj;
     }
 
+#define _cfo_MANAGED_VECTOR_TEMPLATE_ARGS    \
+    T, SYNC, M                                  \
+
     cfo_MANAGED_BASIC_CONST_METHODS
-    (public:
+    (vector<_cfo_MANAGED_VECTOR_TEMPLATE_ARGS>,
+
+     public:
 
      inline std::size_t size() const
      {
@@ -95,13 +100,10 @@ namespace cfo { namespace intern
        return (*this)[this->size() - 1];
      })
 
-     // const inline M& operator[](std::size_t index) const
-     // {
-     //   return *static_cast<M*>(this->vector_type::operator[](index));
-     // })
-
     cfo_MANAGED_BASIC_METHODS
-    (public:
+    (vector<_cfo_MANAGED_VECTOR_TEMPLATE_ARGS>,
+
+     public:
 
      template<typename... A>
      inline void push_back(const A &...args)
@@ -113,12 +115,27 @@ namespace cfo { namespace intern
      inline const M& append(const A &...args)
      {
        return (*this)->append(args...);
-     })
+     }
 
-     // inline M& operator[](std::size_t index)
-     // {
-     //   return (*this)->operator[](index);
-     // })
+     inline M& operator[](std::size_t index)
+     {
+       return (*this)->operator[](index);
+     }
+
+     inline const M& operator[](std::size_t index) const
+     {
+       return this->const_methods::operator[](index);
+     }
+
+     inline M& last()
+     {
+       return (*this)[this->size() - 1];
+     }
+
+     inline const M& last() const
+     {
+       return this->const_methods::last();
+     })
   };
 } }
 
