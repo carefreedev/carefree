@@ -70,7 +70,7 @@ namespace cfo { namespace intern
     }
 
     template<typename... A>
-    inline const M& append(const A &...args)
+    inline M& append(const A &...args)
     {
       M *obj = new M(args...);
       this->vector_type::push_back(obj);
@@ -112,7 +112,7 @@ namespace cfo { namespace intern
      }
 
      template<typename... A>
-     inline const M& append(const A &...args)
+     inline M& append(const A &...args)
      {
        return (*this)->append(args...);
      }
