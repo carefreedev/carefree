@@ -38,8 +38,8 @@ namespace cfo { namespace intern
     public basic_manager,
     public BASES...
   {
-    friend class const_accessor<T, BASES...>;
-    friend class accessor<T, BASES...>;
+    friend class intern::const_accessor<T, BASES...>;
+    friend class intern::accessor<T, BASES...>;
 
   private:
     T *obj;
