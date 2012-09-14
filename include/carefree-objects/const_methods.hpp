@@ -273,6 +273,30 @@ namespace cfo { namespace intern
        (methods))                                                       \
     {}                                                                  \
                                                                         \
+    template<typename cfo_M>                                            \
+    inline                                                              \
+    typename cfo_M::managed_type                                        \
+    ::template cfo_managed_const_methods                                \
+    <cfo_T, cfo_SYNC, cfo_BASES...>                                     \
+    &                                                                   \
+    cast()                                                              \
+    {                                                                   \
+      return *this;                                                     \
+    }                                                                   \
+                                                                        \
+    template<typename cfo_M>                                            \
+    inline                                                              \
+    const                                                               \
+    typename cfo_M::managed_type                                        \
+    ::template cfo_managed_const_methods                                \
+    <cfo_T, cfo_SYNC, cfo_BASES...>                                     \
+    &                                                                   \
+    cast()                                                              \
+      const                                                             \
+    {                                                                   \
+      return *this;                                                     \
+    }                                                                   \
+                                                                        \
   protected:                                                            \
     inline const TYPE* operator->() const                               \
     {                                                                   \
