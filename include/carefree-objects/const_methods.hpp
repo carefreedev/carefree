@@ -73,7 +73,7 @@ namespace cfo { namespace intern
   public:
     inline managed<T, false, false, BASES...>& manager()
     {
-      return static_cast<const managed<T, false, false, BASES...>&>(*this);
+      return static_cast<managed<T, false, false, BASES...>&>(*this);
     }
 
     // inline const managed<T, false, false, BASES...>& manager() const
