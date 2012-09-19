@@ -34,26 +34,26 @@ namespace cfo { namespace intern
 {
   class count_and_lock;
 
-  template<typename T, typename... BASES>
+  template<typename T>
   class const_accessor;
 
-  template<typename T, typename... BASES>
+  template<typename T>
   class accessor;
 
-  template<typename T, bool SYNC = true, typename... BASES>
+  template<typename T, bool SYNC = true>
   class const_methods;
 
-  template<typename T, bool SYNC = true, typename... BASES>
+  template<typename T, bool SYNC = true>
   class methods;
 
   class basic_manager;
 
   template
-  <typename T, bool SYNC = true, bool INIT_NULL = false, typename... BASES>
+  <typename T, bool SYNC = true, bool INIT_NULL = false>
   class managed;
 
   template
-  <typename T, bool SYNC = true, bool INIT_NULL = false, typename... BASES>
+  <typename T, bool SYNC = true, bool INIT_NULL = false>
   class forward;
 } }
 

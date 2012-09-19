@@ -28,12 +28,12 @@
 
 namespace cfo { namespace intern
 {
-  template<typename T, bool INIT_NULL, typename... BASES>
-  class forward<T, true, INIT_NULL, BASES...> :
-    private std::unique_ptr<managed<T, true, INIT_NULL, BASES...> >
+  template<typename T, bool INIT_NULL>
+  class forward<T, true, INIT_NULL> :
+    private std::unique_ptr<managed<T, true, INIT_NULL> >
   {
   private:
-    typedef managed<T, true, INIT_NULL, BASES...> manager_type;
+    typedef managed<T, true, INIT_NULL> manager_type;
     typedef std::unique_ptr<manager_type> basic_type;
 
   protected:
@@ -43,13 +43,13 @@ namespace cfo { namespace intern
 
   public:
     // typedef typename T::template cfo_managed_const_methods
-    //   <const T, true, BASES...>
+    //   <const T, true>
     //   const_accessor;
 
-    // typedef typename T::template cfo_managed_methods<T, true, BASES...>
+    // typedef typename T::template cfo_managed_methods<T, true>
     //   accessor;
 
-    typedef forward<T, true, true, BASES...> null;
+    typedef forward<T, true, true> null;
 
     inline forward() :
       basic_type(new manager_type)
@@ -60,15 +60,14 @@ namespace cfo { namespace intern
       basic_type(new manager_type(args...))
     {}
 
-    inline forward(const managed<T, true, false, BASES...> &manager) :
+    inline forward(const managed<T, true, false> &manager) :
       basic_type(new manager_type(manager))
     {}
 
     template
-    <typename T_other, bool INIT_NULL_other, typename... BASES_other>
+    <typename T_other, bool INIT_NULL_other, typename>
     inline forward
-    (const managed<T_other, true, INIT_NULL_other, BASES_other...>
-     &other_manager) :
+    (const managed<T_other, true, INIT_NULL_other> &other_manager) :
 
       basic_type(new manager_type(other_manager))
     {}
@@ -124,12 +123,12 @@ namespace cfo { namespace intern
     }
   };
 
-  template<typename T, bool INIT_NULL, typename... BASES>
-  class forward<T, false, INIT_NULL, BASES...> :
-    private std::unique_ptr<managed<T, false, INIT_NULL, BASES...> >
+  template<typename T, bool INIT_NULL>
+  class forward<T, false, INIT_NULL> :
+    private std::unique_ptr<managed<T, false, INIT_NULL> >
   {
   private:
-    typedef managed<T, false, INIT_NULL, BASES...> manager_type;
+    typedef managed<T, false, INIT_NULL> manager_type;
     typedef std::unique_ptr<manager_type> basic_type;
 
   protected:
@@ -138,7 +137,7 @@ namespace cfo { namespace intern
     {}
 
   public:
-    typedef forward<T, false, true, BASES...> null;
+    typedef forward<T, false, true> null;
 
     inline forward() :
       basic_type(new manager_type)
@@ -149,15 +148,14 @@ namespace cfo { namespace intern
       basic_type(new manager_type(args...))
     {}
 
-    inline forward(const managed<T, false, false, BASES...> &manager) :
+    inline forward(const managed<T, false, false> &manager) :
       basic_type(new manager_type(manager))
     {}
 
     template
-    <typename T_other, bool INIT_NULL_other, typename... BASES_other>
+    <typename T_other, bool INIT_NULL_other>
     inline forward
-    (const managed<T_other, false, INIT_NULL_other, BASES_other...>
-     &other_manager) :
+    (const managed<T_other, false, INIT_NULL_other> &other_manager) :
 
       basic_type(new manager_type(other_manager))
     {}

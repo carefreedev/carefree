@@ -27,37 +27,37 @@
 
 namespace cfo { namespace intern
 {
-  template<typename T, typename... BASES>
-  class methods<T, true, BASES...> : public accessor<T, BASES...>
+  template<typename T>
+  class methods<T, true> : public accessor<T>
   {
   private:
-    methods(const methods<T, true, BASES...>&);
+    methods(const methods<T, true>&);
 
   public:
-    inline methods(const managed<T, true, false, BASES...> &manager) :
-      accessor<T, BASES...>(manager)
+    inline methods(const managed<T, true, false> &manager) :
+      accessor<T>(manager)
     {}
 
-    inline methods(methods<T, true, BASES...> &&methods) :
-      accessor<T>(static_cast<accessor<T, BASES...>&&>(methods))
+    inline methods(methods<T, true> &&methods) :
+      accessor<T>(static_cast<accessor<T>&&>(methods))
     {}
   };
 
-  template<typename T, typename... BASES>
-  class methods<T, false, BASES...> :
-    public T::template cfo_managed_const_methods<T, false, BASES...>
+  template<typename T>
+  class methods<T, false> :
+    public T::template cfo_managed_const_methods<T, false>
   {
   protected:
     inline methods(T *obj) :
-      T::template cfo_managed_const_methods<T, false, BASES...>(obj)
+      T::template cfo_managed_const_methods<T, false>(obj)
     {}
 
     inline methods(const std::shared_ptr<T> &manager) :
-      T::template cfo_managed_const_methods<T, false, BASES...>(manager)
+      T::template cfo_managed_const_methods<T, false>(manager)
     {}
 
-    inline methods(const methods<T, false, BASES...> &methods) :
-      T::template cfo_managed_const_methods<T, false, BASES...>(methods)
+    inline methods(const methods<T, false> &methods) :
+      T::template cfo_managed_const_methods<T, false>(methods)
     {}
 
   public:
@@ -70,144 +70,122 @@ namespace cfo { namespace intern
 } }
 
 #define cfo_MANAGED_BASIC_METHODS(TYPE, METHODS)                        \
-  template<typename cfo_T, bool cfo_SYNC, typename... cfo_BASES>        \
+  template<typename cfo_T, bool cfo_SYNC>                               \
   class cfo_managed_methods :                                           \
-    public cfo::intern::methods<cfo_T, cfo_SYNC, cfo_BASES...>          \
+    public cfo::intern::methods<cfo_T, cfo_SYNC>                        \
   {                                                                     \
-    template                                                            \
-      <typename cfo_T_other, bool cfo_SYNC_other,                       \
-       typename... cfo_BASES_other                                      \
-       >                                                                \
+    template<typename cfo_T_other, bool cfo_SYNC_other>                 \
       friend class cfo_managed_methods;                                 \
                                                                         \
   private:                                                              \
-    cfo_managed_methods                                                 \
-      (const cfo_managed_methods<cfo_T, true, cfo_BASES...>&);          \
+    template<bool cfo_SYNC_basic = cfo_SYNC>                            \
+      using basic_type = cfo::intern::methods<cfo_T, cfo_SYNC_basic>;   \
                                                                         \
-    typedef                                                             \
-      typename TYPE::template cfo_managed_const_methods                 \
-      <cfo_T, cfo_SYNC, cfo_BASES...>                                   \
+  typedef typename TYPE                                                 \
+    ::template cfo_managed_const_methods<cfo_T, cfo_SYNC>               \
+    const_methods;                                                      \
                                                                         \
-      const_methods;                                                    \
+  cfo_managed_methods(const cfo_managed_methods<cfo_T, true>&);         \
                                                                         \
   protected:                                                            \
     inline cfo_managed_methods(cfo_T *obj) :                            \
-      cfo::intern::methods<cfo_T, false, cfo_BASES...>(obj)             \
+      basic_type<false>(obj)                                            \
     {}                                                                  \
                                                                         \
     inline cfo_managed_methods(const std::shared_ptr<cfo_T> &manager) : \
-      cfo::intern::methods<cfo_T, false, cfo_BASES...>(manager)         \
+      basic_type<false>(manager)                                        \
     {}                                                                  \
                                                                         \
     inline cfo_managed_methods                                          \
-      (const cfo_managed_methods<cfo_T, false, cfo_BASES...>            \
-       &methods) :                                                      \
+      (const cfo_managed_methods<cfo_T, false> &methods) :              \
                                                                         \
-      cfo::intern::methods<cfo_T, false, cfo_BASES...>(methods)         \
-      {}                                                                \
+      basic_type<false>(methods)                                        \
+    {}                                                                  \
                                                                         \
   public:                                                               \
     inline cfo_managed_methods                                          \
-      (const cfo::intern::managed<cfo_T, true, false, cfo_BASES...>     \
-       &manager) :                                                      \
+      (const cfo::intern::managed<cfo_T, true, false> &manager) :       \
                                                                         \
-      cfo::intern::methods<cfo_T, true, cfo_BASES...>(manager)          \
+      basic_type<true>(manager)                                         \
     {}                                                                  \
                                                                         \
     inline cfo_managed_methods                                          \
-      (cfo_managed_methods<cfo_T, true, cfo_BASES...> &&methods) :      \
+      (cfo_managed_methods<cfo_T, true> &&methods) :                    \
                                                                         \
-      cfo::intern::methods<cfo_T, true, cfo_BASES...>                   \
-      (static_cast<cfo::intern::methods<cfo_T, true, cfo_BASES...>&&>   \
-       (methods))                                                       \
+      basic_type<true>(static_cast<basic_type<true>&&>(methods))        \
     {}                                                                  \
                                                                         \
   protected:                                                            \
     inline const TYPE* operator->() const                               \
     {                                                                   \
       return static_cast<const TYPE*>                                   \
-        (this->cfo::intern::methods<cfo_T, cfo_SYNC, cfo_BASES...>      \
-         ::operator->());                                               \
+        (this->basic_type<>::operator->());                             \
     }                                                                   \
                                                                         \
     inline TYPE* operator->()                                           \
     {                                                                   \
-      return static_cast<TYPE*>                                         \
-        (this->cfo::intern::methods<cfo_T, cfo_SYNC, cfo_BASES...>      \
-         ::operator->());                                               \
+      return static_cast<TYPE*>(this->basic_type<>::operator->());      \
     }                                                                   \
                                                                         \
     METHODS                                                             \
   };                                                                    \
                                                                         \
-  template<typename cfo_T, bool cfo_SYNC, typename... cfo_BASES>        \
+  template<typename cfo_T, bool cfo_SYNC>                               \
   friend class TYPE::cfo_managed_methods;                               \
 
 #define cfo_MANAGED_METHODS(TYPE, BASE, METHODS)                        \
-  template<typename cfo_T, bool cfo_SYNC, typename... cfo_BASES>        \
+  template<typename cfo_T, bool cfo_SYNC>                               \
   class cfo_managed_methods :                                           \
-    public BASE::template cfo_managed_methods                           \
-      <cfo_T, cfo_SYNC, cfo_BASES...>                                   \
+    public BASE::template cfo_managed_methods<cfo_T, cfo_SYNC>          \
   {                                                                     \
-    template                                                            \
-      <typename cfo_T_other, bool cfo_SYNC_other,                       \
-       typename... cfo_BASES_other                                      \
-       >                                                                \
+    template<typename cfo_T_other, bool cfo_SYNC_other>                 \
       friend class cfo_managed_methods;                                 \
                                                                         \
   private:                                                              \
-    cfo_managed_methods                                                 \
-      (const cfo_managed_methods<cfo_T, true, cfo_BASES...>&);          \
+    template<bool cfo_SYNC_basic = cfo_SYNC>                            \
+      using basic_type                                                  \
+      = typename BASE::template cfo_managed_methods                     \
+      <cfo_T, cfo_SYNC_basic>;                                          \
                                                                         \
     typedef                                                             \
       typename TYPE::template cfo_managed_const_methods                 \
-      <cfo_T, cfo_SYNC, cfo_BASES...>                                   \
-                                                                        \
+      <cfo_T, cfo_SYNC>                                                 \
       const_methods;                                                    \
+                                                                        \
+    cfo_managed_methods(const cfo_managed_methods<cfo_T, true>&);       \
                                                                         \
   protected:                                                            \
     inline cfo_managed_methods(cfo_T *obj) :                            \
-      BASE::template cfo_managed_methods                                \
-      <cfo_T, false, cfo_BASES...>(obj)                                 \
+      basic_type<false>(obj)                                            \
     {}                                                                  \
                                                                         \
     inline cfo_managed_methods(const std::shared_ptr<cfo_T> &manager) : \
-      BASE::template cfo_managed_methods<cfo_T, false, cfo_BASES...>    \
-      (manager)                                                         \
+      basic_type<false>(manager)                                        \
     {}                                                                  \
                                                                         \
     inline cfo_managed_methods                                          \
-      (const cfo_managed_methods<cfo_T, false, cfo_BASES...>            \
-       &methods) :                                                      \
+      (const cfo_managed_methods<cfo_T, false> &methods) :              \
                                                                         \
-      BASE::template cfo_managed_methods<cfo_T, false, cfo_BASES...>    \
-      (methods)                                                         \
+      basic_type<false>(methods)                                        \
     {}                                                                  \
                                                                         \
   public:                                                               \
     inline cfo_managed_methods                                          \
-      (const cfo::intern::managed<cfo_T, true, false, cfo_BASES...>     \
-       &manager) :                                                      \
+      (const cfo::intern::managed<cfo_T, true, false> &manager) :       \
                                                                         \
-      BASE::template cfo_managed_methods<cfo_T, true, cfo_BASES...>     \
-      (manager)                                                         \
+      basic_type<true>(manager)                                         \
     {}                                                                  \
                                                                         \
     inline cfo_managed_methods                                          \
-      (cfo_managed_methods<cfo_T, true, cfo_BASES...> &&methods) :      \
+      (cfo_managed_methods<cfo_T, true> &&methods) :                    \
                                                                         \
-      BASE::template cfo_managed_methods<cfo_T, true, cfo_BASES...>     \
-      (static_cast                                                      \
-       <typename BASE::template cfo_managed_methods                     \
-       <cfo_T, true, cfo_BASES...>                                      \
-       &&>                                                              \
-       (methods))                                                       \
+      basic_type<true>(static_cast<basic_type<true>&&>(methods))        \
     {}                                                                  \
                                                                         \
     template<typename cfo_M>                                            \
     inline                                                              \
     typename cfo_M::managed_type                                        \
-    ::template cfo_managed_methods<cfo_T, cfo_SYNC, cfo_BASES...>&      \
+    ::template cfo_managed_methods<cfo_T, cfo_SYNC>&                    \
     cast()                                                              \
     {                                                                   \
       return *this;                                                     \
@@ -217,7 +195,7 @@ namespace cfo { namespace intern
     inline                                                              \
     const                                                               \
     typename cfo_M::managed_type                                        \
-    ::template cfo_managed_methods<cfo_T, cfo_SYNC, cfo_BASES...>&      \
+    ::template cfo_managed_methods<cfo_T, cfo_SYNC>&                    \
     cast()                                                              \
       const                                                             \
     {                                                                   \
@@ -228,23 +206,18 @@ namespace cfo { namespace intern
     inline const TYPE* operator->() const                               \
     {                                                                   \
       return static_cast<const TYPE*>                                   \
-        (this->BASE::template cfo_managed_methods                       \
-         <cfo_T, cfo_SYNC, cfo_BASES...>                                \
-         ::operator->());                                               \
+        (this->basic_type<>::operator->());                             \
     }                                                                   \
                                                                         \
     inline TYPE* operator->()                                           \
     {                                                                   \
-      return static_cast<TYPE*>                                         \
-        (this->BASE::template cfo_managed_methods                       \
-         <cfo_T, cfo_SYNC, cfo_BASES...>                                \
-         ::operator->());                                               \
+      return static_cast<TYPE*>(this->basic_type<>::operator->());      \
     }                                                                   \
                                                                         \
     METHODS                                                             \
   };                                                                    \
                                                                         \
-  template<typename cfo_T, bool cfo_SYNC, typename... cfo_BASES>        \
+  template<typename cfo_T, bool cfo_SYNC>                               \
   friend class TYPE::cfo_managed_methods;                               \
 
 #endif
