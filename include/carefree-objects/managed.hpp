@@ -54,6 +54,7 @@ namespace cfo { namespace intern
     typedef const T* managed_const_ptr_type;
 
     typedef managed<T, true, INIT_NULL> manager_type;
+    typedef forward<T, true, INIT_NULL> forward_manager_type;
 
     typedef managed<T, true, true> null;
 
@@ -158,6 +159,7 @@ namespace cfo { namespace intern
     typedef const T* managed_const_ptr_type;
 
     typedef managed<T, false, INIT_NULL> manager_type;
+    typedef forward<T, false, INIT_NULL> forward_manager_type;
 
     typedef managed<T, false, true> null;
 
