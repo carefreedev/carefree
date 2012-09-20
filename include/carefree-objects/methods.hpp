@@ -139,6 +139,28 @@ namespace cfo { namespace intern
       (static_cast<cfo_basic_type<true>&&>(methods))                    \
     {}                                                                  \
                                                                         \
+    template<typename cfo_M>                                            \
+    inline                                                              \
+    typename cfo_M::managed_type                                        \
+    ::template cfo_managed_methods<cfo_T, cfo_SYNC>                     \
+    &                                                                   \
+    cast()                                                              \
+    {                                                                   \
+      return *this;                                                     \
+    }                                                                   \
+                                                                        \
+    template<typename cfo_M>                                            \
+    inline                                                              \
+    const                                                               \
+    typename cfo_M::managed_type                                        \
+    ::template cfo_managed_methods<cfo_T, cfo_SYNC>                     \
+    &                                                                   \
+    cast()                                                              \
+      const                                                             \
+    {                                                                   \
+      return *this;                                                     \
+    }                                                                   \
+                                                                        \
   protected:                                                            \
     inline const TYPE* operator->() const                               \
     {                                                                   \
@@ -219,7 +241,8 @@ namespace cfo { namespace intern
     template<typename cfo_M>                                            \
     inline                                                              \
     typename cfo_M::managed_type                                        \
-    ::template cfo_managed_methods<cfo_T, cfo_SYNC>&                    \
+    ::template cfo_managed_methods<cfo_T, cfo_SYNC>                     \
+    &                                                                   \
     cast()                                                              \
     {                                                                   \
       return *this;                                                     \
@@ -229,7 +252,8 @@ namespace cfo { namespace intern
     inline                                                              \
     const                                                               \
     typename cfo_M::managed_type                                        \
-    ::template cfo_managed_methods<cfo_T, cfo_SYNC>&                    \
+    ::template cfo_managed_methods<cfo_T, cfo_SYNC>                     \
+    &                                                                   \
     cast()                                                              \
       const                                                             \
     {                                                                   \
