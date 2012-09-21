@@ -33,8 +33,8 @@
 
 namespace cfo { namespace intern
 {
-  template<typename T, bool INIT_NULL>
-  class managed<T, true, INIT_NULL> : public basic_manager
+  template<typename T, bool EXC, bool INIT_NULL>
+  class managed<T, true, EXC, INIT_NULL> : public basic_manager
   {
     friend class intern::const_accessor<T>;
     friend class intern::accessor<T>;
@@ -53,24 +53,30 @@ namespace cfo { namespace intern
     typedef T* managed_ptr_type;
     typedef const T* managed_const_ptr_type;
 
-    typedef managed<T, true, INIT_NULL> manager_type;
-    typedef forward<T, true, INIT_NULL> forward_manager_type;
+    typedef managed<T, true, false, false> manager_type;
+    typedef forward<T, true, false, false> forward_manager_type;
 
-    typedef managed<T, true, true> null;
+    typedef managed<T, true, true, false> except;
 
-    typedef typename T::template cfo_managed_const_methods<const T, true>
+    typedef managed<T, true, false, true> null;
+
+    typedef
+    typename T::template cfo_managed_const_methods<const T, true, EXC>
     const_accessor;
 
-    typedef typename T::template cfo_managed_methods<T, true>
+    typedef typename T::template cfo_managed_methods<T, true, EXC>
     accessor;
 
     typedef managed
-    <basic_manager::vector<T, true, managed<T, true, false> >, true>
+    <basic_manager::vector<T, true, EXC, managed<T, true, EXC, false> >,
+     true
+     >
     vector;
 
     template<typename I, typename... E>
       using map = managed
-      <basic_manager::map<I, T, true, managed<T, true, false>, E...>,
+      <basic_manager::map
+       <I, T, true, EXC, managed<T, true, EXC, false>, E...>,
        true>;
 
     inline managed() :
@@ -89,14 +95,15 @@ namespace cfo { namespace intern
     //   obj(NULL)
     // {}
 
-    inline managed(const managed<T, true, false> &manager) :
+    inline managed(const managed<T, true, EXC, false> &manager) :
       basic_manager(manager),
       obj(this->cnl ? manager.obj : NULL)
     {}
 
-    template<typename T_other, bool INIT_NULL_other>
+    template<typename T_other, bool EXC_other, bool INIT_NULL_other>
     inline managed
-    (const managed<T_other, true, INIT_NULL_other> &other_manager) :
+    (const managed<T_other, true, EXC_other, INIT_NULL_other>
+     &other_manager) :
 
       basic_manager(other_manager),
       obj(this->cnl ? static_cast<T*>(other_manager.unmanaged()) : NULL)
@@ -135,17 +142,17 @@ namespace cfo { namespace intern
     }
   };
 
-  template<typename T, bool INIT_NULL>
-  class managed<T, false, INIT_NULL> :
-    public T::template cfo_managed_methods<T, false>
+  template<typename T, bool EXC, bool INIT_NULL>
+  class managed<T, false, EXC, INIT_NULL> :
+    public T::template cfo_managed_methods<T, false, EXC>
   {
     friend T;
 
     template
-    <typename T_other, bool SYNC, bool INIT_NULL_other>
+    <typename T_other, bool SYNC, bool EXC_other, bool INIT_NULL_other>
     friend class managed;
 
-    typedef typename T::template cfo_managed_methods<T, false>
+    typedef typename T::template cfo_managed_methods<T, false, EXC>
     basic_type;
 
   protected:
@@ -158,18 +165,23 @@ namespace cfo { namespace intern
     typedef T* managed_ptr_type;
     typedef const T* managed_const_ptr_type;
 
-    typedef managed<T, false, INIT_NULL> manager_type;
-    typedef forward<T, false, INIT_NULL> forward_manager_type;
+    typedef managed<T, false, false, false> manager_type;
+    typedef forward<T, false, false, false> forward_manager_type;
 
-    typedef managed<T, false, true> null;
+    typedef managed<T, false, true, false> except;
+
+    typedef managed<T, false, false, true> null;
 
     typedef managed
-    <basic_manager::vector<T, false, managed<T, false, false> >, false>
+    <basic_manager::vector<T, false, EXC, managed<T, false, EXC, false> >,
+     false
+     >
     vector;
 
     template<typename I, typename... E>
     using map = managed
-      <basic_manager::map<I, T, false, managed<T, false, false>, E...>,
+      <basic_manager::map
+       <I, T, false, EXC, managed<T, false, EXC, false>, E...>,
        false>;
 
     inline managed() :
@@ -185,13 +197,14 @@ namespace cfo { namespace intern
     //   basic_type(NULL)
     // {}
 
-    inline managed(const managed<T, false, false> &manager) :
+    inline managed(const managed<T, false, EXC, false> &manager) :
       basic_type(manager)
     {}
 
-    template<typename T_other, bool INIT_NULL_other>
+    template<typename T_other, bool EXC_other, bool INIT_NULL_other>
     inline managed
-    (const managed<T_other, false, INIT_NULL_other> &other_manager) :
+    (const managed<T_other, false, EXC_other, INIT_NULL_other>
+     &other_manager) :
 
       basic_type
       (std::static_pointer_cast<T>
@@ -203,7 +216,8 @@ namespace cfo { namespace intern
       return this->use_count();
     }
 
-    inline bool operator==(const managed<T, false, INIT_NULL> &manager)
+    inline bool operator==
+    (const managed<T, false, EXC, INIT_NULL> &manager)
       const
     {
       assert
@@ -217,7 +231,8 @@ namespace cfo { namespace intern
         == manager.std::shared_ptr<T>::operator*();
     }
 
-    inline bool operator!=(const managed<T, false, INIT_NULL> &manager)
+    inline bool operator!=
+    (const managed<T, false, EXC, INIT_NULL> &manager)
       const
     {
       assert
@@ -231,20 +246,24 @@ namespace cfo { namespace intern
         != manager.std::shared_ptr<T>::operator*();
     }
 
-    template<typename T_other, bool INIT_NULL_other>
+    template<typename T_other, bool EXC_other, bool INIT_NULL_other>
     inline bool operator==
-    (const managed<T_other, false, INIT_NULL_other> &other_manager)
+    (const managed<T_other, false, EXC_other, INIT_NULL_other>
+     &other_manager)
       const
     {
-      return this->operator==(managed<T, false, INIT_NULL>(other_manager));
+      return this->operator==
+        (managed<T, false, EXC, INIT_NULL>(other_manager));
     }
 
-    template<typename T_other, bool INIT_NULL_other>
+    template<typename T_other, bool EXC_other, bool INIT_NULL_other>
     inline bool operator!=
-    (const managed<T_other, false, INIT_NULL_other> &other_manager)
+    (const managed<T_other, false, EXC_other, INIT_NULL_other>
+     &other_manager)
       const
     {
-      return this->operator!=(managed<T, false, INIT_NULL>(other_manager));
+      return this->operator!=
+        (managed<T, false, EXC, INIT_NULL>(other_manager));
     }
 
     inline T* operator->() const

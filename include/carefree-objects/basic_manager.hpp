@@ -92,11 +92,15 @@ namespace cfo { namespace intern
     }
 
   public:
-    template<typename T, bool SYNC, typename M = managed<T, SYNC> >
+    template
+    <typename T, bool SYNC, bool EXC = false,
+     typename M = managed<T, SYNC, EXC>
+     >
     class vector;
 
     template
-    <typename I, typename T, bool SYNC, typename M = managed<T, SYNC>,
+    <typename I, typename T, bool SYNC, bool EXC = false,
+     typename M = managed<T, SYNC, EXC>,
      typename... E
      >
     class map;
