@@ -272,6 +272,16 @@ namespace cfo { namespace intern
       return this->get();
     }
 
+    inline except except_() const
+    {
+      return except(*this);
+    }
+
+    inline manager_type noexcept_() const
+    {
+      return manager_type(*this);
+    }
+
     inline T* unmanaged() const
     {
       assert(this->get());
