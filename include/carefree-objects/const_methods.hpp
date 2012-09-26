@@ -35,7 +35,7 @@ namespace cfo { namespace intern
 
   protected:
     template<bool SYNC_switch>
-    using sync = const_methods<T, SYNC_switch>;
+    using cfo_sync = const_methods<T, SYNC_switch>;
 
     inline const_methods
     (const managed<T, true, false> &manager, bool shared) :
@@ -58,7 +58,7 @@ namespace cfo { namespace intern
   {
   protected:
     template<bool SYNC_switch>
-    using sync = const_methods<T, SYNC_switch>;
+    using cfo_sync = const_methods<T, SYNC_switch>;
 
     inline const_methods(T *obj) :
       std::shared_ptr<T>(obj)
@@ -133,11 +133,11 @@ namespace cfo { namespace intern
                                                                         \
     template<bool cfo_SYNC_basic = cfo_SYNC>                            \
       using cfo_basic_type                                              \
-      = typename cfo_BASE::template sync<cfo_SYNC_basic>;               \
+      = typename cfo_BASE::template cfo_sync<cfo_SYNC_basic>;           \
                                                                         \
   protected:                                                            \
     template<bool cfo_SYNC_switch>                                      \
-      using sync                                                        \
+      using cfo_sync                                                    \
       = _cfo_managed_const_methods<cfo_T, cfo_SYNC_switch, cfo_BASE>;   \
                                                                         \
     inline _cfo_managed_const_methods(cfo_T *obj) :                     \
@@ -178,6 +178,28 @@ namespace cfo { namespace intern
       (static_cast<cfo_basic_type<true>&&>(methods))                    \
     {}                                                                  \
                                                                         \
+    template<typename cfo_M>                                            \
+    inline                                                              \
+    typename cfo_M::managed_type                                        \
+    ::template cfo_managed_const_methods<cfo_T, cfo_SYNC>               \
+    &                                                                   \
+    cast()                                                              \
+    {                                                                   \
+      return *this;                                                     \
+    }                                                                   \
+                                                                        \
+    template<typename cfo_M>                                            \
+    inline                                                              \
+    const                                                               \
+    typename cfo_M::managed_type                                        \
+    ::template cfo_managed_const_methods<cfo_T, cfo_SYNC>               \
+    &                                                                   \
+    cast()                                                              \
+      const                                                             \
+    {                                                                   \
+      return *this;                                                     \
+    }                                                                   \
+                                                                        \
   protected:                                                            \
     inline const TYPE* operator->() const                               \
     {                                                                   \
@@ -216,14 +238,14 @@ namespace cfo { namespace intern
   private:                                                              \
     template<bool cfo_SYNC_basic = cfo_SYNC>                            \
       using cfo_basic_type                                              \
-      = typename cfo_BASE::template sync<cfo_SYNC_basic>;               \
+      = typename cfo_BASE::template cfo_sync<cfo_SYNC_basic>;           \
                                                                         \
     _cfo_managed_const_methods                                          \
       (const _cfo_managed_const_methods<cfo_T, true, cfo_BASE>&);       \
                                                                         \
   protected:                                                            \
     template<bool cfo_SYNC_switch>                                      \
-      using sync                                                        \
+      using cfo_sync                                                    \
       = _cfo_managed_const_methods<cfo_T, cfo_SYNC_switch, cfo_BASE>;   \
                                                                         \
     inline _cfo_managed_const_methods(cfo_T *obj) :                     \
