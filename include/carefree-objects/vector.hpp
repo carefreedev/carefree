@@ -91,12 +91,24 @@ namespace cfo { namespace intern
      }
 
      inline const M& operator[](std::size_t index) const
+     noexcept(!cfo_EXC)
      {
+       if (cfo_EXC && index >= this->size())
+         {
+           std::ostringstream what;
+           what << "Index out of range: " << index;
+           throw std::out_of_range(what.str());
+         }
+
        return (*this)->operator[](index);
      }
 
      inline const M& last() const
+     noexcept(!cfo_EXC)
      {
+       if (cfo_EXC && !this->size())
+         throw std::out_of_range("No last element");
+
        return (*this)[this->size() - 1];
      })
 
@@ -118,7 +130,15 @@ namespace cfo { namespace intern
      }
 
      inline M& operator[](std::size_t index)
+     noexcept(!cfo_EXC)
      {
+       if (cfo_EXC && index >= this->size())
+         {
+           std::ostringstream what;
+           what << "Index out of range: " << index;
+           throw std::out_of_range(what.str());
+         }
+
        return (*this)->operator[](index);
      }
 
@@ -128,7 +148,11 @@ namespace cfo { namespace intern
      }
 
      inline M& last()
+     noexcept(!cfo_EXC)
      {
+       if (cfo_EXC && !this->size())
+         throw std::out_of_range("No last element");
+
        return (*this)[this->size() - 1];
      }
 
