@@ -29,7 +29,8 @@
 
 namespace cfo { namespace intern
 {
-  template<typename I, typename T, bool SYNC, typename M, typename... E>
+  template
+  <typename I, typename T, bool SYNC, bool EXC, typename M, typename... E>
   class basic_manager::map
     // : private std::map<I, managed<T, SYNC>*, E...>
     : private std::map<I, M*, E...>
@@ -90,8 +91,8 @@ namespace cfo { namespace intern
       return *obj;
     }
 
-#define _cfo_MANAGED_MAP_TEMPLATE_ARGS       \
-    I, T, SYNC, M, E...                         \
+#define _cfo_MANAGED_MAP_TEMPLATE_ARGS        \
+    I, T, SYNC, EXC, M, E...                  \
 
     cfo_MANAGED_BASIC_CONST_METHODS
     (map<_cfo_MANAGED_MAP_TEMPLATE_ARGS>,
