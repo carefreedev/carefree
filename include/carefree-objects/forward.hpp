@@ -28,12 +28,12 @@
 
 namespace cfo { namespace intern
 {
-  template<typename T, bool INIT_NULL>
-  class forward<T, true, INIT_NULL> :
-    private std::unique_ptr<managed<T, true, INIT_NULL> >
+  template<typename T, bool EXC, bool INIT_NULL>
+  class forward<T, true, EXC, INIT_NULL> :
+    private std::unique_ptr<managed<T, true, EXC, INIT_NULL> >
   {
   private:
-    typedef managed<T, true, INIT_NULL> manager_type;
+    typedef managed<T, true, EXC, INIT_NULL> manager_type;
     typedef std::unique_ptr<manager_type> basic_type;
 
   protected:
@@ -60,14 +60,15 @@ namespace cfo { namespace intern
       basic_type(new manager_type(args...))
     {}
 
-    inline forward(const managed<T, true, false> &manager) :
+    inline forward(const managed<T, true, EXC, false> &manager) :
       basic_type(new manager_type(manager))
     {}
 
     template
-    <typename T_other, bool INIT_NULL_other, typename>
+    <typename T_other, bool EXC_other, bool INIT_NULL_other>
     inline forward
-    (const managed<T_other, true, INIT_NULL_other> &other_manager) :
+    (const managed<T_other, true, EXC_other, INIT_NULL_other>
+     &other_manager) :
 
       basic_type(new manager_type(other_manager))
     {}
@@ -123,12 +124,12 @@ namespace cfo { namespace intern
     }
   };
 
-  template<typename T, bool INIT_NULL>
-  class forward<T, false, INIT_NULL> :
-    private std::unique_ptr<managed<T, false, INIT_NULL> >
+  template<typename T, bool EXC, bool INIT_NULL>
+  class forward<T, false, EXC, INIT_NULL> :
+    private std::unique_ptr<managed<T, false, EXC, INIT_NULL> >
   {
   private:
-    typedef managed<T, false, INIT_NULL> manager_type;
+    typedef managed<T, false, EXC, INIT_NULL> manager_type;
     typedef std::unique_ptr<manager_type> basic_type;
 
   protected:
@@ -153,9 +154,10 @@ namespace cfo { namespace intern
     {}
 
     template
-    <typename T_other, bool INIT_NULL_other>
+    <typename T_other, bool EXC_other, bool INIT_NULL_other>
     inline forward
-    (const managed<T_other, false, INIT_NULL_other> &other_manager) :
+    (const managed<T_other, false, EXC_other, INIT_NULL_other>
+     &other_manager) :
 
       basic_type(new manager_type(other_manager))
     {}

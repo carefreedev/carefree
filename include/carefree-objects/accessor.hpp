@@ -32,24 +32,23 @@
 
 namespace cfo { namespace intern
 {
-  template<typename T>
+  template<typename T, bool EXC>
   class accessor :
-    public T::template cfo_managed_const_methods<T, true>
+    public T::template cfo_managed_const_methods<T, true, EXC>
   {
   private:
-    accessor(accessor<T> &);
+    accessor(accessor<T, EXC> &);
 
   public:
-    inline accessor(const managed<T, true, false> &manager) :
-      T::template cfo_managed_const_methods<T, true>
+    inline accessor(const managed<T, true, EXC, false> &manager) :
+      T::template cfo_managed_const_methods<T, true, EXC>
       (manager, false)
     {}
 
-    inline accessor(accessor<T> &&access) :
-      T::template cfo_managed_const_methods<T, true>
+    inline accessor(accessor<T, EXC> &&access) :
+      T::template cfo_managed_const_methods<T, true, EXC>
       (static_cast
-       <typename T::template cfo_managed_const_methods<T, true>&&
-       >
+       <typename T::template cfo_managed_const_methods<T, true, EXC>&&>
        (access))
     {}
 

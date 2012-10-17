@@ -30,43 +30,43 @@
 
 namespace cfo { namespace intern
 {
-  template<typename T>
+  template<typename T, bool EXC>
   class const_accessor
   {
-    friend class accessor<T>;
+    friend class accessor<T, EXC>;
 
   private:
     const bool shared;
-    std::unique_ptr<managed<T, true, false> > manager_ptr;
+    std::unique_ptr<managed<T, true, EXC, false> > manager_ptr;
 
-    const_accessor(const_accessor<T> &);
+    const_accessor(const_accessor<T, EXC> &);
 
   protected:
     inline const_accessor
-    (const managed<T, true, false> &manager, bool shared) :
+    (const managed<T, true, EXC, false> &manager, bool shared) :
 
       shared(shared),
-      manager_ptr(new managed<T, true, false>(manager))
+      manager_ptr(new managed<T, true, EXC, false>(manager))
     {
       if (manager)
         manager.cnl->lock();
     }
 
-    inline const managed<T, true, false>& manager() const
+    inline const managed<T, true, EXC, false>& manager() const
     {
       return *this->manager_ptr;
     }
 
   public:
-    inline const_accessor(const managed<T, true, false> &manager) :
+    inline const_accessor(const managed<T, true, EXC, false> &manager) :
       shared(true),
-      manager_ptr(new managed<T, true, false>(manager))
+      manager_ptr(new managed<T, true, EXC, false>(manager))
     {
       if (manager)
         manager.cnl->lock_shared();
     }
 
-    inline const_accessor(const_accessor<T> &&access) :
+    inline const_accessor(const_accessor<T, EXC> &&access) :
       shared(access.shared),
       manager_ptr(access.manager_ptr.release())
     {}
