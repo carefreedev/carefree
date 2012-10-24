@@ -36,8 +36,8 @@ namespace cfo { namespace intern
   template<typename T, bool EXC, bool INIT_NULL>
   class managed<T, true, EXC, INIT_NULL> : public basic_manager
   {
-    friend class intern::const_accessor<T>;
-    friend class intern::accessor<T>;
+    friend class intern::const_accessor<T, EXC>;
+    friend class intern::accessor<T, EXC>;
 
   private:
     T *obj;
