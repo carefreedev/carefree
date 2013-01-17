@@ -67,16 +67,12 @@ namespace cfo { namespace intern
     typedef typename T::template cfo_managed_methods<T, true, EXC>
     accessor;
 
-    typedef managed
-    <basic_manager::vector<T, true, EXC, managed<T, true, EXC, false> >,
-     true
-     >
-    vector;
+    typedef managed<basic_manager::vector<T, true, EXC>, true> vector;
 
-    template<typename I, typename... E>
+    template<typename KEY, typename... EXTRA>
       using map = managed
       <basic_manager::map
-       <I, T, true, EXC, managed<T, true, EXC, false>, E...>,
+       <KEY, T, true, EXC, managed<T, true, EXC>, EXTRA...>,
        true>;
 
     inline managed() :

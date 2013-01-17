@@ -94,14 +94,14 @@ namespace cfo { namespace intern
   public:
     template
     <typename T, bool SYNC, bool EXC = false,
-     typename M = managed<T, SYNC, EXC>
+     typename MGR = managed<T, SYNC, EXC>
      >
     class vector;
 
     template
-    <typename I, typename T, bool SYNC, bool EXC = false,
-     typename M = managed<T, SYNC, EXC>,
-     typename... E
+    <typename KEY, typename T, bool SYNC, bool EXC = false,
+     typename MGR = managed<T, SYNC, EXC>,
+     typename... EXTRA
      >
     class map;
 

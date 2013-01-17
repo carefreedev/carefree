@@ -29,68 +29,88 @@
 
 namespace cfo { namespace intern
 {
-  template<typename T, bool SYNC, bool EXC, typename M>
-  class basic_manager::vector
-    // : private std::vector<managed<T, SYNC>*>
-    : private std::vector<M*>
+  template<typename T, bool SYNC, bool EXC, typename MGR>
+  class basic_manager::vector : private std::vector<MGR*>
   {
   private:
-    // typedef managed<T, SYNC> manager_type;
-    typedef M manager_type;
-    typedef std::vector<manager_type*> vector_type;
+    typedef std::vector<MGR*> _base_vector_type;
 
   public:
+    typedef managed<T, SYNC, EXC> element_manager_type;
+
+    typedef managed<vector<T, SYNC, EXC>, SYNC, EXC> manager_type;
+
+    class iterator;
+    class const_iterator;
+
     inline ~vector()
     {
-      BOOST_FOREACH
-        (manager_type *manager_ptr, *static_cast<vector_type*>(this))
+      for (const MGR *element_ptr
+             : static_cast<const _base_vector_type>(*this))
 
-        delete manager_ptr;
+        delete element_ptr;
     }
 
     inline std::size_t size() const
     {
-      return this->vector_type::size();
+      return this->_base_vector_type::size();
     }
 
-    inline const M& operator[](std::size_t index) const
+    inline const MGR& operator[](std::size_t index) const
     {
-      return *static_cast<M*>(this->vector_type::operator[](index));
+      return static_cast<MGR&>
+        (static_cast<element_manager_type&>
+         (*this->_base_vector_type::operator[](index)));
     }
 
-    inline M& operator[](std::size_t index)
+    inline MGR& operator[](std::size_t index)
     {
-      return *static_cast<M*>(this->vector_type::operator[](index));
+      return static_cast<MGR&>
+        (static_cast<element_manager_type&>
+         (*this->_base_vector_type::operator[](index)));
     }
 
     template<typename... A>
     inline void push_back(const A &...args)
     {
-      this->vector_type::push_back(new M(args...));
+      this->_base_vector_type::push_back
+        (static_cast<MGR*>
+         (static_cast<element_manager_type*>(new MGR(args...))));
     }
 
     template<typename... A>
-    inline M& append(const A &...args)
+    inline MGR& append(const A &...args)
     {
-      M *obj = new M(args...);
-      this->vector_type::push_back(obj);
-      return *obj;
+      MGR *element_ptr =
+        static_cast<MGR*>
+        (static_cast<element_manager_type*>(new MGR(args...)));
+
+      this->_base_vector_type::push_back(element_ptr);
+      return *element_ptr;
     }
 
-#define _cfo_MANAGED_VECTOR_TEMPLATE_ARGS     \
-    T, SYNC, EXC, M                           \
+#define _cfo_MANAGED_VECTOR_TEMPLATE_ARGS       \
+    T, SYNC, EXC, MGR                           \
 
     cfo_MANAGED_BASIC_CONST_METHODS
     (vector<_cfo_MANAGED_VECTOR_TEMPLATE_ARGS>,
 
      public:
 
+     typedef MGR value_type;
+
+     typedef const MGR& const_reference;
+     typedef const MGR& reference;
+
+     typedef vector<_cfo_MANAGED_VECTOR_TEMPLATE_ARGS>::const_iterator
+     const_iterator;
+
      inline std::size_t size() const
      {
        return (*this)->size();
      }
 
-     inline const M& operator[](std::size_t index) const
+     inline const MGR& operator[](std::size_t index) const
      noexcept(!cfo_EXC)
      {
        if (cfo_EXC && index >= this->size())
@@ -103,19 +123,32 @@ namespace cfo { namespace intern
        return (*this)->operator[](index);
      }
 
-     inline const M& last() const
+     inline const MGR& last() const
      noexcept(!cfo_EXC)
      {
        if (cfo_EXC && !this->size())
          throw std::out_of_range("No last element");
 
        return (*this)[this->size() - 1];
-     })
+     }
+
+     inline const_iterator cbegin() const;
+
+     inline const_iterator cend() const;
+
+     inline const_iterator begin() const;
+
+     inline const_iterator end() const;
+     )
 
     cfo_MANAGED_BASIC_METHODS
     (vector<_cfo_MANAGED_VECTOR_TEMPLATE_ARGS>,
 
      public:
+
+     typedef MGR& reference;
+
+     typedef vector<_cfo_MANAGED_VECTOR_TEMPLATE_ARGS>::iterator iterator;
 
      template<typename... A>
      inline void push_back(const A &...args)
@@ -124,12 +157,12 @@ namespace cfo { namespace intern
      }
 
      template<typename... A>
-     inline M& append(const A &...args)
+     inline MGR& append(const A &...args)
      {
        return (*this)->append(args...);
      }
 
-     inline M& operator[](std::size_t index)
+     inline MGR& operator[](std::size_t index)
      noexcept(!cfo_EXC)
      {
        if (cfo_EXC && index >= this->size())
@@ -142,12 +175,12 @@ namespace cfo { namespace intern
        return (*this)->operator[](index);
      }
 
-     inline const M& operator[](std::size_t index) const
+     inline const MGR& operator[](std::size_t index) const
      {
        return this->const_methods::operator[](index);
      }
 
-     inline M& last()
+     inline MGR& last()
      noexcept(!cfo_EXC)
      {
        if (cfo_EXC && !this->size())
@@ -156,11 +189,234 @@ namespace cfo { namespace intern
        return (*this)[this->size() - 1];
      }
 
-     inline const M& last() const
+     inline const MGR& last() const
      {
        return this->const_methods::last();
-     })
+     }
+
+     inline const_iterator begin() const;
+
+     inline const_iterator end() const;
+
+     inline iterator begin();
+
+     inline iterator end();
+     )
   };
+
+  template<typename T, bool SYNC, bool EXC, typename MGR>
+  class basic_manager::vector<T, SYNC, EXC, MGR>::const_iterator :
+    private vector<T, SYNC, EXC, MGR>::manager_type
+  {
+  private:
+    std::size_t _index;
+
+  public:
+    typedef vector<T, SYNC, EXC, MGR>::manager_type vector_manager_type;
+
+    inline const_iterator
+    (const vector_manager_type &vector, const std::size_t index = 0u) :
+
+      vector_manager_type(vector),
+      _index(index)
+    {}
+
+    inline const_iterator(const const_iterator &other) :
+      vector_manager_type(other.const_manager()),
+      _index(other._index)
+    {}
+
+    inline const_iterator(const_iterator &&other) :
+      vector_manager_type(static_cast<vector_manager_type&&>(other)),
+      _index(other._index)
+    {}
+
+    inline const MGR& operator*()
+    {
+      return this->vector_manager_type::operator[](this->_index);
+    }
+
+    inline std::size_t index()
+    {
+      return this->_index;
+    }
+
+    inline const_iterator& operator++()
+    {
+      ++this->_index;
+      return *this;
+    }
+
+    inline bool operator==(const const_iterator &other)
+    {
+      return this->unmanaged() == other.unmanaged()
+        && this->_index == other._index;
+    }
+
+    inline bool operator!=(const const_iterator &other)
+    {
+      return this->unmanaged() != other.unmanaged()
+        || this->_index != other._index;
+    }
+  };
+
+
+  template<typename T, bool SYNC, bool EXC, typename MGR>
+  template<typename cfo_T, bool cfo_SYNC, bool cfo_EXC, typename cfo_BASE>
+  inline
+  typename basic_manager::vector<T, SYNC, EXC, MGR>::const_iterator
+  basic_manager::vector<T, SYNC, EXC, MGR>
+  ::_cfo_managed_const_methods<cfo_T, cfo_SYNC, cfo_EXC, cfo_BASE>
+  ::cbegin
+  ()
+    const
+  {
+    return const_iterator(this->const_manager());
+  }
+
+  template<typename T, bool SYNC, bool EXC, typename MGR>
+  template<typename cfo_T, bool cfo_SYNC, bool cfo_EXC, typename cfo_BASE>
+  inline
+  typename basic_manager::vector<T, SYNC, EXC, MGR>::const_iterator
+  basic_manager::vector<T, SYNC, EXC, MGR>
+  ::_cfo_managed_const_methods<cfo_T, cfo_SYNC, cfo_EXC, cfo_BASE>
+  ::cend
+  ()
+    const
+  {
+    return const_iterator(this->const_manager(), this->size());
+  }
+  template<typename T, bool SYNC, bool EXC, typename MGR>
+  template<typename cfo_T, bool cfo_SYNC, bool cfo_EXC, typename cfo_BASE>
+  inline
+  typename basic_manager::vector<T, SYNC, EXC, MGR>::const_iterator
+  basic_manager::vector<T, SYNC, EXC, MGR>
+  ::_cfo_managed_const_methods<cfo_T, cfo_SYNC, cfo_EXC, cfo_BASE>
+  ::begin
+  ()
+    const
+  {
+    return const_iterator(this->const_manager());
+  }
+
+  template<typename T, bool SYNC, bool EXC, typename MGR>
+  template<typename cfo_T, bool cfo_SYNC, bool cfo_EXC, typename cfo_BASE>
+  inline
+  typename basic_manager::vector<T, SYNC, EXC, MGR>::const_iterator
+  basic_manager::vector<T, SYNC, EXC, MGR>
+  ::_cfo_managed_const_methods<cfo_T, cfo_SYNC, cfo_EXC, cfo_BASE>
+  ::end
+  ()
+    const
+  {
+    return const_iterator(this->const_manager(), this->size());
+  }
+
+  template<typename T, bool SYNC, bool EXC, typename MGR>
+  class basic_manager::vector<T, SYNC, EXC, MGR>::iterator :
+    private vector<T, SYNC, EXC, MGR>::manager_type
+  {
+  private:
+    std::size_t _index;
+
+  public:
+    typedef vector<T, SYNC, EXC, MGR>::manager_type vector_manager_type;
+
+    inline iterator
+    (const vector_manager_type &vector, const std::size_t index = 0u) :
+
+      vector_manager_type(vector),
+      _index(index)
+    {}
+
+    inline iterator(const iterator &other) :
+      vector_manager_type(other.const_manager()),
+      _index(other._index)
+    {}
+
+    inline iterator(iterator &&other) :
+      vector_manager_type(static_cast<vector_manager_type&&>(other)),
+      _index(other._index)
+    {}
+
+    inline MGR& operator*()
+    {
+      return this->vector_manager_type::operator[](this->_index);
+    }
+
+    inline std::size_t index()
+    {
+      return this->_index;
+    }
+
+    inline iterator& operator++()
+    {
+      ++this->_index;
+      return *this;
+    }
+
+    inline bool operator==(const iterator &other)
+    {
+      return this->unmanaged() == other.unmanaged()
+        && this->_index == other._index;
+    }
+
+    inline bool operator!=(const iterator &other)
+    {
+      return this->unmanaged() != other.unmanaged()
+        || this->_index != other._index;
+    }
+  };
+
+  template<typename T, bool SYNC, bool EXC, typename MGR>
+  template<typename cfo_T, bool cfo_SYNC, bool cfo_EXC>
+  inline
+  typename basic_manager::vector<T, SYNC, EXC, MGR>::const_iterator
+  basic_manager::vector<T, SYNC, EXC, MGR>
+  ::cfo_managed_methods<cfo_T, cfo_SYNC, cfo_EXC>
+  ::begin
+  ()
+    const
+  {
+    return const_iterator(this->const_manager());
+  }
+
+  template<typename T, bool SYNC, bool EXC, typename MGR>
+  template<typename cfo_T, bool cfo_SYNC, bool cfo_EXC>
+  inline
+  typename basic_manager::vector<T, SYNC, EXC, MGR>::const_iterator
+  basic_manager::vector<T, SYNC, EXC, MGR>
+  ::cfo_managed_methods<cfo_T, cfo_SYNC, cfo_EXC>
+  ::end
+  ()
+    const
+  {
+    return const_iterator(this->const_manager(), this->size());
+  }
+
+  template<typename T, bool SYNC, bool EXC, typename MGR>
+  template<typename cfo_T, bool cfo_SYNC, bool cfo_EXC>
+  inline
+  typename basic_manager::vector<T, SYNC, EXC, MGR>::iterator
+  basic_manager::vector<T, SYNC, EXC, MGR>
+  ::cfo_managed_methods<cfo_T, cfo_SYNC, cfo_EXC>
+  ::begin
+  ()
+  {
+    return iterator(this->const_manager());
+  }
+
+  template<typename T, bool SYNC, bool EXC, typename MGR>
+  template<typename cfo_T, bool cfo_SYNC, bool cfo_EXC>
+  inline
+  typename basic_manager::vector<T, SYNC, EXC, MGR>::iterator
+  basic_manager::vector<T, SYNC, EXC, MGR>
+  ::cfo_managed_methods<cfo_T, cfo_SYNC, cfo_EXC>
+  ::end
+  ()
+  {
+    return iterator(this->const_manager(), this->size());
+  }
 } }
 
 #endif
