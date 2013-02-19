@@ -56,6 +56,11 @@ env.Append(
     ],
   )
 
+try:
+  env.Replace(CXX = os.environ['CXX'])
+except KeyError:
+  pass
+
 PYTHON = env['PYTHON']
 if PYTHON is True:
   PYTHON = 'python'
