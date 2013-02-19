@@ -1,0 +1,8 @@
+~$
+\.orig$
+\.rej$
+
+^\.sconsign\.dblite$
+^build/
+
+\.s?os?$
