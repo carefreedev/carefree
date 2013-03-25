@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
   name = 'carefree-objects',
-  version = '0.1a',
+  version = '0.1a1',
   description = (
     ),
   author = 'Stefan Zimmermann',
