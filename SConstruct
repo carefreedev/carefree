@@ -17,8 +17,16 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with carefree-objects.  If not, see <http://www.gnu.org/licenses/>.
 
+import sys
+import re
 import os
 from subprocess import Popen, PIPE
+
+import jinja2
+from jinjatools.scons import JinjaBuilder
+
+sys.path.insert(0, './python')
+import cfo.jinja
 
 opts = Variables()
 opts.Add(BoolVariable(
@@ -35,7 +43,11 @@ opts.Add(PackageVariable(
   'list of python(-config) binary names to build carefree-python for',
   'python'))
 
-env = Environment(variables = opts)
+env = Environment(
+  variables = opts,
+  BUILDERS = dict(
+    Jinja = JinjaBuilder(jinja2.FileSystemLoader),
+    ))
 for varname in 'CPPFLAGS', 'CXXFLAGS', 'LDFLAGS':
   try:
     env.MergeFlags(os.environ[varname])
@@ -43,6 +55,8 @@ for varname in 'CPPFLAGS', 'CXXFLAGS', 'LDFLAGS':
     pass
 
 env.Append(
+  JINJACONTEXT = cfo.jinja.CONTEXT,
+
   CPPDEFINES = [
     env['DEBUG'] and 'DEBUG' or 'NDEBUG',
     ],
@@ -60,6 +74,27 @@ try:
   env.Replace(CXX = os.environ['CXX'])
 except KeyError:
   pass
+
+INCLUDES = []
+
+for dirpath, dirnames, filenames in os.walk('src/include'):
+  for fn in filenames:
+    if fn.endswith('.hpp'):
+      path = os.path.join(dirpath, fn)
+      INCLUDES.append(env.Jinja(
+        re.sub('^src/', '', path),
+        source = [path]))
+
+CAREFREE_PYTHON_SOURCE_NAMES = [
+  'import',
+  'functions',
+  ]
+CAREFREE_PYTHON_SOURCES = [
+  env.Jinja(
+    'build/python/%s.cpp' % name,
+    source = ['src/python/%s.cpp' % name]
+    )
+  for name in CAREFREE_PYTHON_SOURCE_NAMES]
 
 PYTHON = env['PYTHON']
 if PYTHON is True:
@@ -85,14 +120,15 @@ for pybin in PYTHON and PYTHON.split(',') or []:
     )
 
   OBJECTS = [
-    pyenv.SharedObject(
-      '%s/%s' % (pybuildpath, name),
-      source = ['python/%s.cpp' % name],
-      )
-    for name in (
-      'import',
-      'functions',
-      )]
+    env.Requires(
+      pyenv.SharedObject(
+        '%s/%s' % (pybuildpath, name),
+        source = ['build/python/%s.cpp' % name],
+        ),
+      [CAREFREE_PYTHON_SOURCES, INCLUDES,
+       ])
+    for name in CAREFREE_PYTHON_SOURCE_NAMES],
+
   if env['SHARED']:
     pyenv.SharedLibrary(
       'carefree-python-py' + pyversionsuffix,
