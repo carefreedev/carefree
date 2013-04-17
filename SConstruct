@@ -41,7 +41,7 @@ opts.Add(BoolVariable(
 opts.Add(PackageVariable(
   'PYTHON',
   'list of python(-config) binary names to build carefree-python for',
-  'python'))
+  'yes'))
 
 env = Environment(
   variables = opts,
