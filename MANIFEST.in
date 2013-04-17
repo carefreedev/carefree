@@ -1,0 +1,8 @@
+include COPYING*
+
+include VERSION
+
+recursive-include src *.cpp *.hpp *.inl
+
+recursive-include python/cfo *.py
+include SConstruct
