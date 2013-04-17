@@ -1,17 +1,24 @@
-from setuptools import setup
+from distutils.core import setup
+
+VERSION = open('VERSION').read().strip()
 
 setup(
-  name = 'carefree-objects',
-  version = '0.1a1',
-  description = (
+  name='carefree-objects',
+  version=VERSION,
+  description=(
+    "A thread-safe object manager extension for C++"
+    " - Python Tools"
     ),
-  author = 'Stefan Zimmermann',
-  author_email = 'zimmermann.code@gmail.com',
-  url = 'http://bitbucket.org/StefanZimmermann/carefree-objects',
+  author='Stefan Zimmermann',
+  author_email='zimmermann.code@gmail.com',
+  url='http://bitbucket.org/StefanZimmermann/carefree-objects',
 
-  license = 'LGPLv3',
+  license='LGPLv3',
 
-  packages = [
+  install_requires=[
+    'jinja-tools >= 0.1a5',
+    ],
+  packages=[
     'cfo',
     'cfo.jinja',
     ]
