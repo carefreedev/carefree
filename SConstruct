@@ -112,10 +112,20 @@ for pybin in PYTHON and PYTHON.split(',') or []:
   pyenv.MergeFlags(
     Popen([pybin + '-config', '--includes', '--libs'], stdout = PIPE)
     .communicate()[0])
+  pyconf = Configure(pyenv)
+
+  BOOST_PYTHON_LIB = 'boost_python'
+
+  libname_with_pyversion = '%s-py%s' % (
+    BOOST_PYTHON_LIB, pyversionsuffix)
+  if pyconf.CheckLib(libname_with_pyversion):
+    BOOST_PYTHON_LIB = libname_with_pyversion
+
+  pyenv = pyconf.Finish()
 
   pyenv.Append(
     LIBS = [
-      'boost_python-py' + pyversionsuffix,
+      BOOST_PYTHON_LIB,
       ],
     )
 
