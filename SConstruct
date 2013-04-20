@@ -46,7 +46,7 @@ opts.Add(PackageVariable(
 env = Environment(
   variables = opts,
   BUILDERS = dict(
-    Jinja = JinjaBuilder(jinja2.FileSystemLoader),
+    Jinja = JinjaBuilder(jinja2.FileSystemLoader('.')),
     ))
 for varname in 'CPPFLAGS', 'CXXFLAGS', 'LDFLAGS':
   try:
