@@ -4,7 +4,7 @@ from subprocess import Popen
 
 from distutils.core import setup
 
-SETUP_REQUIRES = [
+REQUIRES = [
   'path.py',
   'jinja-tools >= 0.1a5',
   ]
@@ -51,11 +51,12 @@ setup(
     ),
   author='Stefan Zimmermann',
   author_email='zimmermann.code@gmail.com',
+
   url='http://bitbucket.org/StefanZimmermann/carefree-objects',
 
   license='LGPLv3',
 
-  setup_requires = SETUP_REQUIRES,
+  setup_requires = REQUIRES,
 
   data_files = DATA_FILES,
   )
