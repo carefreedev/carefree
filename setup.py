@@ -6,7 +6,7 @@ from distutils.core import setup
 
 REQUIRES = [
   'path.py',
-  'jinja-tools >= 0.1a5',
+  'jinja-tools >= 0.1a6',
   ]
 
 PYTHON_SHORT_VERSION = '%i%i' % tuple(sys.version_info[:2])

@@ -16,7 +16,7 @@ setup(
   license='LGPLv3',
 
   install_requires=[
-    'jinja-tools >= 0.1a5',
+    'jinja-tools >= 0.1a6',
     ],
   packages=[
     'cfo',
