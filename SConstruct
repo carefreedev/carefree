@@ -141,11 +141,11 @@ for pybin in PYTHON and PYTHON.split(',') or []:
 
   if env['SHARED']:
     pyenv.SharedLibrary(
-      'carefree-python-py' + pyversionsuffix,
+      'lib/carefree-python-py' + pyversionsuffix,
       source = OBJECTS,
       )
   if env['STATIC']:
     pyenv.StaticLibrary(
-      'carefree-python-py' + pyversionsuffix,
+      'lib/carefree-python-py' + pyversionsuffix,
       source = OBJECTS,
       )
