@@ -28,10 +28,10 @@ PYTHON_SHORT_VERSION = '%i%i' % tuple(sys.version_info[:2])
 VERSION = open('VERSION').read().strip()
 
 PACKAGE_DIR = '.'
-# Gets the header files if building an egg
+# Gets the lib/header files if building an egg
 PACKAGE_DATA = []
 
-# Gets the header files for installing to sys.prefix
+# Gets the lib/header files for installing to sys.prefix
 # if doing normal build/install
 DATA_FILES = []
 
@@ -54,7 +54,7 @@ if any(cmd in sys.argv for cmd in ('build', 'install', 'bdist_egg')):
         PREFIX = Path(sys.prefix).abspath()
         # Store sys.prefix location (where data_files are installed)
         # as part of package_data.
-        # Can later be accessed with libarray_ptr.PREFIX
+        # Can later be accessed with libcarefree_objects.PREFIX
         with open('PREFIX', 'w') as f:
             f.write(PREFIX)
         PACKAGE_DATA.append('PREFIX')
