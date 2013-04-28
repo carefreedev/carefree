@@ -105,18 +105,18 @@ setup(
 
   license='LGPLv3',
 
-  setup_requires = REQUIRES,
-  install_requires = REQUIRES,
+  setup_requires=REQUIRES,
+  install_requires=REQUIRES,
 
-  package_dir = {
+  package_dir={
     'libcarefree_objects': '.',
     },
-  packages = [
+  packages=[
     'libcarefree_objects',
     ],
-  package_data = {
+  package_data={
     'libcarefree_objects': PACKAGE_DATA,
     },
 
-  data_files = DATA_FILES,
+  data_files=DATA_FILES,
   )
