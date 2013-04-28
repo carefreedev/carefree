@@ -2,8 +2,14 @@ import sys
 import os
 from subprocess import Popen
 
-from distutils.core import setup
 from setuptools import setup
+
+# Just make sure that the setup_requires list is processed
+# before this package is bdist_egg'd by easy_install
+# as part of setup_requires processing of another package
+if 'bdist_egg' in sys.argv:
+    if Popen(['python', 'setup.py', 'egg_info']).wait():
+        sys.exit(1)
 
 # The setup_requires list
 REQUIRES = [
