@@ -2,6 +2,8 @@ include COPYING*
 
 include VERSION
 
+include requirements.txt
+
 recursive-include src *.cpp *.hpp *.inl
 
 recursive-include python/cfo *.py
