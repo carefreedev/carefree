@@ -25,5 +25,11 @@ setup(
   packages=[
     'cfo',
     'cfo.jinja',
-    ]
+    'cfo.jinja.macros',
+    ],
+  package_data={
+    'cfo.jinja.macros': [
+      'cfo',
+      ],
+    }
   )
