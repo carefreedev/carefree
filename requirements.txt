@@ -1,2 +1,4 @@
 path.py
+python-moretools
+Jinja2
 jinja-tools >= 0.1a6
