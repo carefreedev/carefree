@@ -1,4 +1,9 @@
-from distutils.core import setup
+try:
+    from setuptools import setup
+except ImportError:
+    from distutils.core import setup
+
+REQUIRES = open('requirements.txt').read().strip().split('\n')
 
 VERSION = open('VERSION').read().strip()
 
@@ -15,9 +20,8 @@ setup(
 
   license='LGPLv3',
 
-  install_requires=[
-    'jinja-tools >= 0.1a6',
-    ],
+  install_requires=REQUIRES,
+
   packages=[
     'cfo',
     'cfo.jinja',
