@@ -2,32 +2,13 @@ import sys
 import os
 from subprocess import Popen
 
-from setuptools import setup
+from pkg_resources import require
+try:
+    from setuptools import setup
+except ImportError:
+    from distutils.core import setup
 
-# Just make sure that the setup_requires list is processed
-# before this package is bdist_egg'd by easy_install
-# as part of setup_requires processing of another package
-if 'bdist_egg' in sys.argv:
-    if Popen(['python', 'setup.py', 'egg_info']).wait():
-        sys.exit(1)
-
-# The setup_requires list
-REQUIRES = [
-  'path.py',
-  'jinja-tools >= 0.1a6',
-  ]
-# pip uses setuptools uses easy_install
-# for installing setup_requires packages,
-# which are bdist_egg'd and installed to ./*.egg/ dirs...
-for name in os.listdir('.'):
-    if name.endswith('.egg'):
-        path = os.path.abspath(name)
-        sys.path.insert(0, path)
-        try:
-            PYTHONPATH = os.pathsep.join((path, os.environ['PYTHONPATH']))
-        except KeyError:
-            PYTHONPATH = path
-        os.environ['PYTHONPATH'] = PYTHONPATH
+REQUIRES = open('requirements.txt').read().strip().split('\n')
 
 PYTHON_SHORT_VERSION = '%i%i' % tuple(sys.version_info[:2])
 
@@ -43,6 +24,8 @@ DATA_FILES = []
 
 # Create data file lists if some build/install cmd was given
 if any(cmd in sys.argv for cmd in ('build', 'install', 'bdist_egg')):
+    require(REQUIRES)
+
     from path import path as Path
 
     # Process the header templates and compile the libs
@@ -106,7 +89,6 @@ setup(
 
   license='LGPLv3',
 
-  setup_requires=REQUIRES,
   install_requires=REQUIRES,
 
   package_dir={
