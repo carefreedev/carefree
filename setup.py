@@ -68,9 +68,10 @@ if any(cmd in sys.argv for cmd in ('build', 'install', 'bdist_egg')):
     INCLUDE_FILES = []
     with Path('include'):
         for dirpath, dirnames, filenames in os.walk('.'):
-            abspath = Path(dirpath).abspath()
-            INCLUDE_FILES.append((dirpath, [
-              abspath.joinpath(fn) for fn in filenames]))
+            if filenames:
+                abspath = Path(dirpath).abspath()
+                INCLUDE_FILES.append((dirpath, [
+                  abspath.joinpath(fn) for fn in filenames]))
 
     with Path('lib'):
         LIB_FILES = [
