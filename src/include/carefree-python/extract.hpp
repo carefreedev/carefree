@@ -67,7 +67,7 @@ namespace cfo { namespace python
       }
 
     return true;
-  };
+  }
 {% endfor %}
 
 } }
