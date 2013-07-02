@@ -54,7 +54,7 @@ if any(cmd in sys.argv for cmd in ('build', 'install', 'bdist_egg')):
             if filenames:
                 abspath = Path(dirpath).abspath()
                 INCLUDE_FILES.append((dirpath, [
-                  abspath.joinpath(fn) for fn in filenames]))
+                  abspath / fn for fn in filenames]))
 
     with Path('lib'):
         LIB_FILES = [
@@ -66,8 +66,8 @@ if any(cmd in sys.argv for cmd in ('build', 'install', 'bdist_egg')):
         # Install libs/headers as data_files to sys.prefix
         for dirpath, filenames in INCLUDE_FILES:
             DATA_FILES.append(
-              (PREFIX.joinpath('include', dirpath), filenames))
-        DATA_FILES.append((PREFIX.joinpath('lib'), LIB_FILES))
+              (PREFIX / 'include' / dirpath, filenames))
+        DATA_FILES.append((PREFIX / 'lib', LIB_FILES))
     else:
         # Install libs/headers as package_data
         for dirpath, filepaths in INCLUDE_FILES:
