@@ -112,6 +112,8 @@ namespace cfo { namespace intern
         delete this->obj;
     }
 
+    inline managed<T, true, EXC, false> copy() const;
+
     inline const_accessor caccess() const
     {
       return const_accessor(*this);
@@ -137,6 +139,15 @@ namespace cfo { namespace intern
       return !this->obj;
     }
   };
+
+  template<typename T, bool EXC, bool INIT_NULL>
+  inline
+  managed<T, true, EXC, false> managed<T, true, EXC, INIT_NULL>::copy()
+    const
+  {
+    return managed<T, true, EXC, false>
+      (this->obj ? new managed_type(*this->obj) : NULL);
+  }
 
   template<typename T, bool EXC, bool INIT_NULL>
   class managed<T, false, EXC, INIT_NULL> :
@@ -268,6 +279,8 @@ namespace cfo { namespace intern
       return this->get();
     }
 
+    inline managed<T, false, EXC, false> copy() const;
+
     inline except except_() const
     {
       return except(*this);
@@ -284,6 +297,15 @@ namespace cfo { namespace intern
       return this->get();
     }
   };
+
+  template<typename T, bool EXC, bool INIT_NULL>
+  inline
+  managed<T, false, EXC, false> managed<T, false, EXC, INIT_NULL>::copy()
+    const
+  {
+    return managed<T, false, EXC, false>
+      (this->get() ? new managed_type(*this->get()) : NULL);
+  }
 } }
 
 #endif

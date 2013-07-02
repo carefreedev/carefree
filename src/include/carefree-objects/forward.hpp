@@ -108,6 +108,11 @@ namespace cfo { namespace intern
       return **this;
     }
 
+    inline managed<T, true, EXC> copy() const
+    {
+      return this->const_manager().copy();
+    }
+
     inline operator const manager_type&() const
     {
       return **this;
@@ -185,6 +190,11 @@ namespace cfo { namespace intern
     inline manager_type& manager()
     {
       return **this;
+    }
+
+    inline managed<T, false, EXC> copy() const
+    {
+      return this->const_manager().copy();
     }
 
     inline operator const manager_type&() const
