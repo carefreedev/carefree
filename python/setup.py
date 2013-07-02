@@ -26,6 +26,7 @@ setup(
     'cfo',
     'cfo.jinja',
     'cfo.jinja.macros',
+    'cfo.pkg',
     ],
   package_data={
     'cfo.jinja.macros': [
