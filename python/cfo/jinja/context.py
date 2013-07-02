@@ -27,10 +27,20 @@ import platform
 
 ARCH_BITS = int(platform.architecture()[0].split('bit')[0])
 
-INT_TYPES = ['std::int%i_t' % size for size in 8, 16, 32, 64]
-if ARCH_BITS == 32:
-  INT_TYPES.append('long')
+## INT_TYPES = ['std::int%i_t' % size for size in 8, 16, 32, 64]
+## if ARCH_BITS == 32:
+##   INT_TYPES.append('long')
 
-UINT_TYPES = ['std::uint%i_t' % size for size in 8, 16, 32, 64]
-if ARCH_BITS == 32:
-  UINT_TYPES.append('unsigned long')
+## UINT_TYPES = ['std::uint%i_t' % size for size in 8, 16, 32, 64]
+## if ARCH_BITS == 32:
+##   UINT_TYPES.append('unsigned long')
+
+INT_TYPES = [
+  'char',
+  'short',
+  'int',
+  'long',
+  'long long',
+  ]
+
+UINT_TYPES = ['unsigned ' + typename for typename in INT_TYPES]
