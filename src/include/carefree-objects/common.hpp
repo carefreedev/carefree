@@ -30,30 +30,42 @@
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/shared_mutex.hpp>
 
+namespace cfo
+{
+  template<typename T>
+  struct copy
+  {
+    inline T* operator()(const T& obj) const
+    {
+      return new T(obj);
+    }
+  };
+}
+
 namespace cfo { namespace intern
 {
   class count_and_lock;
 
-  template<typename T, bool EXC = false>
+  template<typename T, bool EXC = false, typename COPY = cfo::copy<T> >
   class const_accessor;
 
-  template<typename T, bool EXC = false>
+  template<typename T, bool EXC = false, typename COPY = cfo::copy<T> >
   class accessor;
 
-  template<typename T, bool SYNC = true, bool EXC = false>
+  template<typename T, bool SYNC = true, bool EXC = false, typename COPY = cfo::copy<T> >
   class const_methods;
 
-  template<typename T, bool SYNC = true, bool EXC = false>
+  template<typename T, bool SYNC = true, bool EXC = false, typename COPY = cfo::copy<T> >
   class methods;
 
   class basic_manager;
 
   template
-  <typename T, bool SYNC = true, bool EXC = false, bool INIT_NULL = false>
+  <typename T, bool SYNC = true, bool EXC = false, bool INIT_NULL = false, typename COPY = cfo::copy<T> >
   class managed;
 
   template
-  <typename T, bool SYNC = true, bool EXC = false, bool INIT_NULL = false>
+  <typename T, bool SYNC = true, bool EXC = false, bool INIT_NULL = false, typename COPY = cfo::copy<T> >
   class forward;
 } }
 

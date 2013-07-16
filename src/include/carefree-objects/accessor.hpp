@@ -32,23 +32,23 @@
 
 namespace cfo { namespace intern
 {
-  template<typename T, bool EXC>
+  template<typename T, bool EXC, typename COPY>
   class accessor :
-    public T::template cfo_managed_const_methods<T, true, EXC>
+    public T::template cfo_managed_const_methods<T, true, EXC, COPY>
   {
   private:
     accessor(accessor<T, EXC> &);
 
   public:
-    inline accessor(const managed<T, true, EXC, false> &manager) :
-      T::template cfo_managed_const_methods<T, true, EXC>
+    inline accessor(const managed<T, true, EXC, false, COPY> &manager) :
+      T::template cfo_managed_const_methods<T, true, EXC, COPY>
       (manager, false)
     {}
 
     inline accessor(accessor<T, EXC> &&access) :
-      T::template cfo_managed_const_methods<T, true, EXC>
+      T::template cfo_managed_const_methods<T, true, EXC, COPY>
       (static_cast
-       <typename T::template cfo_managed_const_methods<T, true, EXC>&&>
+       <typename T::template cfo_managed_const_methods<T, true, EXC, COPY>&&>
        (access))
     {}
 

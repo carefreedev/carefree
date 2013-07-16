@@ -93,8 +93,8 @@ namespace cfo { namespace intern
 
   public:
     template
-    <typename T, bool SYNC, bool EXC = false,
-     typename MGR = managed<T, SYNC, EXC>
+    <typename T, bool SYNC, bool EXC = false, typename COPY = cfo::copy<T>,
+     typename MGR = managed<T, SYNC, EXC, false, COPY>
      >
     class vector;
 

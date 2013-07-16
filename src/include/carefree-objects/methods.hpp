@@ -27,35 +27,35 @@
 
 namespace cfo { namespace intern
 {
-  template<typename T, bool EXC>
-  class methods<T, true, EXC> : public accessor<T, EXC>
+  template<typename T, bool EXC, typename COPY>
+  class methods<T, true, EXC, COPY> : public accessor<T, EXC, COPY>
   {
   private:
-    methods(const methods<T, true, EXC>&);
+    methods(const methods<T, true, EXC, COPY>&);
 
   protected:
     template<bool SYNC_switch>
-    using cfo_sync = methods<T, SYNC_switch, EXC>;
+    using cfo_sync = methods<T, SYNC_switch, EXC, COPY>;
 
   public:
-    inline methods(const managed<T, true, EXC, false> &manager) :
-      accessor<T, EXC>(manager)
+    inline methods(const managed<T, true, EXC, false, COPY> &manager) :
+      accessor<T, EXC, COPY>(manager)
     {}
 
-    inline methods(methods<T, true, EXC> &&methods) :
-      accessor<T, EXC>(static_cast<accessor<T, EXC>&&>(methods))
+    inline methods(methods<T, true, EXC, COPY> &&methods) :
+      accessor<T, EXC, COPY>(static_cast<accessor<T, EXC, COPY>&&>(methods))
     {}
   };
 
-  template<typename T, bool EXC>
-  class methods<T, false, EXC> : public const_methods<T, false, EXC>
+  template<typename T, bool EXC, typename COPY>
+  class methods<T, false, EXC, COPY> : public const_methods<T, false, EXC, COPY>
   {
   private:
-    typedef const_methods<T, false, EXC> basic_type;
+    typedef const_methods<T, false, EXC, COPY> basic_type;
 
   protected:
     template<bool SYNC_switch>
-    using cfo_sync = methods<T, SYNC_switch, EXC>;
+    using cfo_sync = methods<T, SYNC_switch, EXC, COPY>;
 
     inline methods(T *obj) :
       basic_type(obj)
@@ -65,7 +65,7 @@ namespace cfo { namespace intern
       basic_type(manager)
     {}
 
-    inline methods(const methods<T, false, EXC> &methods) :
+    inline methods(const methods<T, false, EXC, COPY> &methods) :
       basic_type(methods)
     {}
 
@@ -85,31 +85,42 @@ namespace cfo { namespace intern
 } }
 
 #define cfo_MANAGED_BASIC_METHODS(TYPE, METHODS)                        \
-  template<typename cfo_T, bool cfo_SYNC, bool cfo_EXC>                              \
+  template                                                              \
+  <typename cfo_T, bool cfo_SYNC, bool cfo_EXC, typename cfo_COPY>      \
   class cfo_managed_methods :                                           \
     public TYPE::template cfo_managed_const_methods                     \
-  <cfo_T, cfo_SYNC, cfo_EXC, cfo::intern::methods<cfo_T, cfo_SYNC, cfo_EXC> >   \
+  <cfo_T, cfo_SYNC, cfo_EXC, cfo_COPY,                                  \
+   cfo::intern::methods<cfo_T, cfo_SYNC, cfo_EXC, cfo_COPY>             \
+   >                                                                    \
   {                                                                     \
-    template<typename cfo_T_other, bool cfo_SYNC_other, bool cfo_EXC_other>                \
+    template                                                            \
+      <typename cfo_T_other, bool cfo_SYNC_other, bool cfo_EXC_other,   \
+       typename cfo_COPY_                                               \
+       >                                                                \
       friend class cfo_managed_methods;                                 \
                                                                         \
   private:                                                              \
     template<bool cfo_SYNC_basic = cfo_SYNC>                            \
       using cfo_basic_type                                              \
       = typename TYPE::template cfo_managed_const_methods               \
-      <cfo_T, cfo_SYNC_basic, cfo_EXC,                                  \
-       cfo::intern::methods<cfo_T, cfo_SYNC_basic, cfo_EXC> >;                  \
+      <cfo_T, cfo_SYNC_basic, cfo_EXC, cfo_COPY,                        \
+       cfo::intern::methods                                             \
+       <cfo_T, cfo_SYNC_basic, cfo_EXC, cfo_COPY> >;                    \
                                                                         \
     typedef                                                             \
       typename TYPE::template cfo_managed_const_methods                 \
-      <cfo_T, cfo_SYNC, cfo_EXC, cfo::intern::methods<cfo_T, cfo_SYNC, cfo_EXC> > \
+      <cfo_T, cfo_SYNC, cfo_EXC, cfo_COPY,                              \
+      cfo::intern::methods<cfo_T, cfo_SYNC, cfo_EXC, cfo_COPY>          \
+      >                                                                 \
       const_methods;                                                    \
                                                                         \
-    cfo_managed_methods(const cfo_managed_methods<cfo_T, true, cfo_EXC>&);      \
+    cfo_managed_methods                                                 \
+      (const cfo_managed_methods<cfo_T, true, cfo_EXC, cfo_COPY>&);     \
                                                                         \
   protected:                                                            \
     template<bool cfo_SYNC_switch>                                      \
-      using cfo_sync = cfo_managed_methods<cfo_T, cfo_SYNC_switch, cfo_EXC>;    \
+      using cfo_sync = cfo_managed_methods                              \
+      <cfo_T, cfo_SYNC_switch, cfo_EXC, cfo_COPY>;                      \
                                                                         \
     inline cfo_managed_methods(cfo_T *obj) :                            \
       cfo_basic_type<false>(obj)                                        \
@@ -120,20 +131,23 @@ namespace cfo { namespace intern
     {}                                                                  \
                                                                         \
     inline cfo_managed_methods                                          \
-      (const cfo_managed_methods<cfo_T, false, cfo_EXC> &methods) :             \
+      (const cfo_managed_methods<cfo_T, false, cfo_EXC, cfo_COPY>       \
+       &methods) :                                                      \
                                                                         \
       cfo_basic_type<false>(methods)                                    \
     {}                                                                  \
                                                                         \
   public:                                                               \
     inline cfo_managed_methods                                          \
-      (const cfo::intern::managed<cfo_T, true, cfo_EXC, false> &manager) : \
+      (const cfo::intern::managed                                       \
+       <cfo_T, true, cfo_EXC, false, cfo_COPY>                          \
+       &manager) :                                                      \
                                                                         \
       cfo_basic_type<true>(manager)                                     \
     {}                                                                  \
                                                                         \
     inline cfo_managed_methods                                          \
-      (cfo_managed_methods<cfo_T, true, cfo_EXC> &&methods) :                   \
+      (cfo_managed_methods<cfo_T, true, cfo_EXC, cfo_COPY> &&methods) : \
                                                                         \
       cfo_basic_type<true>                                              \
       (static_cast<cfo_basic_type<true>&&>(methods))                    \
@@ -142,9 +156,10 @@ namespace cfo { namespace intern
     template<typename cfo_M>                                            \
     inline                                                              \
     typename cfo_M::managed_type                                        \
-      ::template cfo_managed_methods<cfo_T, cfo_SYNC, cfo_EXC>                  \
-    &                                                                   \
-    cast()                                                              \
+      ::template cfo_managed_methods                                    \
+      <cfo_T, cfo_SYNC, cfo_EXC, cfo_COPY>                              \
+      &                                                                 \
+      cast()                                                            \
     {                                                                   \
       return *this;                                                     \
     }                                                                   \
@@ -153,8 +168,9 @@ namespace cfo { namespace intern
     inline                                                              \
     const                                                               \
     typename cfo_M::managed_type                                        \
-      ::template cfo_managed_methods<cfo_T, cfo_SYNC, cfo_EXC>                  \
-    &                                                                   \
+      ::template cfo_managed_methods                                    \
+      <cfo_T, cfo_SYNC, cfo_EXC, cfo_COPY>                              \
+      &                                                                 \
     cast()                                                              \
       const                                                             \
     {                                                                   \
@@ -176,39 +192,48 @@ namespace cfo { namespace intern
     METHODS                                                             \
   };                                                                    \
                                                                         \
-  template<typename cfo_T, bool cfo_SYNC, bool cfo_EXC>                              \
+  template                                                              \
+  <typename cfo_T, bool cfo_SYNC, bool cfo_EXC, typename cfo_COPY>      \
   friend class TYPE::cfo_managed_methods;                               \
 
 #define cfo_MANAGED_METHODS(TYPE, BASE, METHODS)                        \
-  template<typename cfo_T, bool cfo_SYNC, bool cfo_EXC>                              \
+  template                                                              \
+  <typename cfo_T, bool cfo_SYNC, bool cfo_EXC, typename cfo_COPY>      \
   class cfo_managed_methods :                                           \
     public TYPE::template cfo_managed_const_methods                     \
-  <cfo_T, cfo_SYNC, cfo_EXC,                                            \
-   typename BASE::template cfo_managed_methods<cfo_T, cfo_SYNC, cfo_EXC> >      \
+  <cfo_T, cfo_SYNC, cfo_EXC, cfo_COPY,                                  \
+   typename BASE::template cfo_managed_methods                          \
+   <cfo_T, cfo_SYNC, cfo_EXC, cfo_COPY> >                               \
   {                                                                     \
-    template<typename cfo_T_other, bool cfo_SYNC_other, bool cfo_EXC_other>                \
+    template                                                            \
+      <typename cfo_T_other, bool cfo_SYNC_other, bool cfo_EXC_other,   \
+       typename cfo_COPY_                                               \
+       >                                                                \
       friend class cfo_managed_methods;                                 \
                                                                         \
   private:                                                              \
     template<bool cfo_SYNC_basic = cfo_SYNC>                            \
       using cfo_basic_type                                              \
       = typename TYPE::template cfo_managed_const_methods               \
-      <cfo_T, cfo_SYNC_basic, cfo_EXC,                                  \
+      <cfo_T, cfo_SYNC_basic, cfo_EXC, cfo_COPY,                        \
        typename BASE::template cfo_managed_methods                      \
-      <cfo_T, cfo_SYNC_basic, cfo_EXC> >;                                       \
+       <cfo_T, cfo_SYNC_basic, cfo_EXC, cfo_COPY> >;                    \
                                                                         \
     typedef                                                             \
       typename TYPE::template cfo_managed_const_methods                 \
-      <cfo_T, cfo_SYNC, cfo_EXC,                                        \
-      typename BASE::template cfo_managed_methods<cfo_T, cfo_SYNC, cfo_EXC>     \
+      <cfo_T, cfo_SYNC, cfo_EXC, cfo_COPY,                              \
+       typename BASE::template cfo_managed_methods                      \
+       <cfo_T, cfo_SYNC, cfo_EXC, cfo_COPY>                             \
        >                                                                \
-      const_methods;                                                    \
+    const_methods;                                                      \
                                                                         \
-    cfo_managed_methods(const cfo_managed_methods<cfo_T, true, cfo_EXC>&);      \
+    cfo_managed_methods                                                 \
+      (const cfo_managed_methods<cfo_T, true, cfo_EXC, cfo_COPY>&);     \
                                                                         \
   protected:                                                            \
     template<bool cfo_SYNC_switch>                                      \
-      using cfo_sync = cfo_managed_methods<cfo_T, cfo_SYNC_switch, cfo_EXC>;    \
+      using cfo_sync = cfo_managed_methods                              \
+      <cfo_T, cfo_SYNC_switch, cfo_EXC, cfo_COPY>;                      \
                                                                         \
     inline cfo_managed_methods(cfo_T *obj) :                            \
       cfo_basic_type<false>(obj)                                        \
@@ -219,20 +244,23 @@ namespace cfo { namespace intern
     {}                                                                  \
                                                                         \
     inline cfo_managed_methods                                          \
-      (const cfo_managed_methods<cfo_T, false, cfo_EXC> &methods) :             \
+      (const cfo_managed_methods<cfo_T, false, cfo_EXC, cfo_COPY>       \
+       &methods) :                                                      \
                                                                         \
       cfo_basic_type<false>(methods)                                    \
     {}                                                                  \
                                                                         \
   public:                                                               \
     inline cfo_managed_methods                                          \
-      (const cfo::intern::managed<cfo_T, true, cfo_EXC, false> &manager) : \
+      (const cfo::intern::managed                                       \
+       <cfo_T, true, cfo_EXC, false, cfo_COPY>                          \
+       &manager) :                                                      \
                                                                         \
       cfo_basic_type<true>(manager)                                     \
     {}                                                                  \
                                                                         \
     inline cfo_managed_methods                                          \
-      (cfo_managed_methods<cfo_T, true, cfo_EXC> &&methods) :                   \
+      (cfo_managed_methods<cfo_T, true, cfo_EXC, cfo_COPY> &&methods) : \
                                                                         \
       cfo_basic_type<true>                                              \
       (static_cast<cfo_basic_type<true>&&>(methods))                    \
@@ -241,7 +269,8 @@ namespace cfo { namespace intern
     template<typename cfo_M>                                            \
     inline                                                              \
     typename cfo_M::managed_type                                        \
-      ::template cfo_managed_methods<cfo_T, cfo_SYNC, cfo_EXC>                  \
+    ::template cfo_managed_methods                                      \
+    <cfo_T, cfo_SYNC, cfo_EXC, cfo_COPY>                                \
     &                                                                   \
     cast()                                                              \
     {                                                                   \
@@ -252,8 +281,9 @@ namespace cfo { namespace intern
     inline                                                              \
     const                                                               \
     typename cfo_M::managed_type                                        \
-      ::template cfo_managed_methods<cfo_T, cfo_SYNC, cfo_EXC>                  \
-    &                                                                   \
+      ::template cfo_managed_methods                                    \
+      <cfo_T, cfo_SYNC, cfo_EXC, cfo_COPY>                              \
+      &                                                                 \
     cast()                                                              \
       const                                                             \
     {                                                                   \
@@ -275,7 +305,8 @@ namespace cfo { namespace intern
     METHODS                                                             \
   };                                                                    \
                                                                         \
-  template<typename cfo_T, bool cfo_SYNC, bool cfo_EXC>                              \
+  template                                                              \
+  <typename cfo_T, bool cfo_SYNC, bool cfo_EXC, typename cfo_COPY>      \
   friend class TYPE::cfo_managed_methods;                               \
 
 #endif
