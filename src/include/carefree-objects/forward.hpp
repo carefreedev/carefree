@@ -30,10 +30,10 @@ namespace cfo { namespace intern
 {
   template<typename T, bool EXC, bool INIT_NULL, typename COPY>
   class forward<T, true, EXC, INIT_NULL, COPY> :
-    private std::unique_ptr<managed<T, true, EXC, INIT_NULL> >
+    private std::unique_ptr<managed<T, true, EXC, INIT_NULL, COPY> >
   {
   private:
-    typedef managed<T, true, EXC, INIT_NULL> manager_type;
+    typedef managed<T, true, EXC, INIT_NULL, COPY> manager_type;
     typedef std::unique_ptr<manager_type> basic_type;
 
   protected:
@@ -65,9 +65,9 @@ namespace cfo { namespace intern
     {}
 
     template
-    <typename T_other, bool EXC_other, bool INIT_NULL_other>
+    <typename T_other, bool EXC_other, bool INIT_NULL_other, typename COPY_>
     inline forward
-    (const managed<T_other, true, EXC_other, INIT_NULL_other>
+    (const managed<T_other, true, EXC_other, INIT_NULL_other, COPY_>
      &other_manager) :
 
       basic_type(new manager_type(other_manager))
@@ -108,7 +108,7 @@ namespace cfo { namespace intern
       return **this;
     }
 
-    inline managed<T, true, EXC> copy() const
+    inline manager_type copy() const
     {
       return this->const_manager().copy();
     }
@@ -192,7 +192,7 @@ namespace cfo { namespace intern
       return **this;
     }
 
-    inline managed<T, false, EXC> copy() const
+    inline manager_type copy() const
     {
       return this->const_manager().copy();
     }
