@@ -46,26 +46,26 @@ namespace cfo { namespace intern
 {
   class count_and_lock;
 
-  template<typename T, bool EXC = false, typename COPY = cfo::copy<T> >
+  template<typename T, bool EXC = false, typename INIT_T = T, typename COPY = cfo::copy<T> >
   class const_accessor;
 
-  template<typename T, bool EXC = false, typename COPY = cfo::copy<T> >
+  template<typename T, bool EXC = false, typename INIT_T = T, typename COPY = cfo::copy<T> >
   class accessor;
 
-  template<typename T, bool SYNC = true, bool EXC = false, typename COPY = cfo::copy<T> >
+  template<typename T, bool SYNC = true, bool EXC = false, typename INIT_T = T, typename COPY = cfo::copy<T> >
   class const_methods;
 
-  template<typename T, bool SYNC = true, bool EXC = false, typename COPY = cfo::copy<T> >
+  template<typename T, bool SYNC = true, bool EXC = false, typename INIT_T = T, typename COPY = cfo::copy<T> >
   class methods;
 
   class basic_manager;
 
   template
-  <typename T, bool SYNC = true, bool EXC = false, bool INIT_NULL = false, typename COPY = cfo::copy<T> >
+  <typename T, bool SYNC = true, bool EXC = false, typename INIT_T = T, bool INIT_NULL = false, typename COPY = cfo::copy<T> >
   class managed;
 
   template
-  <typename T, bool SYNC = true, bool EXC = false, bool INIT_NULL = false, typename COPY = cfo::copy<T> >
+  <typename T, bool SYNC = true, bool EXC = false, typename INIT_T = T, bool INIT_NULL = false, typename COPY = cfo::copy<T> >
   class forward;
 } }
 

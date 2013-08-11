@@ -29,16 +29,21 @@
 
 namespace cfo { namespace intern
 {
-  template<typename T, bool SYNC, bool EXC, typename COPY, typename MGR>
+  template
+  <typename T, bool SYNC, bool EXC, typename INIT_T, typename COPY,
+   typename MGR
+   >
   class basic_manager::vector : private std::vector<MGR*>
   {
   private:
     typedef std::vector<MGR*> _base_vector_type;
 
   public:
-    typedef managed<T, SYNC, EXC, false, COPY> element_manager_type;
+    typedef managed<T, SYNC, EXC, INIT_T, false, COPY>
+    cfo_element_manager_type;
 
-    typedef managed<vector<T, SYNC, EXC, COPY>, SYNC, EXC> manager_type;
+    typedef managed<vector<T, SYNC, EXC, INIT_T, COPY>, SYNC, EXC>
+    cfo_manager_type;
 
     class iterator;
     class const_iterator;
@@ -59,14 +64,14 @@ namespace cfo { namespace intern
     inline const MGR& operator[](std::size_t index) const
     {
       return static_cast<MGR&>
-        (static_cast<element_manager_type&>
+        (static_cast<cfo_element_manager_type&>
          (*this->_base_vector_type::operator[](index)));
     }
 
     inline MGR& operator[](std::size_t index)
     {
       return static_cast<MGR&>
-        (static_cast<element_manager_type&>
+        (static_cast<cfo_element_manager_type&>
          (*this->_base_vector_type::operator[](index)));
     }
 
@@ -75,7 +80,7 @@ namespace cfo { namespace intern
     {
       this->_base_vector_type::push_back
         (static_cast<MGR*>
-         (static_cast<element_manager_type*>(new MGR(args...))));
+         (static_cast<cfo_element_manager_type*>(new MGR(args...))));
     }
 
     template<typename... A>
@@ -83,14 +88,14 @@ namespace cfo { namespace intern
     {
       MGR *element_ptr =
         static_cast<MGR*>
-        (static_cast<element_manager_type*>(new MGR(args...)));
+        (static_cast<cfo_element_manager_type*>(new MGR(args...)));
 
       this->_base_vector_type::push_back(element_ptr);
       return *element_ptr;
     }
 
 #define _cfo_MANAGED_VECTOR_TEMPLATE_ARGS       \
-    T, SYNC, EXC, COPY, MGR                     \
+    T, SYNC, EXC, INIT_T, COPY, MGR             \
 
     cfo_MANAGED_BASIC_CONST_METHODS
     (vector<_cfo_MANAGED_VECTOR_TEMPLATE_ARGS>,
@@ -204,36 +209,44 @@ namespace cfo { namespace intern
      )
   };
 
-  template<typename T, bool SYNC, bool EXC, typename COPY, typename MGR>
-  class basic_manager::vector<T, SYNC, EXC, COPY, MGR>::const_iterator :
-    private vector<T, SYNC, EXC, COPY, MGR>::manager_type
+  template
+  <typename T, bool SYNC, bool EXC, typename INIT_T, typename COPY,
+   typename MGR
+   >
+  class basic_manager::vector<T, SYNC, EXC, INIT_T, COPY, MGR>
+    ::const_iterator
+    :
+    private vector<T, SYNC, EXC, INIT_T, COPY, MGR>::cfo_manager_type
   {
   private:
     std::size_t _index;
 
   public:
-    typedef vector<T, SYNC, EXC, COPY, MGR>::manager_type vector_manager_type;
+    typedef vector<T, SYNC, EXC, INIT_T, COPY, MGR>::cfo_manager_type
+    cfo_vector_manager_type;
 
     inline const_iterator
-    (const vector_manager_type &vector, const std::size_t index = 0u) :
-
-      vector_manager_type(vector),
+    (const cfo_vector_manager_type &vector, const std::size_t index = 0u
+     ) :
+      cfo_vector_manager_type(vector),
       _index(index)
     {}
 
     inline const_iterator(const const_iterator &other) :
-      vector_manager_type(other.const_manager()),
+      cfo_vector_manager_type(other.const_manager()),
       _index(other._index)
     {}
 
     inline const_iterator(const_iterator &&other) :
-      vector_manager_type(static_cast<vector_manager_type&&>(other)),
+      cfo_vector_manager_type
+      (static_cast<cfo_vector_manager_type&&>(other)
+       ),
       _index(other._index)
     {}
 
     inline const MGR& operator*()
     {
-      return this->vector_manager_type::operator[](this->_index);
+      return this->cfo_vector_manager_type::operator[](this->_index);
     }
 
     inline std::size_t index()
@@ -261,87 +274,122 @@ namespace cfo { namespace intern
   };
 
 
-  template<typename T, bool SYNC, bool EXC, typename COPY, typename MGR>
-  template<typename cfo_T, bool cfo_SYNC, bool cfo_EXC, typename cfo_COPY, typename cfo_BASE>
-  inline
-  typename basic_manager::vector<T, SYNC, EXC, COPY, MGR>::const_iterator
-  basic_manager::vector<T, SYNC, EXC, COPY, MGR>
-  ::_cfo_managed_const_methods<cfo_T, cfo_SYNC, cfo_EXC, cfo_COPY, cfo_BASE>
-  ::cbegin
+  template
+  <typename T, bool SYNC, bool EXC, typename INIT_T, typename COPY,
+   typename MGR
+   >
+  template
+  <typename cfo_T, bool cfo_SYNC, bool cfo_EXC,
+   typename cfo_INIT_T, typename cfo_COPY,
+   typename cfo_BASE
+   >
+  inline typename basic_manager::vector<T, SYNC, EXC, INIT_T, COPY, MGR>
+    ::const_iterator
+  basic_manager::vector<T, SYNC, EXC, INIT_T, COPY, MGR>
+    ::_cfo_managed_const_methods
+    <cfo_T, cfo_SYNC, cfo_EXC, cfo_INIT_T, cfo_COPY, cfo_BASE>
+    ::cbegin
   ()
-    const
-  {
+  const {
     return const_iterator(this->const_manager());
   }
 
-  template<typename T, bool SYNC, bool EXC, typename COPY, typename MGR>
-  template<typename cfo_T, bool cfo_SYNC, bool cfo_EXC, typename cfo_COPY, typename cfo_BASE>
-  inline
-  typename basic_manager::vector<T, SYNC, EXC, COPY, MGR>::const_iterator
-  basic_manager::vector<T, SYNC, EXC, COPY, MGR>
-  ::_cfo_managed_const_methods<cfo_T, cfo_SYNC, cfo_EXC, cfo_COPY, cfo_BASE>
-  ::cend
+  template
+  <typename T, bool SYNC, bool EXC, typename INIT_T, typename COPY,
+   typename MGR
+   >
+  template
+  <typename cfo_T, bool cfo_SYNC, bool cfo_EXC,
+   typename cfo_INIT_T, typename cfo_COPY,
+   typename cfo_BASE
+   >
+  inline typename basic_manager::vector<T, SYNC, EXC, INIT_T, COPY, MGR>
+    ::const_iterator
+  basic_manager::vector<T, SYNC, EXC, INIT_T, COPY, MGR>
+    ::_cfo_managed_const_methods
+    <cfo_T, cfo_SYNC, cfo_EXC, cfo_INIT_T, cfo_COPY, cfo_BASE>
+    ::cend
   ()
-    const
-  {
+  const {
     return const_iterator(this->const_manager(), this->size());
   }
-  template<typename T, bool SYNC, bool EXC, typename COPY, typename MGR>
-  template<typename cfo_T, bool cfo_SYNC, bool cfo_EXC, typename cfo_COPY, typename cfo_BASE>
-  inline
-  typename basic_manager::vector<T, SYNC, EXC, COPY, MGR>::const_iterator
-  basic_manager::vector<T, SYNC, EXC, COPY, MGR>
-  ::_cfo_managed_const_methods<cfo_T, cfo_SYNC, cfo_EXC, cfo_COPY, cfo_BASE>
-  ::begin
+
+  template
+  <typename T, bool SYNC, bool EXC, typename INIT_T, typename COPY,
+   typename MGR
+   >
+  template
+  <typename cfo_T, bool cfo_SYNC, bool cfo_EXC,
+   typename cfo_INIT_T, typename cfo_COPY,
+   typename cfo_BASE
+   >
+  inline typename basic_manager::vector<T, SYNC, EXC, INIT_T, COPY, MGR>
+    ::const_iterator
+  basic_manager::vector<T, SYNC, EXC, INIT_T, COPY, MGR>
+    ::_cfo_managed_const_methods
+    <cfo_T, cfo_SYNC, cfo_EXC, cfo_INIT_T, cfo_COPY, cfo_BASE>
+    ::begin
   ()
-    const
-  {
+  const {
     return const_iterator(this->const_manager());
   }
 
-  template<typename T, bool SYNC, bool EXC, typename COPY, typename MGR>
-  template<typename cfo_T, bool cfo_SYNC, bool cfo_EXC, typename cfo_COPY, typename cfo_BASE>
-  inline
-  typename basic_manager::vector<T, SYNC, EXC, COPY, MGR>::const_iterator
-  basic_manager::vector<T, SYNC, EXC, COPY, MGR>
-  ::_cfo_managed_const_methods<cfo_T, cfo_SYNC, cfo_EXC, cfo_COPY, cfo_BASE>
-  ::end
+  template
+  <typename T, bool SYNC, bool EXC, typename INIT_T, typename COPY,
+   typename MGR
+   >
+  template
+  <typename cfo_T, bool cfo_SYNC, bool cfo_EXC,
+   typename cfo_INIT_T, typename cfo_COPY,
+   typename cfo_BASE
+   >
+  inline typename basic_manager::vector<T, SYNC, EXC, INIT_T, COPY, MGR>
+    ::const_iterator
+  basic_manager::vector<T, SYNC, EXC, INIT_T, COPY, MGR>
+    ::_cfo_managed_const_methods
+    <cfo_T, cfo_SYNC, cfo_EXC, cfo_INIT_T, cfo_COPY, cfo_BASE>
+    ::end
   ()
-    const
-  {
+  const {
     return const_iterator(this->const_manager(), this->size());
   }
 
-  template<typename T, bool SYNC, bool EXC, typename COPY, typename MGR>
-  class basic_manager::vector<T, SYNC, EXC, COPY, MGR>::iterator :
-    private vector<T, SYNC, EXC, COPY, MGR>::manager_type
+  template
+  <typename T, bool SYNC, bool EXC, typename INIT_T, typename COPY,
+   typename MGR
+   >
+  class basic_manager::vector<T, SYNC, EXC, INIT_T, COPY, MGR>::iterator :
+    private vector<T, SYNC, EXC, INIT_T, COPY, MGR>::cfo_manager_type
   {
   private:
     std::size_t _index;
 
   public:
-    typedef vector<T, SYNC, EXC, COPY, MGR>::manager_type vector_manager_type;
+    typedef vector<T, SYNC, EXC, INIT_T, COPY, MGR>::cfo_manager_type
+      cfo_vector_manager_type;
 
     inline iterator
-    (const vector_manager_type &vector, const std::size_t index = 0u) :
-
-      vector_manager_type(vector),
+    (const cfo_vector_manager_type &vector, const std::size_t index = 0u
+     ) :
+      cfo_vector_manager_type(vector),
       _index(index)
     {}
 
     inline iterator(const iterator &other) :
-      vector_manager_type(other.const_manager()),
+      cfo_vector_manager_type(other.const_manager()),
       _index(other._index)
     {}
 
     inline iterator(iterator &&other) :
-      vector_manager_type(static_cast<vector_manager_type&&>(other)),
+      cfo_vector_manager_type
+      (static_cast<cfo_vector_manager_type&&>(other)
+       ),
       _index(other._index)
     {}
 
     inline MGR& operator*()
     {
-      return this->vector_manager_type::operator[](this->_index);
+      return this->cfo_vector_manager_type::operator[](this->_index);
     }
 
     inline std::size_t index()
@@ -368,51 +416,73 @@ namespace cfo { namespace intern
     }
   };
 
-  template<typename T, bool SYNC, bool EXC, typename COPY, typename MGR>
-  template<typename cfo_T, bool cfo_SYNC, bool cfo_EXC, typename cfo_COPY>
-  inline
-  typename basic_manager::vector<T, SYNC, EXC, COPY, MGR>::const_iterator
-  basic_manager::vector<T, SYNC, EXC, COPY, MGR>
-  ::cfo_managed_methods<cfo_T, cfo_SYNC, cfo_EXC, cfo_COPY>
-  ::begin
+  template
+  <typename T, bool SYNC, bool EXC, typename INIT_T, typename COPY,
+   typename MGR
+   >
+  template
+  <typename cfo_T, bool cfo_SYNC, bool cfo_EXC,
+   typename cfo_INIT_T, typename cfo_COPY
+   >
+  inline typename basic_manager::vector<T, SYNC, EXC, INIT_T, COPY, MGR>
+    ::const_iterator
+  basic_manager::vector<T, SYNC, EXC, INIT_T, COPY, MGR>
+    ::cfo_managed_methods<cfo_T, cfo_SYNC, cfo_EXC, cfo_INIT_T, cfo_COPY>
+    ::begin
   ()
-    const
-  {
+  const {
     return const_iterator(this->const_manager());
   }
 
-  template<typename T, bool SYNC, bool EXC, typename COPY, typename MGR>
-  template<typename cfo_T, bool cfo_SYNC, bool cfo_EXC, typename cfo_COPY>
-  inline
-  typename basic_manager::vector<T, SYNC, EXC, COPY, MGR>::const_iterator
-  basic_manager::vector<T, SYNC, EXC, COPY, MGR>
-  ::cfo_managed_methods<cfo_T, cfo_SYNC, cfo_EXC, cfo_COPY>
-  ::end
+  template
+  <typename T, bool SYNC, bool EXC, typename INIT_T, typename COPY,
+   typename MGR
+   >
+  template
+  <typename cfo_T, bool cfo_SYNC, bool cfo_EXC,
+   typename cfo_INIT_T, typename cfo_COPY
+   >
+  inline typename basic_manager::vector<T, SYNC, EXC, INIT_T, COPY, MGR>
+    ::const_iterator
+  basic_manager::vector<T, SYNC, EXC, INIT_T, COPY, MGR>
+    ::cfo_managed_methods<cfo_T, cfo_SYNC, cfo_EXC, cfo_INIT_T, cfo_COPY>
+    ::end
   ()
-    const
-  {
+  const {
     return const_iterator(this->const_manager(), this->size());
   }
 
-  template<typename T, bool SYNC, bool EXC, typename COPY, typename MGR>
-  template<typename cfo_T, bool cfo_SYNC, bool cfo_EXC, typename cfo_COPY>
-  inline
-  typename basic_manager::vector<T, SYNC, EXC, COPY, MGR>::iterator
-  basic_manager::vector<T, SYNC, EXC, COPY, MGR>
-  ::cfo_managed_methods<cfo_T, cfo_SYNC, cfo_EXC, cfo_COPY>
-  ::begin
+  template
+  <typename T, bool SYNC, bool EXC, typename INIT_T, typename COPY,
+   typename MGR
+   >
+  template
+  <typename cfo_T, bool cfo_SYNC, bool cfo_EXC,
+   typename cfo_INIT_T, typename cfo_COPY
+   >
+  inline typename basic_manager::vector<T, SYNC, EXC, INIT_T, COPY, MGR>
+    ::iterator
+  basic_manager::vector<T, SYNC, EXC, INIT_T, COPY, MGR>
+    ::cfo_managed_methods<cfo_T, cfo_SYNC, cfo_EXC, cfo_INIT_T, cfo_COPY>
+    ::begin
   ()
   {
     return iterator(this->const_manager());
   }
 
-  template<typename T, bool SYNC, bool EXC, typename COPY, typename MGR>
-  template<typename cfo_T, bool cfo_SYNC, bool cfo_EXC, typename cfo_COPY>
-  inline
-  typename basic_manager::vector<T, SYNC, EXC, COPY, MGR>::iterator
-  basic_manager::vector<T, SYNC, EXC, COPY, MGR>
-  ::cfo_managed_methods<cfo_T, cfo_SYNC, cfo_EXC, cfo_COPY>
-  ::end
+  template
+  <typename T, bool SYNC, bool EXC, typename INIT_T, typename COPY,
+   typename MGR
+   >
+  template
+  <typename cfo_T, bool cfo_SYNC, bool cfo_EXC,
+   typename cfo_INIT_T, typename cfo_COPY
+   >
+  inline typename basic_manager::vector<T, SYNC, EXC, INIT_T, COPY, MGR>
+    ::iterator
+  basic_manager::vector<T, SYNC, EXC, INIT_T, COPY, MGR>
+    ::cfo_managed_methods<cfo_T, cfo_SYNC, cfo_EXC, cfo_INIT_T, cfo_COPY>
+    ::end
   ()
   {
     return iterator(this->const_manager(), this->size());

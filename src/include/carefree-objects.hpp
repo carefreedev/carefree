@@ -26,15 +26,25 @@
 
 namespace cfo
 {
-  template<typename T, bool SYNC = true, bool EXC = false, typename COPY = copy<T> >
-  using managed = intern::managed<T, SYNC, EXC, false, COPY>;
+  template
+  <typename T, bool SYNC = true, bool EXC = false,
+   typename INIT_T = T, typename COPY = copy<T>
+   >
+  using managed = intern::managed<T, SYNC, EXC, INIT_T, false, COPY>;
 
-  template<typename T, bool SYNC = true, bool EXC = false, typename COPY = copy<T> >
-  using managed_forward = intern::forward<T, SYNC, EXC, false, COPY>;
+  template
+  <typename T, bool SYNC = true, bool EXC = false,
+   typename INIT_T = T, typename COPY = copy<T>
+   >
+  using managed_forward = intern::forward
+    <T, SYNC, EXC, INIT_T, false, COPY>;
 
-  template<typename T, bool SYNC = true, bool EXC = false, typename COPY = copy<T> >
+  template
+  <typename T, bool SYNC = true, bool EXC = false,
+   typename INIT_T = T, typename COPY = copy<T>
+   >
   using managed_vector = intern::managed
-    <intern::basic_manager::vector<T, SYNC, EXC, COPY>, SYNC, EXC>;
+    <intern::basic_manager::vector<T, SYNC, EXC, INIT_T, COPY>, SYNC, EXC>;
 }
 
 #define cfo_MANAGER_CONSTRUCTORS(NAME)                                \
