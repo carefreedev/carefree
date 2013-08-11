@@ -39,12 +39,17 @@ namespace cfo { namespace intern
     // typedef managed<T, SYNC> manager_type;
     typedef M manager_type;
     typedef std::map<I, manager_type*, E...> map_type;
+    typedef std::map<I, manager_type*, E...> _base_map_type;
 
     M nullmanager;
 
   public:
     inline map() :
       nullmanager(typename managed<T, SYNC>::null())
+    {}
+
+    inline map(const map<I, T, SYNC, EXC, M, E...> &/*map_*/) :
+      _base_map_type()
     {}
 
     inline ~map()
