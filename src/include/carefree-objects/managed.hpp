@@ -49,6 +49,13 @@ namespace cfo { namespace intern
     {}
 
   public:
+    typedef T cfo_unmanaged_type;
+    typedef T* cfo_unmanaged_ptr_type;
+    typedef const T* cfo_unmanaged_const_ptr_type;
+
+    typedef managed<T, true, false, false, COPY> cfo_manager_type;
+    typedef forward<T, true, false, false, COPY> cfo_forward_manager_type;
+
     typedef T managed_type;
     typedef T* managed_ptr_type;
     typedef const T* managed_const_ptr_type;
@@ -168,6 +175,13 @@ namespace cfo { namespace intern
     {}
 
   public:
+    typedef T cfo_unmanaged_type;
+    typedef T* cfo_unmanaged_ptr_type;
+    typedef const T* cfo_unmanaged_const_ptr_type;
+
+    typedef managed<T, false, false, false, COPY> cfo_manager_type;
+    typedef forward<T, false, false, false, COPY> cfo_forward_manager_type;
+
     typedef T managed_type;
     typedef T* managed_ptr_type;
     typedef const T* managed_const_ptr_type;
