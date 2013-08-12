@@ -219,7 +219,15 @@ namespace cfo { namespace intern
 
     typedef managed<T, false, true, INIT_T, false, COPY> except;
 
-    typedef managed<T, false, false, INIT_T, true, COPY> null;
+    // typedef managed<T, false, false, INIT_T, true, COPY> null;
+    class null;
+
+    template<typename INIT_T_>
+    using cfo_new_init_type = managed
+      <T, false, false, INIT_T_, false, COPY>;
+
+    template<typename INIT_T_>
+    class init;
 
     typedef managed
     <basic_manager::vector
@@ -266,6 +274,8 @@ namespace cfo { namespace intern
       (std::static_pointer_cast<T>
        (static_cast<const std::shared_ptr<T_>&>(other)))
     {}
+
+    inline managed(const null&);
 
     inline std::size_t refcount() const
     {
@@ -350,6 +360,52 @@ namespace cfo { namespace intern
       return this->get();
     }
   };
+
+  template
+  <typename T, bool EXC, typename INIT_T, bool INIT_NULL, typename COPY>
+  template<typename INIT_T_>
+  class managed<T, false, EXC, INIT_T, INIT_NULL, COPY>::init :
+    public managed<T, false, EXC, INIT_T, false, COPY>
+  {
+    using cfo_manager_type::cfo_manager_type;
+
+  public:
+    typedef init<INIT_T_> cfo_init_manager_type;
+
+  protected:
+    inline init(INIT_T_ *ptr) :
+      cfo_manager_type(static_cast<T*>(ptr))
+    {}
+
+  public:
+    inline init() :
+      cfo_manager_type(static_cast<T*>(new INIT_T_))
+    {}
+
+    template<typename... ARGS>
+    inline init(const ARGS &...args) :
+      cfo_manager_type(static_cast<T*>(new INIT_T_(args...)))
+    {}
+  };
+
+  template
+  <typename T, bool EXC, typename INIT_T, bool INIT_NULL, typename COPY>
+  class managed<T, false, EXC, INIT_T, INIT_NULL, COPY>::null :
+    public managed<T, false, EXC, INIT_T, false, COPY>
+  {
+  public:
+    inline null() :
+      cfo_manager_type(static_cast<T*>(NULL))
+    {}
+  };
+
+  template
+  <typename T, bool EXC, typename INIT_T, bool INIT_NULL, typename COPY>
+  inline managed<T, false, EXC, INIT_T, INIT_NULL, COPY>::managed
+  (const null&
+   ) :
+    managed(static_cast<T*>(NULL))
+  {}
 
   template
   <typename T, bool EXC, typename INIT_T, bool INIT_NULL, typename COPY>
