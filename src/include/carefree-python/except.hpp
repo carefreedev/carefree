@@ -40,7 +40,7 @@ namespace cfo { namespace python
       return boost::python::make_tuple(std::string(e.what()));
     }
 
-    template<args_translator_type ARGS = args>
+    template<args_translator_type ARGS = exception<BASE, CATCH>::args>
     class class_ : public boost::python::object
     {
     public:
@@ -57,8 +57,8 @@ namespace cfo { namespace python
         __base__(base_exc)
       {}
 
-      inline class_(const std::string &name, const PyObject *base_exc) :
-        class_(name, boost::python::borrowed(base_exc))
+      inline class_(const std::string &name, PyObject *base_exc) :
+        class_(name, boost::python::object(boost::python::borrowed(base_exc)))
       {}
 
       inline class_(const class_<ARGS> &exc) :
@@ -75,9 +75,10 @@ namespace cfo { namespace python
            ARGS(e).boost::python::tuple::ptr());
       }
 
-      inline void register_()
+      inline class_<ARGS>& register_()
       {
         boost::python::register_exception_translator<catch_type>(*this);
+        return *this;
       }
     };
   };
