@@ -32,12 +32,26 @@ namespace cfo
    >
   using managed = intern::managed<T, SYNC, EXC, INIT_T, false, COPY>;
 
+  template<typename T, typename COPY = copy<T> >
+  using managed_sync = intern::managed<T, true, false, T, false, COPY>;
+
+  template<typename T, typename COPY = copy<T> >
+  using managed_unsync = intern::managed<T, false, false, T, false, COPY>;
+
   template
   <typename T, bool SYNC = true, bool EXC = false,
    typename INIT_T = T, typename COPY = copy<T>
    >
   using managed_forward = intern::forward
     <T, SYNC, EXC, INIT_T, false, COPY>;
+
+  template<typename T, typename COPY = copy<T> >
+  using managed_sync_forward
+  = intern::forward<T, true, false, T, false, COPY>;
+
+  template<typename T, typename COPY = copy<T> >
+  using managed_unsync_forward
+  = intern::forward<T, false, false, T, false, COPY>;
 
   template
   <typename T, bool SYNC = true, bool EXC = false,
