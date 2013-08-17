@@ -25,6 +25,71 @@
 
 namespace cfo { namespace python
 {
+  template<typename... ARGS>
+  inline void raise(PyObject *exc, const ARGS &...args)
+  {
+    const auto tuple = boost::python::make_tuple(args...);
+    PyErr_SetObject(exc, tuple.ptr());
+    boost::python::throw_error_already_set();
+  }
+
+  template<typename... ARGS>
+  inline void raise(const boost::python::object &exc, const ARGS &...args)
+  {
+    return raise(exc.ptr(), args...);
+  }
+
+  inline boost::python::tuple exc_info()
+  {
+    PyObject *exc_type, *exc_value, *traceback;
+    PyErr_Fetch(&exc_type, &exc_value, &traceback);
+
+    const auto tuple = boost::python::make_tuple
+      (cfo::python::object(exc_type),
+       cfo::python::object(exc_value),
+       cfo::python::object(traceback));
+
+    //- Take away the initial IncRefs from PyErr_Fetch:
+    Py_DecRef(exc_type);
+    Py_DecRef(exc_value);
+    Py_DecRef(traceback);
+
+    return tuple;
+  }
+
+  inline void raise_exc
+  (PyObject *exc_type, PyObject *exc_value, PyObject *traceback)
+  {
+{% for ARG in ['exc_type', 'exc_value', 'traceback'] %}
+    if ({{ ARG }} == Py_None)
+      {{ ARG }} = NULL;
+    else
+      //- PyErr_Restore DecRefs all args...
+      Py_IncRef({{ ARG }});
+{% endfor %}
+
+    PyErr_Restore(exc_type, exc_value, traceback);
+    boost::python::throw_error_already_set();
+  }
+
+  inline void raise_exc
+  (const boost::python::object &exc_type,
+   const boost::python::object &exc_value,
+   const boost::python::object &traceback)
+  {
+    raise_exc(exc_type.ptr(), exc_value.ptr(), traceback.ptr());
+  }
+
+  inline void raise_exc(const boost::python::tuple &exc_info)
+  {
+    raise_exc(exc_info[0], exc_info[1], exc_info[2]);
+  }
+
+  inline void raise()
+  {
+    raise_exc(exc_info());
+  }
+
   template<typename BASE, typename CATCH = BASE>
   class exception : public BASE, public boost::python::object
   {
