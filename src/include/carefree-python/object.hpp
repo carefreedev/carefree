@@ -18,20 +18,22 @@
  * along with carefree-objects.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __CAREFREE_PYTHON_HPP
-#define __CAREFREE_PYTHON_HPP
+#ifndef __CAREFREE_PYTHON_OBJECT_HPP
+#define __CAREFREE_PYTHON_OBJECT_HPP
 
-#include <carefree-objects.hpp>
+namespace cfo { namespace python
+{
+  class object : public boost::python::object
+  {
+    using boost::python::object::object;
 
-#include "carefree-python/common.hpp"
-#include "carefree-python/import.hpp"
-
-#include "carefree-python/object.hpp"
-
-#include "carefree-python/functions.hpp"
-
-#include "carefree-python/except.hpp"
-
-#include "carefree-python/extract.hpp"
+  public:
+    inline object(PyObject *obj) :
+      boost::python::object
+      (obj ? boost::python::object(boost::python::borrowed(obj))
+       : boost::python::object())
+    {}
+  };
+} }
 
 #endif
