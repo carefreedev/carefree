@@ -156,8 +156,8 @@ namespace cfo { namespace python
         boost::python::object
         (cfo::python::import::type
          (name, boost::python::make_tuple(base_exc),
-          boost::python::dict())),
-
+          boost::python::dict())
+         ),
         __base__(base_exc)
       {
         if (STR_F)
