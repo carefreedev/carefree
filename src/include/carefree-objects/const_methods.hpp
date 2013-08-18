@@ -83,16 +83,19 @@ namespace cfo { namespace intern
     {}
 
   public:
+    inline const managed<T, false, EXC, INIT_T, false, COPY>& manager()
+      const
+    {
+      return static_cast
+        <const managed<T, false, EXC, INIT_T, false, COPY>&>
+        (*this);
+    }
+
     inline managed<T, false, EXC, INIT_T, false, COPY>& manager()
     {
       return static_cast<managed<T, false, EXC, INIT_T, false, COPY>&>
         (*this);
     }
-
-    // inline const managed<T, false, false>& manager() const
-    // {
-    //   return static_cast<const managed<T, false, false>&>(*this);
-    // }
 
     inline const managed<T, false, EXC, INIT_T, false, COPY>&
     const_manager()
