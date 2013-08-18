@@ -51,6 +51,15 @@ namespace cfo { namespace intern
     {}
 
   public:
+    typedef T unmanaged_type;
+    typedef T* unmanaged_ptr_type;
+    typedef const T* unmanaged_const_ptr_type;
+
+    typedef managed<T, true, EXC, INIT_T, false, COPY> managed_base;
+
+    typedef cfo::intern::forward<T, true, false, INIT_T, false, COPY>
+      forward;
+
     typedef T cfo_unmanaged_type;
     typedef T* cfo_unmanaged_ptr_type;
     typedef const T* cfo_unmanaged_const_ptr_type;
@@ -60,7 +69,7 @@ namespace cfo { namespace intern
     typedef const INIT_T* cfo_unmanaged_const_init_ptr_type;
 
     typedef managed<T, true, false, INIT_T, false, COPY> cfo_manager_type;
-    typedef forward<T, true, false, INIT_T, false, COPY>
+    typedef cfo::intern::forward<T, true, false, INIT_T, false, COPY>
       cfo_forward_manager_type;
 
     typedef T managed_type;
@@ -68,7 +77,7 @@ namespace cfo { namespace intern
     typedef const T* managed_const_ptr_type;
 
     typedef managed<T, true, false, INIT_T, false, COPY> manager_type;
-    typedef forward<T, true, false, INIT_T, false, COPY>
+    typedef cfo::intern::forward<T, true, false, INIT_T, false, COPY>
       forward_manager_type;
 
     typedef managed<T, true, true, INIT_T, false, COPY> except;
@@ -197,6 +206,15 @@ namespace cfo { namespace intern
     {}
 
   public:
+    typedef managed<T, false, EXC, INIT_T, false, COPY> managed_base;
+
+    typedef cfo::intern::forward<T, false, false, INIT_T, false, COPY>
+      forward;
+
+    typedef T unmanaged_type;
+    typedef T* unmanaged_ptr_type;
+    typedef const T* unmanaged_const_ptr_type;
+
     typedef T cfo_unmanaged_type;
     typedef T* cfo_unmanaged_ptr_type;
     typedef const T* cfo_unmanaged_const_ptr_type;
@@ -206,7 +224,7 @@ namespace cfo { namespace intern
     typedef const INIT_T* cfo_unmanaged_const_init_ptr_type;
 
     typedef managed<T, false, false, INIT_T, false, COPY> cfo_manager_type;
-    typedef forward<T, false, false, INIT_T, false, COPY>
+    typedef cfo::intern::forward<T, false, false, INIT_T, false, COPY>
       cfo_forward_manager_type;
 
     typedef T managed_type;
@@ -214,7 +232,7 @@ namespace cfo { namespace intern
     typedef const T* managed_const_ptr_type;
 
     typedef managed<T, false, false, INIT_T, false, COPY> manager_type;
-    typedef forward<T, false, false, INIT_T, false, COPY>
+    typedef cfo::intern::forward<T, false, false, INIT_T, false, COPY>
       forward_manager_type;
 
     typedef managed<T, false, true, INIT_T, false, COPY> except;
