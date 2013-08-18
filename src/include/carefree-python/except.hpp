@@ -93,40 +93,89 @@ namespace cfo { namespace python
   template<typename BASE, typename CATCH = BASE>
   class exception : public BASE, public boost::python::object
   {
+    using BASE::BASE;
+
   public:
     typedef CATCH catch_type;
     typedef boost::python::tuple (*args_translator_type)
-    (const catch_type&);
-
-    using BASE::BASE;
+      (const catch_type&);
 
     static boost::python::tuple args(const catch_type &e)
     {
       return boost::python::make_tuple(std::string(e.what()));
     }
 
-    template<args_translator_type ARGS = exception<BASE, CATCH>::args>
+    typedef std::string (*args_to_string_type)
+      (const boost::python::tuple &args);
+
+  public:
+    template
+    <args_translator_type ARGS_F = exception<BASE, CATCH>::args,
+     args_to_string_type STR_F = args_to_string_type(NULL)
+     >
     class class_ : public boost::python::object
     {
     public:
       const boost::python::object __base__;
 
-      inline class_
-      (const std::string &name, const boost::python::object &base_exc) :
+    private:
+      static boost::python::object __str__(const boost::python::object &self)
+      {
+        assert(STR_F);
+        const auto &args = self.attr("args");
+        const boost::python::extract<boost::python::tuple> _tuple(args);
+        return boost::python::object(STR_F(_tuple()));
+      }
 
+      template<std::size_t N>
+      static boost::python::object _arg(const boost::python::object &self)
+      {
+        const auto &args = self.attr("args");
+        return args[N];
+      }
+
+      template<std::size_t N = 0u>
+      inline void _init_arg_properties()
+      {}
+
+      template<std::size_t N = 0u, typename... STR>
+      inline void _init_arg_properties(const std::string &name, const STR &...names)
+      {
+        this->attr(name.c_str()) = cfo::python::import::property
+          (boost::python::make_function(_arg<N>));
+
+        this->_init_arg_properties<N + 1>(names...);
+      }
+
+    public:
+      template<typename... STR>
+      inline class_
+      (const std::string &name, const boost::python::object &base_exc,
+       const STR &...argnames
+       ) :
         boost::python::object
         (cfo::python::import::type
          (name, boost::python::make_tuple(base_exc),
           boost::python::dict())),
 
         __base__(base_exc)
+      {
+        if (STR_F)
+          this->attr("__str__") = boost::python::make_function(__str__);
+
+        this->_init_arg_properties<>(argnames...);
+      }
+
+      template<typename... STR>
+      inline class_
+      (const std::string &name, PyObject *base_exc, const STR &...argnames
+       ) :
+        class_
+        (name, boost::python::object(boost::python::borrowed(base_exc)),
+         argnames...)
       {}
 
-      inline class_(const std::string &name, PyObject *base_exc) :
-        class_(name, boost::python::object(boost::python::borrowed(base_exc)))
-      {}
-
-      inline class_(const class_<ARGS> &exc) :
+      inline class_(const class_<ARGS_F, STR_F> &exc) :
         boost::python::object
         (static_cast<const boost::python::object&>(exc)),
 
@@ -137,10 +186,10 @@ namespace cfo { namespace python
       {
         PyErr_SetObject
           (this->boost::python::object::ptr(),
-           ARGS(e).boost::python::tuple::ptr());
+           ARGS_F(e).boost::python::tuple::ptr());
       }
 
-      inline class_<ARGS>& register_()
+      inline class_<ARGS_F, STR_F>& register_()
       {
         boost::python::register_exception_translator<catch_type>(*this);
         return *this;
