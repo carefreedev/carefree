@@ -25,19 +25,38 @@
 
 namespace cfo { namespace python
 {
-  template<typename... ARGS>
-  inline void raise(PyObject *exc, const ARGS &...args)
+  struct raise
   {
-    const auto tuple = boost::python::make_tuple(args...);
-    PyErr_SetObject(exc, tuple.ptr());
-    boost::python::throw_error_already_set();
-  }
+    template<typename... ARGS>
+    inline raise(PyObject *exc, const ARGS &...args)
+    {
+      const auto tuple = boost::python::make_tuple(args...);
+      PyErr_SetObject(exc, tuple.ptr());
+      boost::python::throw_error_already_set();
+    }
 
-  template<typename... ARGS>
-  inline void raise(const boost::python::object &exc, const ARGS &...args)
-  {
-    return raise(exc.ptr(), args...);
-  }
+    template<typename... ARGS>
+    inline raise
+    (const boost::python::object &exc, const ARGS &...args
+     ) :
+      raise(exc.ptr(), args...)
+    {}
+
+    inline raise();
+
+{% for EXC_NAME in [
+     'ValueError',
+     'TypeError',
+     'LookupError',
+     'IndexError',
+     ] %}
+    template<typename... ARGS>
+    static inline void {{ EXC_NAME }}(const ARGS &...args)
+    {
+      raise(PyExc_{{ EXC_NAME }}, args...);
+    }
+{% endfor %}
+  };
 
   inline boost::python::tuple exc_info()
   {
@@ -85,7 +104,7 @@ namespace cfo { namespace python
     raise_exc(exc_info[0], exc_info[1], exc_info[2]);
   }
 
-  inline void raise()
+  inline raise::raise()
   {
     raise_exc(exc_info());
   }
