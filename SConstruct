@@ -70,10 +70,9 @@ env.Append(
     ],
   )
 
-try:
-  env.Replace(CXX = os.environ['CXX'])
-except KeyError:
-  pass
+CXX = os.environ.get('CXX')
+if CXX:
+    env.Replace(CXX = CXX)
 
 INCLUDES = []
 
