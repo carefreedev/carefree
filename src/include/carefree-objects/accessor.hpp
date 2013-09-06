@@ -2,7 +2,7 @@
  *
  * a thread-safe object manager extension for c++
  *
- * Copyright (C) 2011-2012 Stefan Zimmermann <zimmermann.code@googlemail.com>
+ * Copyright (C) 2011-2013 Stefan Zimmermann <zimmermann.code@gmail.com>
  *
  * carefree-objects is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -32,23 +32,28 @@
 
 namespace cfo { namespace intern
 {
-  template<typename T, bool EXC>
+  template<typename T, bool EXC, typename INIT_T, typename COPY>
   class accessor :
-    public T::template cfo_managed_const_methods<T, true, EXC>
+    public T::template cfo_managed_const_methods
+      <T, true, EXC, INIT_T, COPY>
   {
   private:
-    accessor(accessor<T, EXC> &);
+    accessor(const accessor<T, EXC, INIT_T, COPY> &);
 
   public:
-    inline accessor(const managed<T, true, EXC, false> &manager) :
-      T::template cfo_managed_const_methods<T, true, EXC>
-      (manager, false)
+    inline accessor
+    (const managed<T, true, EXC, INIT_T, false, COPY> &manager
+     ) :
+      T::template cfo_managed_const_methods<T, true, EXC, INIT_T, COPY>
+        (manager, false)
     {}
 
-    inline accessor(accessor<T, EXC> &&access) :
-      T::template cfo_managed_const_methods<T, true, EXC>
+    inline accessor(accessor<T, EXC, INIT_T, COPY> &&access) :
+      T::template cfo_managed_const_methods<T, true, EXC, INIT_T, COPY>
       (static_cast
-       <typename T::template cfo_managed_const_methods<T, true, EXC>&&>
+       <typename T::template cfo_managed_const_methods
+        <T, true, EXC, INIT_T, COPY>
+        &&>
        (access))
     {}
 

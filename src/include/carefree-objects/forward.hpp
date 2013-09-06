@@ -2,7 +2,7 @@
  *
  * a thread-safe object manager extension for c++
  *
- * Copyright (C) 2011-2012 Stefan Zimmermann <zimmermann.code@googlemail.com>
+ * Copyright (C) 2011-2013 Stefan Zimmermann <zimmermann.code@gmail.com>
  *
  * carefree-objects is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -28,17 +28,21 @@
 
 namespace cfo { namespace intern
 {
-  template<typename T, bool EXC, bool INIT_NULL>
-  class forward<T, true, EXC, INIT_NULL> :
-    private std::unique_ptr<managed<T, true, EXC, INIT_NULL> >
+  template
+  <typename T, bool EXC, typename INIT_T, bool INIT_NULL, typename COPY>
+  class forward<T, true, EXC, INIT_T, INIT_NULL, COPY> :
+    private std::unique_ptr
+      <managed<T, true, EXC, INIT_T, INIT_NULL, COPY> >
   {
   private:
-    typedef managed<T, true, EXC, INIT_NULL> manager_type;
-    typedef std::unique_ptr<manager_type> basic_type;
+    typedef managed<T, true, EXC, INIT_T, INIT_NULL, COPY>
+      cfo_manager_type;
+
+    typedef std::unique_ptr<cfo_manager_type> basic_type;
 
   protected:
     inline forward(T *obj) :
-      basic_type(new manager_type(obj))
+      basic_type(new cfo_manager_type(obj))
     {}
 
   public:
@@ -49,28 +53,32 @@ namespace cfo { namespace intern
     // typedef typename T::template cfo_managed_methods<T, true>
     //   accessor;
 
-    typedef forward<T, true, true> null;
+    typedef forward<T, true, EXC, INIT_T, true, COPY> null;
 
     inline forward() :
-      basic_type(new manager_type)
+      basic_type(new cfo_manager_type)
     {}
 
     template<typename... A>
     inline forward(A... args) :
-      basic_type(new manager_type(args...))
+      basic_type(new cfo_manager_type(args...))
     {}
 
-    inline forward(const managed<T, true, EXC, false> &manager) :
-      basic_type(new manager_type(manager))
+    inline forward
+    (const managed<T, true, EXC, INIT_T, false, COPY> &manager
+     ) :
+      basic_type(new cfo_manager_type(manager))
     {}
 
     template
-    <typename T_other, bool EXC_other, bool INIT_NULL_other>
+    <typename T_, bool EXC_, typename INIT_T_, bool INIT_NULL_,
+     typename COPY_
+     >
     inline forward
-    (const managed<T_other, true, EXC_other, INIT_NULL_other>
-     &other_manager) :
-
-      basic_type(new manager_type(other_manager))
+    (const managed<T_, true, EXC_, INIT_T_, INIT_NULL_, COPY_>
+     &manager
+     ) :
+      basic_type(new cfo_manager_type(manager))
     {}
 
     // inline const_accessor caccess() const
@@ -98,68 +106,79 @@ namespace cfo { namespace intern
       return !*this;
     }
 
-    inline const manager_type& const_manager() const
+    inline const cfo_manager_type& const_manager() const
     {
       return **this;
     }
 
-    inline manager_type& manager()
+    inline cfo_manager_type& manager()
     {
       return **this;
     }
 
-    inline operator const manager_type&() const
+    inline cfo_manager_type copy() const
+    {
+      return this->const_manager().copy();
+    }
+
+    inline operator const cfo_manager_type&() const
     {
       return **this;
     }
 
-    inline operator manager_type&()
+    inline operator cfo_manager_type&()
     {
       return **this;
     }
 
-    inline operator manager_type()
+    inline operator cfo_manager_type()
     {
       return **this;
     }
   };
 
-  template<typename T, bool EXC, bool INIT_NULL>
-  class forward<T, false, EXC, INIT_NULL> :
-    private std::unique_ptr<managed<T, false, EXC, INIT_NULL> >
+  template
+  <typename T, bool EXC, typename INIT_T, bool INIT_NULL, typename COPY>
+  class forward<T, false, EXC, INIT_T, INIT_NULL, COPY> :
+    private std::unique_ptr
+      <managed<T, false, EXC, INIT_T, INIT_NULL, COPY> >
   {
   private:
-    typedef managed<T, false, EXC, INIT_NULL> manager_type;
-    typedef std::unique_ptr<manager_type> basic_type;
+    typedef managed<T, false, EXC, INIT_T, INIT_NULL, COPY>
+      cfo_manager_type;
+
+    typedef std::unique_ptr<cfo_manager_type> basic_type;
 
   protected:
     inline forward(T *obj) :
-      basic_type(new manager_type(obj))
+      basic_type(new cfo_manager_type(obj))
     {}
 
   public:
-    typedef forward<T, false, true> null;
+    typedef forward<T, false, EXC, INIT_T, true, COPY> null;
 
     inline forward() :
-      basic_type(new manager_type)
+      basic_type(new cfo_manager_type)
     {}
 
     template<typename... A>
     inline forward(A... args) :
-      basic_type(new manager_type(args...))
+      basic_type(new cfo_manager_type(args...))
     {}
 
-    inline forward(const managed<T, false, false> &manager) :
-      basic_type(new manager_type(manager))
+    inline forward(const managed<T, false, EXC, INIT_T, false, COPY> &manager) :
+      basic_type(new cfo_manager_type(manager))
     {}
 
     template
-    <typename T_other, bool EXC_other, bool INIT_NULL_other>
+    <typename T_, bool EXC_, typename INIT_T_, bool INIT_NULL_,
+     typename COPY_
+     >
     inline forward
-    (const managed<T_other, false, EXC_other, INIT_NULL_other>
-     &other_manager) :
+    (const managed<T_, false, EXC_, INIT_T_,  INIT_NULL_, COPY_>
+     &manager) :
 
-      basic_type(new manager_type(other_manager))
+      basic_type(new cfo_manager_type(manager))
     {}
 
     inline std::size_t refcount() const
@@ -177,27 +196,32 @@ namespace cfo { namespace intern
       return (**this).unmanaged();
     }
 
-    inline const manager_type& const_manager() const
+    inline const cfo_manager_type& const_manager() const
     {
       return **this;
     }
 
-    inline manager_type& manager()
+    inline cfo_manager_type& manager()
     {
       return **this;
     }
 
-    inline operator const manager_type&() const
+    inline cfo_manager_type copy() const
+    {
+      return this->const_manager().copy();
+    }
+
+    inline operator const cfo_manager_type&() const
     {
       return **this;
     }
 
-    inline operator manager_type&()
+    inline operator cfo_manager_type&()
     {
       return **this;
     }
 
-    inline operator manager_type()
+    inline operator cfo_manager_type()
     {
       return **this;
     }

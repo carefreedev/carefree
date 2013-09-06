@@ -2,7 +2,7 @@
  *
  * a thread-safe object manager extension for c++
  *
- * Copyright (C) 2011-2012 Stefan Zimmermann <zimmermann.code@googlemail.com>
+ * Copyright (C) 2011-2013 Stefan Zimmermann <zimmermann.code@gmail.com>
  *
  * carefree-objects is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -39,12 +39,17 @@ namespace cfo { namespace intern
     // typedef managed<T, SYNC> manager_type;
     typedef M manager_type;
     typedef std::map<I, manager_type*, E...> map_type;
+    typedef std::map<I, manager_type*, E...> _base_map_type;
 
     M nullmanager;
 
   public:
     inline map() :
       nullmanager(typename managed<T, SYNC>::null())
+    {}
+
+    inline map(const map<I, T, SYNC, EXC, M, E...> &/*map_*/) :
+      _base_map_type()
     {}
 
     inline ~map()

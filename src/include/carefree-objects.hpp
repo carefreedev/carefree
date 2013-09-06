@@ -2,7 +2,7 @@
  *
  * a thread-safe object manager extension for c++
  *
- * Copyright (C) 2011-2012 Stefan Zimmermann <zimmermann.code@googlemail.com>
+ * Copyright (C) 2011-2013 Stefan Zimmermann <zimmermann.code@gmail.com>
  *
  * carefree-objects is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -26,11 +26,39 @@
 
 namespace cfo
 {
-  template<typename T, bool SYNC = true, bool EXC = false>
-  using managed = intern::managed<T, SYNC, EXC, false>;
+  template
+  <typename T, bool SYNC = true, bool EXC = false,
+   typename INIT_T = T, typename COPY = copy<T>
+   >
+  using managed = intern::managed<T, SYNC, EXC, INIT_T, false, COPY>;
 
-  template<typename T, bool SYNC = true, bool EXC = false>
-  using managed_forward = intern::forward<T, SYNC, EXC, false>;
+  template<typename T, typename COPY = copy<T> >
+  using managed_sync = intern::managed<T, true, false, T, false, COPY>;
+
+  template<typename T, typename COPY = copy<T> >
+  using managed_unsync = intern::managed<T, false, false, T, false, COPY>;
+
+  template
+  <typename T, bool SYNC = true, bool EXC = false,
+   typename INIT_T = T, typename COPY = copy<T>
+   >
+  using managed_forward = intern::forward
+    <T, SYNC, EXC, INIT_T, false, COPY>;
+
+  template<typename T, typename COPY = copy<T> >
+  using managed_sync_forward
+  = intern::forward<T, true, false, T, false, COPY>;
+
+  template<typename T, typename COPY = copy<T> >
+  using managed_unsync_forward
+  = intern::forward<T, false, false, T, false, COPY>;
+
+  template
+  <typename T, bool SYNC = true, bool EXC = false,
+   typename INIT_T = T, typename COPY = copy<T>
+   >
+  using managed_vector = intern::managed
+    <intern::basic_manager::vector<T, SYNC, EXC, INIT_T, COPY>, SYNC, EXC>;
 }
 
 #define cfo_MANAGER_CONSTRUCTORS(NAME)                                \

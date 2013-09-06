@@ -2,7 +2,7 @@
  *
  * a thread-safe object manager extension for c++
  *
- * Copyright (C) 2011-2012 Stefan Zimmermann <zimmermann.code@googlemail.com>
+ * Copyright (C) 2011-2013 Stefan Zimmermann <zimmermann.code@gmail.com>
  *
  * carefree-objects is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,39 +18,30 @@
  * along with carefree-objects.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __CFO_COUNT_AND_LOCK_HPP
-#define __CFO_COUNT_AND_LOCK_HPP
+#include <carefree-python/functions.hpp>
 
-#include "common.hpp"
-
-namespace cfo { namespace intern
+namespace cfo { namespace python
 {
-  class count_and_lock : public boost::shared_mutex
+  bool is
+  (const boost::python::object &left_obj,
+   const boost::python::object &right_obj)
   {
-  private:
-    std::size_t counter;
+    return left_obj.ptr() == right_obj.ptr();
+  }
 
-  public:
-    inline count_and_lock() :
-      boost::shared_mutex(),
-      counter(0)
-    {}
+  std::string str(const boost::python::object &obj)
+  {
+    const boost::python::object &str_obj = boost::python::str(obj);
+    const boost::python::extract<std::string> _str(str_obj);
 
-    inline count_and_lock& operator++()
-    {
-      return ++this->counter, *this;
-    }
+    return _str();
+  }
 
-    inline count_and_lock& operator--()
-    {
-      return --this->counter, *this;
-    }
+  std::string repr(const boost::python::object &obj)
+  {
+    const boost::python::object &repr_obj = cfo::python::import::repr(obj);
+    const boost::python::extract<std::string> _repr_str(repr_obj);
 
-    inline operator bool()
-    {
-      return this->counter;
-    }
-  };
+    return _repr_str();
+  }
 } }
-
-#endif

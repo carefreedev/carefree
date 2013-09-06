@@ -2,7 +2,7 @@
  *
  * a thread-safe object manager extension for c++
  *
- * Copyright (C) 2011-2012 Stefan Zimmermann <zimmermann.code@googlemail.com>
+ * Copyright (C) 2011-2013 Stefan Zimmermann <zimmermann.code@gmail.com>
  *
  * carefree-objects is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -94,14 +94,15 @@ namespace cfo { namespace intern
   public:
     template
     <typename T, bool SYNC, bool EXC = false,
-     typename M = managed<T, SYNC, EXC>
+     typename INIT_T = T, typename COPY = cfo::copy<T>,
+     typename MGR = managed<T, SYNC, EXC, INIT_T, false, COPY>
      >
     class vector;
 
     template
-    <typename I, typename T, bool SYNC, bool EXC = false,
-     typename M = managed<T, SYNC, EXC>,
-     typename... E
+    <typename KEY, typename T, bool SYNC, bool EXC = false,
+     typename MGR = managed<T, SYNC, EXC>,
+     typename... EXTRA
      >
     class map;
 

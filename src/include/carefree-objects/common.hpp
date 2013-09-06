@@ -2,7 +2,7 @@
  *
  * a thread-safe object manager extension for c++
  *
- * Copyright (C) 2011-2012 Stefan Zimmermann <zimmermann.code@googlemail.com>
+ * Copyright (C) 2011-2013 Stefan Zimmermann <zimmermann.code@gmail.com>
  *
  * carefree-objects is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -30,30 +30,42 @@
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/shared_mutex.hpp>
 
+namespace cfo
+{
+  template<typename T>
+  struct copy
+  {
+    inline T* operator()(const T& obj) const
+    {
+      return new T(obj);
+    }
+  };
+}
+
 namespace cfo { namespace intern
 {
   class count_and_lock;
 
-  template<typename T, bool EXC = false>
+  template<typename T, bool EXC = false, typename INIT_T = T, typename COPY = cfo::copy<T> >
   class const_accessor;
 
-  template<typename T, bool EXC = false>
+  template<typename T, bool EXC = false, typename INIT_T = T, typename COPY = cfo::copy<T> >
   class accessor;
 
-  template<typename T, bool SYNC = true, bool EXC = false>
+  template<typename T, bool SYNC = true, bool EXC = false, typename INIT_T = T, typename COPY = cfo::copy<T> >
   class const_methods;
 
-  template<typename T, bool SYNC = true, bool EXC = false>
+  template<typename T, bool SYNC = true, bool EXC = false, typename INIT_T = T, typename COPY = cfo::copy<T> >
   class methods;
 
   class basic_manager;
 
   template
-  <typename T, bool SYNC = true, bool EXC = false, bool INIT_NULL = false>
+  <typename T, bool SYNC = true, bool EXC = false, typename INIT_T = T, bool INIT_NULL = false, typename COPY = cfo::copy<T> >
   class managed;
 
   template
-  <typename T, bool SYNC = true, bool EXC = false, bool INIT_NULL = false>
+  <typename T, bool SYNC = true, bool EXC = false, typename INIT_T = T, bool INIT_NULL = false, typename COPY = cfo::copy<T> >
   class forward;
 } }
 
