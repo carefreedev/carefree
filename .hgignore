@@ -3,6 +3,27 @@
 \.rej$
 
 ^\.sconsign\.dblite$
+^\.sconf_temp/
+
+^include/
 ^build/
 
+\.diff$
+
 \.s?os?$
+\.a$
+
+\.pyc$
+
+^dist/
+^python/dist/
+
+\.egg-info/
+\.egg/
+
+\.log$
+
+^MANIFEST$
+^python/MANIFEST$
+
+^test$
