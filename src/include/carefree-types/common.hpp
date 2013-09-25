@@ -18,16 +18,13 @@
  * along with carefree-objects.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __CAREFREE_PYTHON_COMMON_HPP
-#define __CAREFREE_PYTHON_COMMON_HPP
+#ifndef __CFO_TOOLS_COMMON_HPP
+#define __CFO_TOOLS_COMMON_HPP
+
+#include <array_ptr.hpp>
 
 #include <carefree-objects.hpp>
-#include <carefree-types.hpp>
 
-#include <boost/python.hpp>
-#include <boost/python/slice.hpp>
-#include <boost/python/raw_function.hpp>
-
-#include "./import.hpp"
+#include <boost/asio.hpp>
 
 #endif

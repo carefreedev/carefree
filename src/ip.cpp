@@ -18,16 +18,12 @@
  * along with carefree-objects.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __CAREFREE_PYTHON_COMMON_HPP
-#define __CAREFREE_PYTHON_COMMON_HPP
+#include <carefree-types/ip.hpp>
 
-#include <carefree-objects.hpp>
-#include <carefree-types.hpp>
-
-#include <boost/python.hpp>
-#include <boost/python/slice.hpp>
-#include <boost/python/raw_function.hpp>
-
-#include "./import.hpp"
-
-#endif
+namespace cfo { namespace ip { namespace base
+{
+  namespace _address
+  {
+    /*extern*/ bool no_return_error;
+  }
+} } }

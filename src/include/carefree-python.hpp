@@ -22,16 +22,17 @@
 #define __CAREFREE_PYTHON_HPP
 
 #include <carefree-objects.hpp>
+#include <carefree-types.hpp>
 
-#include "carefree-python/common.hpp"
-#include "carefree-python/import.hpp"
+#include "./carefree-python/common.hpp"
+#include "./carefree-python/import.hpp"
 
-#include "carefree-python/object.hpp"
+#include "./carefree-python/object.hpp"
 
-#include "carefree-python/functions.hpp"
+#include "./carefree-python/functions.hpp"
 
-#include "carefree-python/except.hpp"
+#include "./carefree-python/except.hpp"
 
-#include "carefree-python/extract.hpp"
+#include "./carefree-python/extract.hpp"
 
 #endif

@@ -56,11 +56,16 @@ if any(cmd in sys.argv for cmd in ('build', 'install', 'bdist_egg')):
                 INCLUDE_FILES.append((dirpath, [
                   abspath / fn for fn in filenames]))
 
+    LIB_FILES = []
     with Path('lib'):
-        LIB_FILES = [
-          Path('libcarefree-python-py%s.%s' % (PYTHON_SHORT_VERSION, ext)
-               ).abspath()
-          for ext in ('a', 'so')]
+        for suffix in [
+          'types',
+          'python-py%s' % PYTHON_SHORT_VERSION,
+          ]:
+            LIB_FILES.extend(
+              Path('libcarefree-%s.%s' % (suffix, ext)
+                   ).abspath()
+              for ext in ('a', 'so'))
 
     if not 'bdist_egg' in sys.argv:
         # Install libs/headers as data_files to sys.prefix

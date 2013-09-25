@@ -18,16 +18,42 @@
  * along with carefree-objects.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __CAREFREE_PYTHON_COMMON_HPP
-#define __CAREFREE_PYTHON_COMMON_HPP
+#ifndef __CFO_TOOLS_IP_V4_ADDRESS_INL
+#define __CFO_TOOLS_IP_V4_ADDRESS_INL
 
-#include <carefree-objects.hpp>
-#include <carefree-types.hpp>
+#include "./address.hpp"
 
-#include <boost/python.hpp>
-#include <boost/python/slice.hpp>
-#include <boost/python/raw_function.hpp>
+namespace cfo { namespace ip { namespace base
+{
+{% for N in range(4) %}
+  template<>
+  template<>
+  inline std::uint8_t ip::v4::_address::base::get<{{ N }}u>() const
+  {
+    return (*this)[{{ N }}u];
+  }
+{% endfor %}
 
-#include "./import.hpp"
+{% for N in range(4) %}
+  template<>
+  template<>
+  inline std::uint8_t ip::v4::_address::base::byte<{{ N }}u>() const
+  {
+    return this->to_bytes()[{{ N }}u];
+  }
+{% endfor %}
+} } }
+
+namespace cfo { namespace ip
+{
+  namespace v4
+{
+  template<>
+  inline std::uint32_t address::_address<3u>(const std::uint8_t number)
+  {
+    return std::uint32_t(number);
+  }
+}
+} }
 
 #endif

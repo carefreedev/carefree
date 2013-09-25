@@ -21,6 +21,7 @@ import sys
 import re
 import os
 from subprocess import Popen, PIPE
+from path import path as Path
 
 import jinja2
 from jinjatools.scons import JinjaBuilder
@@ -74,15 +75,81 @@ CXX = os.environ.get('CXX')
 if CXX:
     env.Replace(CXX = CXX)
 
-INCLUDES = []
+SOURCE_PATH = Path('src')
+INCLUDE_SOURCE_PATH = SOURCE_PATH / 'include'
 
-for dirpath, dirnames, filenames in os.walk('src/include'):
-  for fn in filenames:
-    if fn.endswith('.hpp'):
-      path = os.path.join(dirpath, fn)
-      INCLUDES.append(env.Jinja(
-        re.sub('^src/', '', path),
-        source = [path]))
+INCLUDE_PATH = Path('include')
+
+BUILD_PATH = Path('build')
+
+LIB_PATH = Path('lib')
+
+INCLUDES = []
+for path in INCLUDE_SOURCE_PATH.walkfiles():
+    if path.ext in ['.hpp', '.inl']:
+        INCLUDES.append(env.Jinja(
+          INCLUDE_PATH / INCLUDE_SOURCE_PATH.relpathto(path),
+          source=path,
+          ))
+
+OBJECTS = []
+for path in SOURCE_PATH.files():
+    if path.ext == '.cpp':
+        OBJECTS.append(env.Requires(
+          env.SharedObject(
+            env.Jinja(
+              BUILD_PATH / SOURCE_PATH.relpathto(path),
+              source=path,
+              )),
+          INCLUDES))
+
+if env['SHARED']:
+    LIB_CAREFREE_TYPES = env.SharedLibrary(
+      LIB_PATH / 'carefree-types',
+      source=OBJECTS,
+      )
+if env['STATIC']:
+    env.StaticLibrary(
+      LIB_PATH / 'carefree-types',
+      source=OBJECTS,
+      )
+
+TEST_OBJECTS = []
+for path in (SOURCE_PATH / 'test').walkfiles():
+    if path.ext == '.cpp':
+        TEST_OBJECTS.append(env.Requires(
+          env.SharedObject(
+            env.Jinja(
+              BUILD_PATH / SOURCE_PATH.relpathto(path),
+              source=path,
+              )),
+          INCLUDES))
+
+if env['SHARED']:
+    LIB_CAREFREE_TYPES_TEST = env.SharedLibrary(
+      LIB_PATH / 'carefree-types-test',
+      source=TEST_OBJECTS,
+      )
+if env['STATIC']:
+    env.StaticLibrary(
+      LIB_PATH / 'carefree-types-test',
+      source=TEST_OBJECTS,
+      )
+
+env.Requires(
+  env.Program(
+    'test', source='test.cpp',
+
+    LIBPATH=[LIB_PATH],
+    LIBS=[
+      'boost_system',
+      LIB_CAREFREE_TYPES,
+      LIB_CAREFREE_TYPES_TEST,
+      ],
+    ),
+  [LIB_CAREFREE_TYPES,
+   LIB_CAREFREE_TYPES_TEST,
+   ])
 
 CAREFREE_PYTHON_SOURCE_NAMES = [
   'import',
