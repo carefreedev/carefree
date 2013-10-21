@@ -39,6 +39,9 @@ opts.Add(BoolVariable(
 opts.Add(BoolVariable(
   'STATIC', 'build a static carefree-python library',
   'no'))
+opts.Add(BoolVariable(
+  'TESTS', 'Build the test programs',
+  'no'))
 opts.Add(PackageVariable(
   'PYTHON',
   'list of python(-config) binary names to build carefree-python for',
@@ -75,6 +78,11 @@ CXX = os.environ.get('CXX')
 if CXX:
     env.Replace(CXX = CXX)
 
+BOOST_LIBS = [
+  'boost_system',
+  'boost_thread',
+  ]
+
 SOURCE_PATH = Path('src')
 INCLUDE_SOURCE_PATH = SOURCE_PATH / 'include'
 
@@ -107,6 +115,8 @@ if env['SHARED']:
     LIB_CAREFREE_TYPES = env.SharedLibrary(
       LIB_PATH / 'carefree-types',
       source=OBJECTS,
+
+      LIBS=BOOST_LIBS,
       )
 if env['STATIC']:
     env.StaticLibrary(
@@ -114,42 +124,42 @@ if env['STATIC']:
       source=OBJECTS,
       )
 
-TEST_OBJECTS = []
-for path in (SOURCE_PATH / 'test').walkfiles():
-    if path.ext == '.cpp':
-        TEST_OBJECTS.append(env.Requires(
-          env.SharedObject(
-            env.Jinja(
-              BUILD_PATH / SOURCE_PATH.relpathto(path),
-              source=path,
-              )),
-          INCLUDES))
+if env['TESTS']:
+    TEST_OBJECTS = []
+    for path in (SOURCE_PATH / 'test').walkfiles():
+        if path.ext == '.cpp':
+            TEST_OBJECTS.append(env.Requires(
+              env.SharedObject(
+                env.Jinja(
+                  BUILD_PATH / SOURCE_PATH.relpathto(path),
+                  source=path,
+                  )),
+              INCLUDES))
 
-if env['SHARED']:
-    LIB_CAREFREE_TYPES_TEST = env.SharedLibrary(
-      LIB_PATH / 'carefree-types-test',
-      source=TEST_OBJECTS,
-      )
-if env['STATIC']:
-    env.StaticLibrary(
-      LIB_PATH / 'carefree-types-test',
-      source=TEST_OBJECTS,
-      )
+    if env['SHARED']:
+        LIB_CAREFREE_TYPES_TEST = env.SharedLibrary(
+          LIB_PATH / 'carefree-types-test',
+          source=TEST_OBJECTS,
+          )
+    if env['STATIC']:
+        env.StaticLibrary(
+          LIB_PATH / 'carefree-types-test',
+          source=TEST_OBJECTS,
+          )
 
-env.Requires(
-  env.Program(
-    'test', source='test.cpp',
+    env.Requires(
+      env.Program(
+        'test', source='test.cpp',
 
-    LIBPATH=[LIB_PATH],
-    LIBS=[
-      'boost_system',
-      LIB_CAREFREE_TYPES,
-      LIB_CAREFREE_TYPES_TEST,
-      ],
-    ),
-  [LIB_CAREFREE_TYPES,
-   LIB_CAREFREE_TYPES_TEST,
-   ])
+        LIBPATH=[LIB_PATH],
+        LIBS=BOOST_LIBS + [
+          LIB_CAREFREE_TYPES,
+          LIB_CAREFREE_TYPES_TEST,
+          ],
+        ),
+      [LIB_CAREFREE_TYPES,
+       LIB_CAREFREE_TYPES_TEST,
+       ])
 
 CAREFREE_PYTHON_SOURCE_NAMES = [
   'import',
@@ -190,7 +200,7 @@ for pybin in PYTHON and PYTHON.split(',') or []:
   pyenv = pyconf.Finish()
 
   pyenv.Append(
-    LIBS = [
+    LIBS=BOOST_LIBS + [
       BOOST_PYTHON_LIB,
       ],
     )
