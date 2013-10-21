@@ -5,6 +5,7 @@ include VERSION
 include requirements.txt
 
 recursive-include src *.cpp *.hpp *.inl
+include test.cpp
 
 recursive-include python/cfo *.py
 include SConstruct
