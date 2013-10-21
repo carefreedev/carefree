@@ -53,10 +53,10 @@ namespace cfo { namespace ip
     template<typename ARRAY>
     inline std::uint32_t _address_from_array(const ARRAY &numbers)
     {
-      return (std::uint32_t(std::uint8_t(numbers.operator[](0))) << 24)
-        + (std::uint32_t(std::uint8_t(numbers.operator[](1))) << 16)
-        + (std::uint32_t(std::uint8_t(numbers.operator[](2))) << 8)
-        + std::uint32_t(std::uint8_t(numbers.operator[](3)));
+      return (std::uint32_t(std::uint8_t(numbers[0u])) << 24)
+        + (std::uint32_t(std::uint8_t(numbers[1u])) << 16)
+        + (std::uint32_t(std::uint8_t(numbers[2u])) << 8)
+        + std::uint32_t(std::uint8_t(numbers[3u]));
     }
 
   protected:
@@ -71,10 +71,10 @@ namespace cfo { namespace ip
     (const std::string &numbers,
      bool &return_error = ip::base::_address::no_return_error)
     {
-      if (numbers.length() == 4)
+      if (numbers.length() == 4u)
         return this->_address
           (stz::const_array_ptr<std::string::value_type>
-           (numbers.c_str(), 4));
+           (numbers.c_str(), 4u));
 
       boost::system::error_code error;
       boost::asio::ip::address_v4 address
@@ -100,20 +100,20 @@ namespace cfo { namespace ip
     (const std::uint8_t number, const INTS &...numbers)
     {
       return (std::uint32_t(number) << ((3 - N) * 8))
-        + (sizeof...(numbers) ? this->_address<N + 1>(numbers...) : 0);
+        + (sizeof...(numbers) ? this->_address<N + 1>(numbers...) : 0u);
     }
 
   public:
     template<typename... INTS>
     inline address(const INTS &...numbers) :
       ip::v4::_address::base
-      ((sizeof...(INTS) == 4) ? this->_address<0>(numbers...) : 0)
+      ((sizeof...(INTS) == 4) ? this->_address<0>(numbers...) : 0u)
     {}
 
     template<typename INT>
     inline address(const stz::const_array_ptr<INT> &numbers) :
       ip::v4::_address::base
-      ((numbers.size() == 4) ? this->_address(numbers) : 0)
+      ((numbers.size() == 4) ? this->_address(numbers) : 0u)
     {}
 
     inline address
@@ -150,7 +150,7 @@ namespace cfo { namespace ip
 
     inline address(const boost::asio::ip::address &address) :
       ip::v4::_address::base
-      (address.is_v4() ? address.to_v4().to_ulong() : 0)
+      (address.is_v4() ? address.to_v4().to_ulong() : 0u)
     {}
 
   public:
