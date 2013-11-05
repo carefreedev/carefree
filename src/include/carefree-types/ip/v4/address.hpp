@@ -53,10 +53,11 @@ namespace cfo { namespace ip
     template<typename ARRAY>
     inline std::uint32_t _address_from_array(const ARRAY &numbers)
     {
-      return (std::uint32_t(std::uint8_t(numbers[0u])) << 24)
-        + (std::uint32_t(std::uint8_t(numbers[1u])) << 16)
-        + (std::uint32_t(std::uint8_t(numbers[2u])) << 8)
-        + std::uint32_t(std::uint8_t(numbers[3u]));
+      //- (Just numbers[#] results in "zero-size array" error)
+      return (std::uint32_t(std::uint8_t(numbers.operator[](0u))) << 24)
+        + (std::uint32_t(std::uint8_t(numbers.operator[](1u))) << 16)
+        + (std::uint32_t(std::uint8_t(numbers.operator[](2u))) << 8)
+        + std::uint32_t(std::uint8_t(numbers.operator[](3u)));
     }
 
   protected:
