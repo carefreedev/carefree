@@ -4,8 +4,9 @@ include VERSION
 
 include requirements.txt
 
+include cfo/jinja/macros/cfo
+
 recursive-include src *.cpp *.hpp *.inl
 include test.cpp
 
-recursive-include python/cfo *.py
 include SConstruct
