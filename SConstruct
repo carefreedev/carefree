@@ -26,7 +26,7 @@ from path import path as Path
 import jinja2
 from jinjatools.scons import JinjaBuilder
 
-sys.path.insert(0, './python')
+sys.path.insert(0, '')
 import cfo.jinja
 
 opts = Variables()
