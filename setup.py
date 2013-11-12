@@ -18,8 +18,8 @@ VERSION = open('VERSION').read().strip()
 
 LIB_PACKAGE = 'libcfo'
 LIB_PACKAGE_DIR = '.'
-# Gets the lib/header files if building an egg
-LIB_PACKAGE_DATA = []
+# Also gets the lib/header files if building an egg
+LIB_PACKAGE_DATA = ['VERSION', 'requirements.txt']
 # Gets the lib/header files for installing to sys.prefix
 # if doing normal build/install
 LIB_DATA_FILES = []
@@ -33,6 +33,14 @@ if any(cmd in sys.argv for cmd in ('build', 'install', 'bdist_egg')):
     require(REQUIRES)
 
     from path import path as Path
+
+    try:
+        import libarray_ptr
+    except ImportError:
+        pass
+    else:
+        os.environ['CPPFLAGS'] = '-I%s %s' % (
+          str(libarray_ptr.INCLUDE_PATH), os.environ.get('CPPFLAGS', ''))
 
     # Process the header templates and compile the libs
     for cmd in [
