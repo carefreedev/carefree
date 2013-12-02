@@ -57,6 +57,15 @@ namespace cfo { namespace ip
       address(std::string(numbers), error)
     {}
 
+    inline address(const boost::asio::ip::address_v6 &address) :
+      ip::v6::_address::base(address)
+    {}
+
+    // inline address(const boost::asio::ip::address &address) :
+    //   ip::v6::_address::base
+    //   (address.is_v6() ? address.to_v6().to_ulong() : 0u)
+    // {}
+
   public:
     static void _test();
   };

@@ -51,6 +51,13 @@ namespace cfo { namespace ip
   inline boost::asio::ip::address_v6 address::_from
   (const std::string &numbers, bool &return_error)
   {
+    if (numbers.length() == 16u)
+      {
+        boost::asio::ip::address_v6::bytes_type bytes;
+        std::memcpy(bytes.data(), numbers.data(), 16);
+        return boost::asio::ip::address_v6(bytes);
+      }
+
     boost::system::error_code error;
     boost::asio::ip::address_v6 address
       (boost::asio::ip::address_v6::from_string(numbers, error));
