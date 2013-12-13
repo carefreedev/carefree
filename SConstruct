@@ -38,10 +38,10 @@ opts.Add(BoolVariable(
   'yes'))
 opts.Add(BoolVariable(
   'STATIC', 'build a static carefree-python library',
-  'no'))
+  'yes'))
 opts.Add(BoolVariable(
   'TESTS', 'Build the test programs',
-  'no'))
+  'yes'))
 opts.Add(PackageVariable(
   'PYTHON',
   'list of python(-config) binary names to build carefree-python for',
@@ -58,14 +58,16 @@ for varname in 'CPPFLAGS', 'CXXFLAGS', 'LDFLAGS':
   except KeyError:
     pass
 
+env.Prepend(
+  CPPPATH = [
+    'include',
+    ],
+  )
 env.Append(
   JINJACONTEXT = cfo.jinja.CONTEXT,
 
   CPPDEFINES = [
     env['DEBUG'] and 'DEBUG' or 'NDEBUG',
-    ],
-  CPPPATH = [
-    'include',
     ],
   CXXFLAGS = [
     '-std=c++11',
