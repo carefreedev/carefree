@@ -57,4 +57,14 @@ namespace cfo { namespace python { namespace import
       tzinfo = module.attr("tzinfo"),
       datetime = module.attr("datetime");
   }
+
+  namespace netaddr
+  {
+    static const boost::python::object module
+    = boost::python::import("netaddr");
+
+    const boost::python::object
+      IPAddress = module.attr("IPAddress"),
+      EUI = module.attr("EUI");
+  }
 } } }
