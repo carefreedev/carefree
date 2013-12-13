@@ -21,6 +21,8 @@
 #ifndef __CAREFREE_PYTHON_OBJECT_HPP
 #define __CAREFREE_PYTHON_OBJECT_HPP
 
+#include "./common.hpp"
+
 namespace cfo { namespace python
 {
   class object : public boost::python::object
@@ -32,6 +34,24 @@ namespace cfo { namespace python
       boost::python::object
       (obj ? boost::python::object(boost::python::borrowed(obj))
        : boost::python::object())
+    {}
+
+    inline object(const cfo::byte &byte) :
+      boost::python::object(int(byte.value))
+    {}
+
+    inline object(const cfo::character &chr) :
+      boost::python::object(std::wstring(&chr.value, 1u))
+    {}
+
+    inline object(const cfo::ip::v4::address &addr) :
+      boost::python::object
+      (cfo::python::import::netaddr::IPAddress(std::uint32_t(addr)))
+    {}
+
+    inline object(const cfo::ip::v6::address &addr) :
+      boost::python::object
+      (cfo::python::import::netaddr::IPAddress(std::string(addr)))
     {}
   };
 } }
