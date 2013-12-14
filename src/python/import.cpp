@@ -19,13 +19,27 @@
  */
 
 #include <carefree-python/import.hpp>
+#include <carefree-python/except.hpp>
 
 namespace cfo { namespace python { namespace import
 {
   namespace __builtin__
   {
-    static const boost::python::object module
-    = boost::python::import("__builtin__");
+    static boost::python::object _module()
+    {
+      try
+        {
+          return boost::python::import("__builtin__");
+        }
+      catch(const boost::python::error_already_set &e)
+        {
+          if (!cfo::python::except(PyExc_ImportError))
+            cfo::python::raise();
+        }
+      return boost::python::import("builtins");
+    }
+
+    static const boost::python::object module = _module();
 
     const boost::python::object
       type = module.attr("type"),
