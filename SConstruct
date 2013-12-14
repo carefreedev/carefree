@@ -69,11 +69,6 @@ env.Append(
   CPPDEFINES = [
     env['DEBUG'] and 'DEBUG' or 'NDEBUG',
     ],
-  CXXFLAGS = [
-    '-std=c++11',
-    '-Wall', '-Wextra', '-Werror', '-pedantic',
-    env['DEBUG'] and '-ggdb3' or '-O3',
-    ],
   )
 
 CXX = os.environ.get('CXX')
@@ -178,8 +173,9 @@ PYTHON = env['PYTHON']
 if PYTHON is True:
   PYTHON = 'python'
 for pybin in PYTHON and PYTHON.split(',') or []:
-  pyversion = Popen([pybin, '--version'], stderr = PIPE).communicate(
-    )[1].split()[-1].split('.', 2)
+  pyversion = Popen(
+    [pybin, '--version'], stderr = PIPE, universal_newlines=True
+    ).communicate()[1].split()[-1].split('.', 2)
 
   pyversionsuffix = ''.join(pyversion[:2])
 
@@ -188,8 +184,10 @@ for pybin in PYTHON and PYTHON.split(',') or []:
 
   pyenv = env.Clone()
   pyenv.MergeFlags(
-    Popen([pybin + '-config', '--includes', '--libs'], stdout = PIPE)
-    .communicate()[0])
+    Popen(
+      [pybin + '-config', '--includes', '--libs'],
+      stdout = PIPE, universal_newlines=True
+      ).communicate()[0])
   pyconf = Configure(pyenv)
 
   BOOST_PYTHON_LIB = 'boost_python'
