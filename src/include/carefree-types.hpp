@@ -18,16 +18,16 @@
  * along with carefree-objects.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __CAREFREE_PYTHON_COMMON_HPP
-#define __CAREFREE_PYTHON_COMMON_HPP
+#ifndef __CAREFREE_TOOLS_HPP
+#define __CAREFREE_TOOLS_HPP
 
 #include <carefree-objects.hpp>
-#include <carefree-types.hpp>
 
-#include <boost/python.hpp>
-#include <boost/python/slice.hpp>
-#include <boost/python/raw_function.hpp>
+#include "./carefree-types/common.hpp"
 
-#include "./import.hpp"
+#include "./carefree-types/bytes.hpp"
+#include "./carefree-types/string.hpp"
+
+#include "./carefree-types/ip.hpp"
 
 #endif

@@ -21,7 +21,7 @@
 
 .. moduleauthor:: Stefan Zimmermann <zimmermann.code@gmail.com>
 """
-__all__ = 'INT_TYPES', 'UINT_TYPES',
+__all__ = ['ARCH_BITS', 'INT_TYPES', 'UINT_TYPES']
 
 import platform
 
@@ -35,12 +35,23 @@ ARCH_BITS = int(platform.architecture()[0].split('bit')[0])
 ## if ARCH_BITS == 32:
 ##   UINT_TYPES.append('unsigned long')
 
-INT_TYPES = [
-  'char',
-  'short',
-  'int',
-  'long',
-  'long long',
-  ]
+class IntTypes(list):
+    def __init__(self, names_and_sizes):
+        self._items = list(names_and_sizes)
 
-UINT_TYPES = ['unsigned ' + typename for typename in INT_TYPES]
+    def __iter__(self):
+        return (item[0] for item in self._items)
+
+    def __gt__(self, bits):
+        return (item[0] for item in self._items if item[1] > bits)
+
+INT_TYPES = IntTypes([
+  ('char', 8),
+  ('short', 16),
+  ('int', 32),
+  ('long', ARCH_BITS),
+  ('long long', 64),
+  ])
+
+UINT_TYPES = IntTypes(
+  ('unsigned ' + name, size) for name, size in INT_TYPES._items)

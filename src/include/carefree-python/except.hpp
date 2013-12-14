@@ -23,6 +23,9 @@
 
 #include "common.hpp"
 
+#include "object.hpp"
+#include "functions.hpp"
+
 namespace cfo { namespace python
 {
   struct raise
@@ -214,6 +217,29 @@ namespace cfo { namespace python
         return *this;
       }
     };
+  };
+
+  class except : protected cfo::python::object
+  {
+  public:
+    inline except(const cfo::python::object &exc_type) :
+      cfo::python::object()
+    {
+      const auto exc_info = cfo::python::exc_info();
+      if (cfo::python::is(exc_info[0], exc_type))
+        this->cfo::python::object::operator=(exc_info[1]);
+    }
+
+  public:
+    inline operator bool() const
+    {
+      return !this->is_none();
+    }
+
+    inline bool operator!() const
+    {
+      return this->is_none();
+    }
   };
 } }
 

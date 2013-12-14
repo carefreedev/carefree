@@ -21,8 +21,8 @@
 #ifndef __CAREFREE_OBJECTS_HPP
 #define __CAREFREE_OBJECTS_HPP
 
-#include "carefree-objects/managed.hpp"
-#include "carefree-objects/forward.hpp"
+#include "./carefree-objects/managed.hpp"
+#include "./carefree-objects/forward.hpp"
 
 namespace cfo
 {

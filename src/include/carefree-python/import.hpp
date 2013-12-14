@@ -53,6 +53,13 @@ namespace cfo { namespace python { namespace import
       tzinfo,
       datetime;
   }
+
+  namespace netaddr
+  {
+    extern const boost::python::object
+      IPAddress,
+      EUI;
+  }
 } } }
 
 #endif

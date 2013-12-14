@@ -1,4 +1,5 @@
 path.py
-python-moretools
+moretools >= 0.1a25
+MarkupSafe
 Jinja2
-jinja-tools >= 0.1a6
+jinjatools >= 0.1a10

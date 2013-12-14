@@ -1,3 +1,4 @@
+from functools import partial
 try:
     from setuptools import setup
 except ImportError:
@@ -7,7 +8,8 @@ REQUIRES = open('requirements.txt').read().strip().split('\n')
 
 VERSION = open('VERSION').read().strip()
 
-setup(
+SETUP = partial(
+  setup,
   name='carefree-objects',
   version=VERSION,
   description=(
@@ -34,3 +36,6 @@ setup(
       ],
     }
   )
+
+if __name__ == '__main__':
+    SETUP()

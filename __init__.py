@@ -25,6 +25,9 @@ __all__ = 'PREFIX', 'INCLUDE_PATH', 'LIB_PATH',
 
 from path import path as Path
 
+from .libcfo import __version__, __requires__
+
+
 # Determine the location prefix of libcarefree_object's data_files
 PREFIX = Path(__path__[0])
 with PREFIX:
