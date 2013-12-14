@@ -30,6 +30,10 @@ namespace cfo { namespace python
     using boost::python::object::object;
 
   public:
+    inline object() :
+      boost::python::object()
+    {}
+
     inline object(PyObject *obj) :
       boost::python::object
       (obj ? boost::python::object(boost::python::borrowed(obj))
@@ -53,6 +57,15 @@ namespace cfo { namespace python
       boost::python::object
       (cfo::python::import::netaddr::IPAddress(std::string(addr)))
     {}
+
+  public:
+    using boost::python::object::operator=;
+
+  //   inline object& operator=(const boost::python::object &obj)
+  //   {
+  //     this->boost::python::object::operator=(obj);
+  //     return *this;
+  //   }
   };
 } }
 
