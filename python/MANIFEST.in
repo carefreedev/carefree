@@ -1,5 +1,0 @@
-include VERSION
-
-include requirements.txt
-
-include cfo/jinja/macros/cfo

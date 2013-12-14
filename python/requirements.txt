@@ -1,4 +1,0 @@
-path.py
-moretools >= 0.1a25
-Jinja2
-jinjatools >= 0.1a10
