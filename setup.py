@@ -1,19 +1,46 @@
 import sys
 import os
+from collections import OrderedDict
 from subprocess import Popen
 
-from pkg_resources import require
+from pkg_resources import require, parse_requirements
 try:
     from setuptools import setup
 except ImportError:
     from distutils.core import setup
 
 
-REQUIRES = open('requirements.txt').read().strip().split('\n')
-
 PYTHON_SHORT_VERSION = '%i%i' % tuple(sys.version_info[:2])
 
+
 VERSION = open('VERSION').read().strip()
+
+REQUIREMENTS_TXT = open('requirements.txt').read().strip().split('\n')
+REQUIRES = OrderedDict(
+  (req.unsafe_name, req) for req in parse_requirements(REQUIREMENTS_TXT))
+
+PYTHONPATH = os.environ.get('PYTHONPATH')
+
+paths = []
+names = os.listdir('..')
+if 'pip-delete-this-directory.txt' in names:
+    paths.extend(os.path.join('..', name) for name in names)
+paths.extend(os.listdir('.'))
+paths = [os.path.abspath(path) for path in paths if os.path.isdir(path)]
+for req in REQUIRES.values():
+    for path in paths:
+        if any(os.path.basename(path).startswith(reqname)
+               for reqname in (req.key, req.unsafe_name)
+               ):
+            sys.path.insert(0, path)
+
+            if PYTHONPATH is None:
+                PYTHONPATH = path
+            else:
+                PYTHONPATH = '%s:%s' % (path, PYTHONPATH)
+
+if PYTHONPATH is not None:
+    os.environ['PYTHONPATH'] = PYTHONPATH
 
 
 LIB_PACKAGE = 'libcfo'
@@ -30,7 +57,7 @@ LIB_PACKAGES = [LIB_PACKAGE]
 # Create libcarefree_objects data file lists
 # if some build/install cmd was given:
 if any(cmd in sys.argv for cmd in ('build', 'install', 'bdist_egg')):
-    require(REQUIRES)
+    ## require(REQUIRES)
 
     from path import path as Path
 
@@ -110,7 +137,7 @@ setup(
 
   license='LGPLv3',
 
-  install_requires=REQUIRES,
+  install_requires=REQUIREMENTS_TXT,
 
   package_dir={
     LIB_PACKAGE: LIB_PACKAGE_DIR,
