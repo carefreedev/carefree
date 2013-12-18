@@ -21,6 +21,9 @@
 #ifndef __CFO_TOOLS_COMMON_HPP
 #define __CFO_TOOLS_COMMON_HPP
 
+#include <locale>
+// #include <codecvt>
+
 #include <array_ptr.hpp>
 
 #include <carefree-objects.hpp>
