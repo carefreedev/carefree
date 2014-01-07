@@ -23,15 +23,22 @@
 
 #include "common.hpp"
 
+#include "object.hpp"
+
 namespace cfo { namespace python
 {
   template<typename T>
   class extract : public boost::python::extract<T>
   {
   public:
+    inline extract(const cfo::python::object &py_value) :
+      boost::python::extract<T>
+      (static_cast<const boost::python::object&>(py_value))
+    {}
+
     // using boost::python::extract<T>::extract;
-    inline extract(const boost::python::object &py_value)
-      : boost::python::extract<T>(py_value)
+    inline extract(const boost::python::object &py_value) :
+      boost::python::extract<T>(py_value)
     {}
 
     inline bool check() const

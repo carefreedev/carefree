@@ -34,6 +34,14 @@ namespace cfo { namespace python
       boost::python::object()
     {}
 
+    inline object(const cfo::python::object &obj) :
+      boost::python::object(static_cast<const boost::python::object&>(obj))
+    {}
+
+    inline object(const boost::python::object &obj) :
+      boost::python::object(obj)
+    {}
+
     inline object(PyObject *obj) :
       boost::python::object
       (obj ? boost::python::object(boost::python::borrowed(obj))
@@ -61,11 +69,17 @@ namespace cfo { namespace python
   public:
     using boost::python::object::operator=;
 
-  //   inline object& operator=(const boost::python::object &obj)
-  //   {
-  //     this->boost::python::object::operator=(obj);
-  //     return *this;
-  //   }
+    inline object& operator=(const cfo::python::object &obj)
+    {
+      this->boost::python::object::operator=(obj);
+      return *this;
+    }
+
+  public:
+    inline operator const boost::python::object&() const
+    {
+      return static_cast<const boost::python::object&>(*this);
+    }
   };
 } }
 
