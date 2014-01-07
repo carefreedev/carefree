@@ -20,6 +20,9 @@
 
 #include <carefree-python/functions.hpp>
 
+#include <carefree-python/except.hpp>
+#include <carefree-python/extract.hpp>
+
 namespace cfo { namespace python
 {
   bool is
@@ -28,6 +31,16 @@ namespace cfo { namespace python
   {
     return left_obj.ptr() == right_obj.ptr();
   }
+
+  // int int_(const cfo::python::object &py_value)
+  // {
+  //   const auto py_int = cfo::python::import::int_(py_value);
+  //   cfo::python::extract<int> _int(py_int);
+  //   if (!_int.check())
+  //     cfo::python::raise::ValueError(py_int);
+
+  //   return _int();
+  // }
 
   std::string str(const boost::python::object &obj)
   {
