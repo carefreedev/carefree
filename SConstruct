@@ -20,7 +20,9 @@
 import sys
 import re
 import os
+import imp
 from subprocess import Popen, PIPE
+
 from path import path as Path
 
 import jinja2
@@ -28,6 +30,7 @@ from jinjatools.scons import JinjaBuilder
 
 sys.path.insert(0, '')
 import cfo.jinja
+import cfo.jinja.macros
 
 opts = Variables()
 opts.Add(BoolVariable(
@@ -47,10 +50,15 @@ opts.Add(PackageVariable(
   'list of python(-config) binary names to build carefree-python for',
   'yes'))
 
+JINJA_LOADER = jinja2.ChoiceLoader([
+  cfo.jinja.macros.LOADER,
+  jinja2.FileSystemLoader('.'),
+  ])
+
 env = Environment(
   variables = opts,
   BUILDERS = dict(
-    Jinja = JinjaBuilder(jinja2.FileSystemLoader('.')),
+    Jinja = JinjaBuilder(JINJA_LOADER),
     ))
 for varname in 'CPPFLAGS', 'CXXFLAGS', 'LDFLAGS':
   try:
@@ -92,10 +100,40 @@ LIB_PATH = Path('lib')
 INCLUDES = []
 for path in INCLUDE_SOURCE_PATH.walkfiles():
     if path.ext in ['.hpp', '.inl']:
-        INCLUDES.append(env.Jinja(
-          INCLUDE_PATH / INCLUDE_SOURCE_PATH.relpathto(path),
-          source=path,
-          ))
+        subpath, ext = path.splitext()
+        subpath /= ext.strip('.')
+
+        incenv = env.Clone()
+        try:
+            modinfo = imp.find_module('context', [subpath])
+        except ImportError:
+            depends = []
+        else:
+            depends = [subpath / 'context.py']
+            context = imp.load_module('context', *modinfo)
+            context = dict(
+              (name, getattr(context, name))
+              for name in context.__all__)
+            incenv.Append(
+              JINJACONTEXT=context,
+              )
+
+        loader = jinja2.ChoiceLoader([
+          JINJA_LOADER,
+          jinja2.FileSystemLoader(subpath),
+          ])
+        target = INCLUDE_PATH / (
+          INCLUDE_SOURCE_PATH.relpathto(path)
+          .replace('carefree_', 'carefree-'))
+
+        INCLUDES.append(
+          incenv.Depends(
+            incenv.Jinja(
+              target, source=path,
+
+              JINJALOADER=loader,
+              ),
+            depends))
 
 OBJECTS = []
 for path in SOURCE_PATH.files():
