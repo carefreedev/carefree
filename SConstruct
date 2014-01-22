@@ -97,6 +97,14 @@ BUILD_PATH = Path('build')
 
 LIB_PATH = Path('lib')
 
+
+SOURCE_DEPENDS = [SOURCE_PATH / 'context.py']
+
+from src import context
+context = {name: getattr(context, name) for name in context.__all__}
+env.Append(JINJACONTEXT=context)
+
+
 INCLUDES = []
 for path in INCLUDE_SOURCE_PATH.walkfiles():
     if path.ext in ['.hpp', '.inl']:
@@ -111,9 +119,8 @@ for path in INCLUDE_SOURCE_PATH.walkfiles():
         else:
             depends = [subpath / 'context.py']
             context = imp.load_module('context', *modinfo)
-            context = dict(
-              (name, getattr(context, name))
-              for name in context.__all__)
+            context = {name: getattr(context, name)
+                       for name in context.__all__}
             incenv.Append(
               JINJACONTEXT=context,
               )
@@ -122,9 +129,7 @@ for path in INCLUDE_SOURCE_PATH.walkfiles():
           JINJA_LOADER,
           jinja2.FileSystemLoader(subpath),
           ])
-        target = INCLUDE_PATH / (
-          INCLUDE_SOURCE_PATH.relpathto(path)
-          .replace('carefree_', 'carefree-'))
+        target = INCLUDE_PATH / INCLUDE_SOURCE_PATH.relpathto(path)
 
         INCLUDES.append(
           incenv.Depends(
@@ -133,7 +138,8 @@ for path in INCLUDE_SOURCE_PATH.walkfiles():
 
               JINJALOADER=loader,
               ),
-            depends))
+            SOURCE_DEPENDS + depends))
+
 
 OBJECTS = []
 for path in SOURCE_PATH.files():
@@ -145,6 +151,7 @@ for path in SOURCE_PATH.files():
               source=path,
               )),
           INCLUDES))
+
 
 if env['SHARED']:
     LIB_CAREFREE_TYPES = env.SharedLibrary(
