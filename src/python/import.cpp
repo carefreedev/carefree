@@ -31,7 +31,7 @@ namespace cfo { namespace python { namespace import
         {
           return boost::python::import("__builtin__");
         }
-      catch(const boost::python::error_already_set &e)
+      catch(const boost::python::error_already_set&)
         {
           if (!cfo::python::except(PyExc_ImportError))
             cfo::python::raise();
