@@ -27,3 +27,15 @@
 ^python/MANIFEST$
 
 ^test$
+
+\.sln$
+\.suo$
+\.(open)?sdf$
+
+\.vxcproj
+\.pyproj$
+
+^Debug/
+
+\.obj$
+\.exe$
