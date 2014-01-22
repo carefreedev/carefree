@@ -24,8 +24,10 @@
 #ifndef __CFO_VECTOR_HPP
 #define __CFO_VECTOR_HPP
 
-#include "basic_manager.hpp"
-#include "methods.hpp"
+#include "./common.hpp"
+
+#include "./basic_manager.hpp"
+#include "./methods.hpp"
 
 namespace cfo { namespace intern
 {
@@ -107,8 +109,9 @@ namespace cfo { namespace intern
      typedef const MGR& const_reference;
      typedef const MGR& reference;
 
-     typedef vector<_cfo_MANAGED_VECTOR_TEMPLATE_ARGS>::const_iterator
-     const_iterator;
+     typedef
+       typename vector<_cfo_MANAGED_VECTOR_TEMPLATE_ARGS>::const_iterator
+       const_iterator;
 
      inline std::size_t size() const
      {
@@ -153,7 +156,8 @@ namespace cfo { namespace intern
 
      typedef MGR& reference;
 
-     typedef vector<_cfo_MANAGED_VECTOR_TEMPLATE_ARGS>::iterator iterator;
+     typedef typename vector<_cfo_MANAGED_VECTOR_TEMPLATE_ARGS>::iterator
+       iterator;
 
      template<typename... A>
      inline void push_back(const A &...args)
@@ -222,8 +226,9 @@ namespace cfo { namespace intern
     std::size_t _index;
 
   public:
-    typedef vector<T, SYNC, EXC, INIT_T, COPY, MGR>::cfo_manager_type
-    cfo_vector_manager_type;
+    typedef
+      typename vector<T, SYNC, EXC, INIT_T, COPY, MGR>::cfo_manager_type
+      cfo_vector_manager_type;
 
     inline const_iterator
     (const cfo_vector_manager_type &vector, const std::size_t index = 0u
@@ -365,7 +370,8 @@ namespace cfo { namespace intern
     std::size_t _index;
 
   public:
-    typedef vector<T, SYNC, EXC, INIT_T, COPY, MGR>::cfo_manager_type
+    typedef
+      typename vector<T, SYNC, EXC, INIT_T, COPY, MGR>::cfo_manager_type
       cfo_vector_manager_type;
 
     inline iterator

@@ -24,8 +24,10 @@
 #ifndef __CFO_MAP_HPP
 #define __CFO_MAP_HPP
 
-#include "basic_manager.hpp"
-#include "methods.hpp"
+#include "./common.hpp"
+
+#include "./basic_manager.hpp"
+#include "./methods.hpp"
 
 namespace cfo { namespace intern
 {

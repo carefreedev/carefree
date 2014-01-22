@@ -57,7 +57,9 @@ namespace cfo
 
   namespace _bytes
   {
-    typedef std::basic_string<cfo::byte> base;
+    //- Using cfo::byte as template arg raises C2620 in VC++
+    //  (union member with constructor)
+    typedef std::basic_string<cfo::byte::value_type> base;
   }
   class bytes : public _bytes::base
   {

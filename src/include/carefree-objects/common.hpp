@@ -21,9 +21,16 @@
 #ifndef __CFO_COMMON_HPP
 #define __CFO_COMMON_HPP
 
+#if defined(WIN32) || defined(WIN64)
+#define noexcept(_)
+#endif
+
 #include <cstdlib>
 
 #include <memory>
+
+#include <vector>
+#include <map>
 
 #include <boost/foreach.hpp>
 

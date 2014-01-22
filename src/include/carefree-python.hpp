@@ -32,4 +32,6 @@
 #include "./carefree-python/except.hpp"
 #include "./carefree-python/extract.hpp"
 
+#include "./carefree-python/object.inl"
+
 #endif

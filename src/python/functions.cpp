@@ -23,6 +23,8 @@
 #include <carefree-python/except.hpp>
 #include <carefree-python/extract.hpp>
 
+#include <carefree-python/object.inl>
+
 namespace cfo { namespace python
 {
   bool is
@@ -32,20 +34,27 @@ namespace cfo { namespace python
     return left_obj.ptr() == right_obj.ptr();
   }
 
-  // int int_(const cfo::python::object &py_value)
-  // {
-  //   const auto py_int = cfo::python::import::int_(py_value);
-  //   cfo::python::extract<int> _int(py_int);
-  //   if (!_int.check())
-  //     cfo::python::raise::ValueError(py_int);
+{% for INT in CFO_PYTHON_INT_TYPES %}
+  {{ INT }} {{ INT.cfo }}
+  (const boost::python::object &py_value, const unsigned int base /*= 0u*/)
+  {
+    const cfo::python::object py_int = base ?
+      cfo::python::import::int_(py_value, boost::python::arg("base") = base)
+      : cfo::python::import::int_(py_value);
 
-  //   return _int();
-  // }
+    cfo::python::extract<{{ INT }}> _int(py_int);
+    if (!_int.check())
+      throw std::invalid_argument(py_int);
+
+    return _int();
+  }
+{% endfor %}
 
   std::string str(const boost::python::object &obj)
   {
-    const boost::python::object &str_obj = boost::python::str(obj);
+    const boost::python::object str_obj = boost::python::str(obj);
     const boost::python::extract<std::string> _str(str_obj);
+    assert(_str.check());
 
     return _str();
   }
@@ -54,6 +63,7 @@ namespace cfo { namespace python
   {
     const boost::python::object &repr_obj = cfo::python::import::repr(obj);
     const boost::python::extract<std::string> _repr_str(repr_obj);
+    assert(_repr_str.check());
 
     return _repr_str();
   }

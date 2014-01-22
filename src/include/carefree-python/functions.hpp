@@ -35,15 +35,8 @@ namespace cfo { namespace python
   std::string str(const boost::python::object &obj);
 
 {% for INT in CFO_PYTHON_INT_TYPES %}
-  inline {{ INT }} {{ INT.cfo }} (const boost::python::object &py_value)
-  {
-    const auto py_int = cfo::python::import::int_(py_value);
-    cfo::python::extract<{{ INT }}> _int(py_int);
-    if (!_int.check())
-      throw std::invalid_argument(str(py_int));
-
-    return _int();
-  }
+  {{ INT }} {{ INT.cfo }}
+  (const boost::python::object &py_value, const unsigned int base = 0u);
 {% endfor %}
 
   std::string repr(const boost::python::object &obj);

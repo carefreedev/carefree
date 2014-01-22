@@ -67,7 +67,9 @@ namespace cfo
 
   namespace _string
   {
-    typedef std::basic_string<cfo::character> super;
+    //- Using cfo::character as template arg raises C2620 in VC++
+    //  (union member with constructor)
+    typedef std::basic_string<cfo::character::value_type> super;
   }
 
   class string : public _string::super
