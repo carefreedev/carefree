@@ -25,11 +25,17 @@
 
 namespace cfo { namespace python
 {
+  /**
+   * A wrapper for `boost::python::object`.
+   *
+   * - Provides additional constructors and conversion operators.
+   */
   class object : public boost::python::object
   {
     using boost::python::object::object;
 
-  public:
+  public: //- Default and copy contructor.
+
     inline object() :
       boost::python::object()
     {}
@@ -38,15 +44,29 @@ namespace cfo { namespace python
       boost::python::object(static_cast<const boost::python::object&>(obj))
     {}
 
+  public: //- Construct from boost::python::object.
+
     inline object(const boost::python::object &obj) :
       boost::python::object(obj)
     {}
+
+    inline object(boost::python::object &&obj) :
+      boost::python::object(obj)
+    {}
+
+    inline object(const boost::python::api::const_object_item &obj) :
+      boost::python::object(obj)
+    {}
+
+  public: //- Construct from Python C API Object pointers.
 
     inline object(PyObject *obj) :
       boost::python::object
       (obj ? boost::python::object(boost::python::borrowed(obj))
        : boost::python::object())
     {}
+
+  public: //- Construct from byte/character.
 
     inline object(const cfo::byte &byte) :
       boost::python::object(int(byte.value))
@@ -55,6 +75,8 @@ namespace cfo { namespace python
     inline object(const cfo::character &chr) :
       boost::python::object(std::wstring(&chr.value, 1u))
     {}
+
+  public: //-Construct from IP addresses.
 
     inline object(const cfo::ip::v4::address &addr) :
       boost::python::object
@@ -66,7 +88,8 @@ namespace cfo { namespace python
       (cfo::python::import::netaddr::IPAddress(std::string(addr)))
     {}
 
-  public:
+  public: //- Assignment operators.
+
     using boost::python::object::operator=;
 
     inline object& operator=(const cfo::python::object &obj)
@@ -75,12 +98,40 @@ namespace cfo { namespace python
       return *this;
     }
 
-  public:
+    inline object& operator=
+    (const boost::python::api::const_object_item &obj)
+    {
+      this->boost::python::object::operator=(obj);
+      return *this;
+    }
+
+  public: //- Implicit boost::python::object converters.
+
     inline operator const boost::python::object&() const
     {
       return static_cast<const boost::python::object&>(*this);
     }
-  };
-} }
 
-#endif
+    inline operator boost::python::object&()
+    {
+      return static_cast<boost::python::object&>(*this);
+    }
+
+    inline operator boost::python::object() const
+    {
+      return static_cast<const boost::python::object&>(*this);
+    }
+
+  public: //- Additional conversion operators using cfo::python::* converters.
+    // (#include "object.inl").
+
+{% for INT in [INT_TYPES, UINT_TYPES]|chain %}
+    inline operator {{ INT }}() const;
+{% endfor %}
+
+    inline operator std::string() const;
+
+  }; /* class object */
+} } /* namespace cfo::python */
+
+#endif /* __CAREFREE_PYTHON_OBJECT_HPP */
