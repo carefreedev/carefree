@@ -32,39 +32,10 @@ sys.path.insert(0, '')
 import cfo.jinja
 import cfo.jinja.macros
 
-opts = Variables()
-opts.Add(BoolVariable(
-  'DEBUG', 'build carefree-python with debugging symbols',
-  'no'))
-opts.Add(BoolVariable(
-  'SHARED', 'build a shared carefree-python library',
-  'yes'))
-opts.Add(BoolVariable(
-  'STATIC', 'build a static carefree-python library',
-  'yes'))
-opts.Add(BoolVariable(
-  'TESTS', 'Build the test programs',
-  'yes'))
-opts.Add(PackageVariable(
-  'PYTHON',
-  'list of python(-config) binary names to build carefree-python for',
-  'yes'))
+from cfo.scons import Environment
 
-JINJA_LOADER = jinja2.ChoiceLoader([
-  cfo.jinja.macros.LOADER,
-  jinja2.FileSystemLoader('.'),
-  ])
 
-env = Environment(
-  variables = opts,
-  BUILDERS = dict(
-    Jinja = JinjaBuilder(JINJA_LOADER),
-    ))
-for varname in 'CPPFLAGS', 'CXXFLAGS', 'LDFLAGS':
-  try:
-    env.MergeFlags(os.environ[varname])
-  except KeyError:
-    pass
+env = Environment('carefree-objects')
 
 env.Prepend(
   CPPPATH = [
@@ -78,10 +49,6 @@ env.Append(
     env['DEBUG'] and 'DEBUG' or 'NDEBUG',
     ],
   )
-
-CXX = os.environ.get('CXX')
-if CXX:
-    env.Replace(CXX = CXX)
 
 BOOST_LIBS = [
   'boost_system',
@@ -126,7 +93,7 @@ for path in INCLUDE_SOURCE_PATH.walkfiles():
               )
 
         loader = jinja2.ChoiceLoader([
-          JINJA_LOADER,
+          incenv['JINJALOADER'],
           jinja2.FileSystemLoader(subpath),
           ])
         target = INCLUDE_PATH / INCLUDE_SOURCE_PATH.relpathto(path)
