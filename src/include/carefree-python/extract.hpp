@@ -31,19 +31,25 @@ namespace cfo { namespace python
   class extract : public boost::python::extract<T>
   {
   public:
+    const cfo::python::object source;
+
     inline extract(const cfo::python::object &py_value) :
       boost::python::extract<T>
-      (static_cast<const boost::python::object&>(py_value))
+      (static_cast<const boost::python::object&>(py_value)
+       ),
+      source(py_value)
     {}
 
     // using boost::python::extract<T>::extract;
     inline extract(const boost::python::object &py_value) :
-      boost::python::extract<T>(py_value)
+      boost::python::extract<T>(py_value),
+      source(py_value)
     {}
 
     inline bool check() const
     {
-      return this->boost::python::extract<T>::check();
+      return !this->source.is_none()
+        && this->boost::python::extract<T>::check();
     }
   };
 
