@@ -21,7 +21,7 @@
 
 .. moduleauthor:: Stefan Zimmermann <zimmermann.code@gmail.com>
 """
-__all__ = 'CONTEXT',
+__all__ = ['CONTEXT']
 
 from . import context
 
