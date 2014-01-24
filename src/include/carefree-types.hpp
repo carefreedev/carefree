@@ -25,6 +25,8 @@
 
 #include "./carefree-types/common.hpp"
 
+#include "./carefree-types/named.hpp"
+
 #include "./carefree-types/bytes.hpp"
 #include "./carefree-types/string.hpp"
 
