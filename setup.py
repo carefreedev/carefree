@@ -147,6 +147,7 @@ setup(
     'cfo.jinja',
     'cfo.jinja.macros',
     'cfo.pkg',
+    'cfo.scons',
     ] + LIB_PACKAGES,
 
   package_data={
