@@ -26,10 +26,12 @@
 #ifndef __CFO_MANAGED_HPP
 #define __CFO_MANAGED_HPP
 
-#include "common.hpp"
+#include "./common.hpp"
 
-#include "basic_manager.hpp"
-#include "methods.hpp"
+#include "./error.hpp"
+
+#include "./basic_manager.hpp"
+#include "./methods.hpp"
 
 namespace cfo { namespace intern
 {
@@ -103,16 +105,34 @@ namespace cfo { namespace intern
        <KEY, T, true, EXC, managed<T, true, EXC, INIT_T>, EXTRA...>,
        true>;
 
-    inline managed() :
+  private:
+    cfo::intern::error _error;
+
+  public:
+    inline managed() try :
       basic_manager(),
       obj(INIT_NULL ? NULL : static_cast<T*>(new INIT_T))
     {}
+    catch (const std::exception &e)
+    {
+      if (EXC)
+        throw e;
+
+      this->_error.reset(e);
+    }
 
     template<typename... A>
-    inline managed(A... args) :
+    inline managed(A... args) try :
       basic_manager(),
       obj(static_cast<T*>(new INIT_T(args...)))
     {}
+    catch (const std::exception &e)
+    {
+      if (EXC)
+        throw e;
+
+      this->_error.reset(e);
+    }
 
     // inline managed(const managed<T, true, true> &/*nullmanager*/) :
     //   basic_manager(),
@@ -144,8 +164,16 @@ namespace cfo { namespace intern
         delete this->obj;
     }
 
+  public:
+    inline const cfo::intern::error& error_() const
+    {
+      return this->_error;
+    }
+
+  public:
     inline managed<T, true, EXC, INIT_T, false, COPY> copy() const;
 
+  public:
     inline const_accessor caccess() const
     {
       return const_accessor(*this);
@@ -156,11 +184,13 @@ namespace cfo { namespace intern
       return accessor(*this);
     }
 
+  public:
     inline T* unmanaged() const
     {
       return this->obj;
     }
 
+  public:
     inline operator bool() const
     {
       return this->obj;
@@ -262,14 +292,54 @@ namespace cfo { namespace intern
        <I, T, false, EXC, managed<T, false, EXC, INIT_T, false>, E...>,
        false>;
 
+  private:
+    cfo::intern::error _error;
+
+  public:
     inline managed() :
-      basic_type(INIT_NULL ? NULL : static_cast<T*>(new INIT_T))
-    {}
+      // basic_type(INIT_NULL ? NULL : static_cast<T*>(new INIT_T))
+      basic_type(NULL)
+    {
+      if (INIT_NULL)
+        return;
+
+      if (EXC)
+        {
+          this->std::shared_ptr<T>::reset(static_cast<T*>(new INIT_T));
+          return;
+        }
+      try
+        {
+          this->std::shared_ptr<T>::reset(static_cast<T*>(new INIT_T));
+        }
+      catch (const std::exception &e)
+        {
+          this->_error.reset(e);
+        }
+    }
 
     template<typename... A>
     inline managed(A... args) :
-      basic_type(static_cast<T*>(new INIT_T(args...)))
-    {}
+      // basic_type(static_cast<T*>(new INIT_T(args...)))
+      basic_type(NULL)
+    {
+      if (EXC)
+        {
+          this->std::shared_ptr<T>::reset
+            (static_cast<T*>(new INIT_T(args...)));
+
+          return;
+        }
+      try
+        {
+          this->std::shared_ptr<T>::reset
+            (static_cast<T*>(new INIT_T(args...)));
+        }
+      catch (const std::exception &e)
+        {
+          this->_error.reset(e);
+        }
+    }
 
     // inline managed(const managed<T, false, true> &/*nullmanager*/) :
     //   basic_type(NULL)
@@ -295,11 +365,74 @@ namespace cfo { namespace intern
 
     inline managed(const null&);
 
+  public:
+    inline const cfo::intern::error& error_() const
+    {
+      return this->_error;
+    }
+
+  public:
+    inline bool is
+    (const managed<T, false, EXC, INIT_T, INIT_NULL, COPY> &other)
+      const
+    {
+      if (!this->unmanaged())
+        return !other.unmanaged();
+
+      try
+        {
+          return this->unmanaged()
+            == &dynamic_cast<const T&>(*other.unmanaged());
+        }
+      catch (const std::bad_cast &)
+        {
+          return false;
+        }
+    }
+
+    template<typename MGR>
+    inline bool is_() const
+    {
+      if (!this->unmanaged())
+        return false;
+
+      try
+        {
+          dynamic_cast<const typename MGR::unmanaged_type&>
+            (*this->unmanaged());
+
+          return true;
+        }
+      catch (const std::bad_cast &)
+        {
+          return false;
+        }
+    }
+
+    template<typename T_>
+    inline bool is_managed() const
+    {
+      if (!this->unmanaged())
+        return false;
+
+      try
+        {
+          dynamic_cast<const T_&>(*this->unmanaged());
+          return true;
+        }
+      catch (const std::bad_cast &)
+        {
+          return false;
+        }
+    }
+
+  public:
     inline std::size_t refcount() const
     {
       return this->use_count();
     }
 
+  public:
     inline bool operator==
     (const managed<T, false, EXC, INIT_T, INIT_NULL, COPY> &other)
       const
@@ -354,14 +487,17 @@ namespace cfo { namespace intern
         (managed<T, false, EXC, INIT_T, INIT_NULL, COPY>(other));
     }
 
+  public:
     inline T* operator->() const
     {
       assert(this->get());
       return this->get();
     }
 
+  public:
     inline managed<T, false, EXC, INIT_T, false, COPY> copy() const;
 
+  public:
     inline except except_() const
     {
       return except(*this);
@@ -372,6 +508,7 @@ namespace cfo { namespace intern
       return manager_type(*this);
     }
 
+  public:
     inline T* unmanaged() const
     {
       assert(this->get());

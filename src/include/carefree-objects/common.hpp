@@ -27,12 +27,16 @@
 
 #include <cstdlib>
 
+#include <typeinfo>
+#include <typeindex>
+
 #include <memory>
 
 #include <vector>
 #include <map>
 
 #include <boost/foreach.hpp>
+#include <boost/current_function.hpp>
 
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/shared_mutex.hpp>
