@@ -46,6 +46,11 @@ namespace cfo { namespace python
       source(py_value)
     {}
 
+    inline extract(const boost::python::api::const_object_item &py_value) :
+      boost::python::extract<T>(py_value),
+      source(py_value)
+    {}
+
     inline bool check() const
     {
       return !this->source.is_none()
