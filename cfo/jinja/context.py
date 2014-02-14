@@ -21,11 +21,16 @@
 
 .. moduleauthor:: Stefan Zimmermann <zimmermann.code@gmail.com>
 """
+from __future__ import division
+
 __all__ = ['ARCH_BITS', 'INT_TYPES', 'UINT_TYPES']
 
 import platform
+from itertools import starmap
+
 
 ARCH_BITS = int(platform.architecture()[0].split('bit')[0])
+
 
 ## INT_TYPES = ['std::int%i_t' % size for size in 8, 16, 32, 64]
 ## if ARCH_BITS == 32:
@@ -35,15 +40,38 @@ ARCH_BITS = int(platform.architecture()[0].split('bit')[0])
 ## if ARCH_BITS == 32:
 ##   UINT_TYPES.append('unsigned long')
 
+
+class IntType(str):
+    def __new__(cls, name, bits):
+        return str.__new__(cls, name)
+
+    def __init__(self, name, bits):
+        self.bits = bits
+        self.size = bits // 8
+        if name.startswith('unsigned'):
+            self.min = 0
+            self.max = 2 ** bits - 1
+        else:
+            self.min = -2 ** (bits - 1)
+            self.max = 2 ** (bits - 1) - 1
+
+
 class IntTypes(list):
     def __init__(self, names_and_sizes):
-        self._items = list(names_and_sizes)
-
-    def __iter__(self):
-        return (item[0] for item in self._items)
+        list.__init__(self, starmap(IntType, names_and_sizes))
 
     def __gt__(self, bits):
-        return (item[0] for item in self._items if item[1] > bits)
+        return (i for i in self if i.bits > bits)
+
+    def __ge__(self, bits):
+        return (i for i in self if i.bits >= bits)
+
+    def __lt__(self, bits):
+        return (i for i in self if i.bits < bits)
+
+    def __le__(self, bits):
+        return (i for i in self if i.bits <= bits)
+
 
 INT_TYPES = IntTypes([
   ('char', 8),
@@ -53,5 +81,4 @@ INT_TYPES = IntTypes([
   ('long long', 64),
   ])
 
-UINT_TYPES = IntTypes(
-  ('unsigned ' + name, size) for name, size in INT_TYPES._items)
+UINT_TYPES = IntTypes(('unsigned ' + i, i.bits) for i in INT_TYPES)
