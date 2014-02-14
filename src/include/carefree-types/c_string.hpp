@@ -18,21 +18,35 @@
  * along with carefree-objects.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __CAREFREE_TOOLS_HPP
-#define __CAREFREE_TOOLS_HPP
+#ifndef __CFO_TYPES_C_STRING_HPP
+#define __CFO_TYPES_C_STRING_HPP
 
-#include <carefree-objects.hpp>
+#include "./common.hpp"
 
-#include "./carefree-types/common.hpp"
+#include "./c_array.hpp"
 
-#include "./carefree-types/named.hpp"
+namespace cfo
+{
+  class c_string : public c_array<char>
+  {
+    typedef c_array<char>::_except<c_string> except;
 
-#include "./carefree-types/c_array.hpp"
-#include "./carefree-types/c_string.hpp"
+  public:
+    using c_array<char>::c_array;
+  };
 
-#include "./carefree-types/bytes.hpp"
-#include "./carefree-types/string.hpp"
+  class const_c_string : public const_c_array<char>
+  {
+  public:
+    typedef const_c_array<char>::_except<const_c_string> except;
 
-#include "./carefree-types/ip.hpp"
+  public:
+    using const_c_array<char>::const_c_array;
+
+    inline const_c_string(const std::string &str) :
+      const_c_string(str.c_str(), str.length())
+    {}
+  };
+}
 
 #endif
