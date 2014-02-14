@@ -6,7 +6,7 @@ include requirements.txt
 
 include cfo/jinja/macros/cfo
 
-recursive-include src *.cpp *.hpp *.inl
+recursive-include src *.cpp *.hpp *.inl *.py
 include test.cpp
 
 include SConstruct
