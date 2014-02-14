@@ -22,11 +22,12 @@
 .. moduleauthor:: Stefan Zimmermann <zimmermann.code@gmail.com>
 """
 
-__all__ = 'SEARCH_PATH', 'LOADER', 'CFO',
+__all__ = ['SEARCH_PATH', 'LOADER', 'CFO']
 
 from path import path as Path
 
 import jinja2
+
 
 SEARCH_PATH = Path(__path__[0])
 

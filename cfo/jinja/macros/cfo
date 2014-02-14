@@ -28,3 +28,33 @@
   };
   typedef typename _{{ name }}::Enum {{ name }};
 {% endmacro %}
+
+{% macro _method(pre_qualifiers, return_type, name, arg_types, post_qualifiers) %}
+  {{ pre_qualifiers|join(' ') }} {{ return_type }} {{ name }}
+  ({{ arg_types|join(', ') }})
+    {{ post_qualifiers|join('\n') }}
+    noexcept(!cfo_EXC)
+  {
+  {% if caller %}
+    {{ caller() }}
+  {% else %}
+    return (*this)->{{ name }}();
+  {% endif %}
+  }
+{% endmacro %}
+
+{% macro method(return_type, name, arg_types) %}
+  {{ _method([], return_type, name, arg_types, []) }}
+{% endmacro %}
+
+{% macro const_method(return_type, name, arg_types) %}
+  {{ _method([], return_type, name, arg_types, ['const']) }}
+{% endmacro %}
+
+{% macro inline_method(return_type, name, arg_types) %}
+  {{ _method(['inline'], return_type, name, arg_types, []) }}
+{% endmacro %}
+
+{% macro inline_const_method(return_type, name, arg_types) %}
+  {{ _method(['inline'], return_type, name, arg_types, ['const']) }}
+{% endmacro %}
