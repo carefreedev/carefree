@@ -27,7 +27,7 @@
 
 namespace cfo { namespace python
 {
-  template<typename T>
+  template<typename T = void>
   class extract : public boost::python::extract<T>
   {
   public:
@@ -58,6 +58,14 @@ namespace cfo { namespace python
     }
   };
 
+  template<>
+  class extract<void>
+  {
+  public:
+    typedef extract<boost::python::tuple> tuple;
+    typedef extract<boost::python::list> list;
+    typedef extract<boost::python::dict> dict;
+  };
 
 {% for int in [INT_TYPES, UINT_TYPES]|chain %}
   template<>
