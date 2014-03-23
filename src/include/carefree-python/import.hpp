@@ -29,12 +29,11 @@ namespace cfo { namespace python { namespace import
   {
     extern const boost::python::object
       type,
-
       property,
-
       int_,
       hash,
       iter,
+      next,
       repr;
   }
   using namespace __builtin__;
