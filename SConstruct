@@ -173,6 +173,7 @@ if env['TESTS']:
 CAREFREE_PYTHON_SOURCE_NAMES = [
   'import',
   'functions',
+  'object/iterator',
   ]
 CAREFREE_PYTHON_SOURCES = [
   env.Jinja(
