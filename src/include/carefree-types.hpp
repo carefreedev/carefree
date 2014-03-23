@@ -30,6 +30,8 @@
 #include "./carefree-types/c_array.hpp"
 #include "./carefree-types/c_string.hpp"
 
+#include "./carefree-types/bits.hpp"
+
 #include "./carefree-types/bytes.hpp"
 #include "./carefree-types/string.hpp"
 
