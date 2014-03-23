@@ -31,10 +31,11 @@ namespace cfo { namespace python { namespace import
         {
           return boost::python::import("__builtin__");
         }
-      catch(const boost::python::error_already_set&)
+      catch(const cfo::python::error&)
         {
-          if (!cfo::python::except(PyExc_ImportError))
-            cfo::python::raise();
+          const auto except = cfo::python::except();
+          if (!except(PyExc_ImportError))
+            except.raise();
         }
       return boost::python::import("builtins");
     }
@@ -49,6 +50,7 @@ namespace cfo { namespace python { namespace import
       int_ = module.attr("int"),
       hash = module.attr("hash"),
       iter = module.attr("iter"),
+      next = module.attr("next"),
       repr = module.attr("repr");
   }
 
