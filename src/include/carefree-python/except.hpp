@@ -28,6 +28,8 @@
 
 namespace cfo { namespace python
 {
+  typedef boost::python::error_already_set error;
+
   struct raise
   {
     template<typename... ARGS>
@@ -103,6 +105,11 @@ namespace cfo { namespace python
   }
 
   inline void raise_exc(const boost::python::tuple &exc_info)
+  {
+    raise_exc(exc_info[0], exc_info[1], exc_info[2]);
+  }
+
+  inline void raise_exc(const cfo::python::object &exc_info)
   {
     raise_exc(exc_info[0], exc_info[1], exc_info[2]);
   }
@@ -222,23 +229,20 @@ namespace cfo { namespace python
   class except : protected cfo::python::object
   {
   public:
-    inline except(const cfo::python::object &exc_type) :
-      cfo::python::object()
+    inline except() :
+      cfo::python::object(cfo::python::exc_info())
+    {}
+
+  public:
+    inline bool operator()(const cfo::python::object &exc_type) const
     {
-      const auto exc_info = cfo::python::exc_info();
-      if (cfo::python::is(exc_info[0], exc_type))
-        this->cfo::python::object::operator=(exc_info[1]);
+      return cfo::python::is((*this)[0], exc_type);
     }
 
   public:
-    inline operator bool() const
+    inline void raise() const
     {
-      return !this->is_none();
-    }
-
-    inline bool operator!() const
-    {
-      return this->is_none();
+      raise_exc(*this);
     }
   };
 } }
