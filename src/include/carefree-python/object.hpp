@@ -34,6 +34,12 @@ namespace cfo { namespace python
   {
     using boost::python::object::object;
 
+  public:
+    typedef object value_type;
+
+    class iterator;
+    typedef iterator const_iterator;
+
   public: //- Default and copy contructor.
 
     inline object() :
@@ -131,7 +137,19 @@ namespace cfo { namespace python
 
     inline operator std::string() const;
 
+  public:
+    //--> ./object.inl
+
+    inline iterator begin();
+
+    inline const_iterator cbegin() const;
+
+    inline iterator end();
+
+    inline const_iterator cend() const;
   }; /* class object */
 } } /* namespace cfo::python */
+
+#include "./object/iterator.hpp"
 
 #endif /* __CAREFREE_PYTHON_OBJECT_HPP */

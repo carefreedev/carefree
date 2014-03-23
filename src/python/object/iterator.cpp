@@ -18,44 +18,30 @@
  * along with carefree-objects.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __CAREFREE_PYTHON_OBJECT_INL
-#define __CAREFREE_PYTHON_OBJECT_INL
+#include <carefree-python/object/iterator.hpp>
 
-#include "./object.hpp"
+#include <carefree-python/except.hpp>
 
 namespace cfo { namespace python
 {
-  inline object::iterator object::begin()
+  object::iterator& object::iterator::operator++()
   {
-    return object::iterator(*this);
-  }
+    try
+      {
+        const auto &self = static_cast<boost::python::object&>(*this);
+        //- next() raises StopIteration after last item:
+        const auto item = cfo::python::import::next(self);
+        this->_item_ptr.reset(new cfo::python::object(item));
+      }
+    catch (const cfo::python::error&)
+      {
+        const auto except = cfo::python::except();
+        if (!except(PyExc_StopIteration))
+          //- Just reraise any unexpected Exception:
+          except.raise();
 
-  inline object::const_iterator object::cbegin() const
-  {
-    return object::const_iterator(*this);
-  }
-
-  inline object::iterator object::end()
-  {
-    return iterator();
-  }
-
-  inline object::const_iterator object::cend() const
-  {
-    return const_iterator();
-  }
-
-{% for INT in [INT_TYPES, UINT_TYPES]|chain %}
-  inline object::operator {{ INT }}() const
-  {
-    return cfo::python::{{ CFO_PYTHON_INT_TYPES[INT].cfo }}(*this);
-  }
-{% endfor %}
-
-  inline object::operator std::string() const
-  {
-    return cfo::python::str(*this);
+        this->_item_ptr.reset(); //==> *this == object.end()
+      }
+    return *this;
   }
 } }
-
-#endif
