@@ -116,7 +116,7 @@ namespace cfo { namespace intern
     catch (const std::exception &e)
     {
       if (EXC)
-        throw e;
+        throw;
 
       this->_error.reset(e);
     }
@@ -129,7 +129,7 @@ namespace cfo { namespace intern
     catch (const std::exception &e)
     {
       if (EXC)
-        throw e;
+        throw;
 
       this->_error.reset(e);
     }
