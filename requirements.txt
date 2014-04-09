@@ -1,5 +1,5 @@
 path.py
-moretools >= 0.1a25
+moretools >= 0.1a34
 Jinja2
-jinjatools >= 0.1a10
+jinjatools >= 0.1a14
 libarray_ptr >= 0.7
