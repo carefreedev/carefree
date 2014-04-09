@@ -19,28 +19,20 @@ REQUIREMENTS_TXT = open('requirements.txt').read().strip().split('\n')
 REQUIRES = OrderedDict(
   (req.unsafe_name, req) for req in parse_requirements(REQUIREMENTS_TXT))
 
-PYTHONPATH = os.environ.get('PYTHONPATH')
 
-paths = []
 names = os.listdir('..')
 if 'pip-delete-this-directory.txt' in names:
-    paths.extend(os.path.join('..', name) for name in names)
-paths.extend(os.listdir('.'))
-paths = [os.path.abspath(path) for path in paths if os.path.isdir(path)]
-for req in REQUIRES.values():
+    paths = (os.path.join('..', name) for name in names)
+    paths = [os.path.abspath(p) for p in paths if os.path.isdir(p)]
     for path in paths:
-        if any(os.path.basename(path).startswith(reqname)
-               for reqname in (req.key, req.unsafe_name)
-               ):
-            sys.path.insert(0, path)
+        sys.path.insert(0, path)
 
-            if PYTHONPATH is None:
-                PYTHONPATH = path
-            else:
-                PYTHONPATH = '%s:%s' % (path, PYTHONPATH)
-
-if PYTHONPATH is not None:
-    os.environ['PYTHONPATH'] = PYTHONPATH
+    PYTHONPATH = os.environ.get('PYTHONPATH')
+    PATH = ':'.join(paths)
+    if PYTHONPATH is None:
+        os.environ['PYTHONPATH'] = PATH
+    else:
+        os.environ['PYTHONPATH'] = ':'.join([PATH, PYTHONPATH])
 
 
 LIB_PACKAGE = 'libcfo'
