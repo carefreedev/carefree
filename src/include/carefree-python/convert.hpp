@@ -18,21 +18,25 @@
  * along with carefree-objects.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __CAREFREE_PYTHON_HPP
-#define __CAREFREE_PYTHON_HPP
+#ifndef __CAREFREE_PYTHON_CONVERT_HPP
+#define __CAREFREE_PYTHON_CONVERT_HPP
 
-#include <carefree-objects.hpp>
-#include <carefree-types.hpp>
+#include "common.hpp"
 
-#include "./carefree-python/common.hpp"
-#include "./carefree-python/import.hpp"
+#include "object.hpp"
+#include "extract.hpp"
 
-#include "./carefree-python/object.hpp"
-#include "./carefree-python/functions.hpp"
-#include "./carefree-python/except.hpp"
-#include "./carefree-python/extract.hpp"
-#include "./carefree-python/convert.hpp"
+namespace cfo { namespace python
+{
+{% for BITS in [8, 16, 32, 64] %}
 
-#include "./carefree-python/object.inl"
+  std::int{{ BITS }}_t to_int{{ BITS }}
+  (const cfo::python::object &py_obj);
+
+  std::uint{{ BITS }}_t to_uint{{ BITS }}
+  (const cfo::python::object &py_obj);
+
+{% endfor %}
+} }
 
 #endif
