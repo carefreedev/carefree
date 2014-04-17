@@ -21,6 +21,9 @@
 #ifndef __CFO_TOOLS_COMMON_HPP
 #define __CFO_TOOLS_COMMON_HPP
 
+#include <iostream>
+#include <iomanip>
+
 #include <locale>
 // #include <codecvt>
 
@@ -29,5 +32,7 @@
 #include <carefree-objects.hpp>
 
 #include <boost/asio.hpp>
+
+#include <boost/tokenizer.hpp>
 
 #endif
