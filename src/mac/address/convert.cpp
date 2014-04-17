@@ -18,24 +18,20 @@
  * along with carefree-objects.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __CAREFREE_TOOLS_HPP
-#define __CAREFREE_TOOLS_HPP
+#include <carefree-types/mac.hpp>
 
-#include <carefree-objects.hpp>
+namespace cfo { namespace mac
+{
+  std::string address::to_string() const
+  {
+    std::ostringstream out;
+    out.fill('0');
 
-#include "./carefree-types/common.hpp"
+    bool first = true;
+    for (const std::uint8_t &byte : *this)
+      (first ? (first = false, out) : (out << ':')
+       ) << std::hex << std::setw(2) << int(byte);
 
-#include "./carefree-types/named.hpp"
-
-#include "./carefree-types/c_array.hpp"
-#include "./carefree-types/c_string.hpp"
-
-#include "./carefree-types/bits.hpp"
-
-#include "./carefree-types/bytes.hpp"
-#include "./carefree-types/string.hpp"
-
-#include "./carefree-types/ip.hpp"
-#include "./carefree-types/mac.hpp"
-
-#endif
+    return out.str();
+  }
+} }

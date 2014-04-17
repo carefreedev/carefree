@@ -18,24 +18,11 @@
  * along with carefree-objects.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __CAREFREE_TOOLS_HPP
-#define __CAREFREE_TOOLS_HPP
+#ifndef __CFO_TOOLS_MAC_HPP
+#define __CFO_TOOLS_MAC_HPP
 
-#include <carefree-objects.hpp>
+#include <carefree-types/common.hpp>
 
-#include "./carefree-types/common.hpp"
-
-#include "./carefree-types/named.hpp"
-
-#include "./carefree-types/c_array.hpp"
-#include "./carefree-types/c_string.hpp"
-
-#include "./carefree-types/bits.hpp"
-
-#include "./carefree-types/bytes.hpp"
-#include "./carefree-types/string.hpp"
-
-#include "./carefree-types/ip.hpp"
-#include "./carefree-types/mac.hpp"
+#include "./mac/address.hpp"
 
 #endif

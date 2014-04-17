@@ -18,24 +18,28 @@
  * along with carefree-objects.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __CAREFREE_TOOLS_HPP
-#define __CAREFREE_TOOLS_HPP
+#ifndef __CFO_TOOLS_MAC_ADDRESS_INL
+#define __CFO_TOOLS_MAC_ADDRESS_INL
 
-#include <carefree-objects.hpp>
+#include "./address.hpp"
 
-#include "./carefree-types/common.hpp"
-
-#include "./carefree-types/named.hpp"
-
-#include "./carefree-types/c_array.hpp"
-#include "./carefree-types/c_string.hpp"
-
-#include "./carefree-types/bits.hpp"
-
-#include "./carefree-types/bytes.hpp"
-#include "./carefree-types/string.hpp"
-
-#include "./carefree-types/ip.hpp"
-#include "./carefree-types/mac.hpp"
+namespace cfo { namespace mac
+{
+  template<typename INT>
+  inline address::address
+  (const stz::const_array_ptr<INT> &bytes, bool &error
+   ) :
+    array_type()
+  {
+    if (bytes.size() == 6u)
+      {
+        error = true;
+        return;
+      }
+    error = false;
+    for (std::size_t n = 0u ; n < 6u ; ++n)
+      (*this)[n] = bytes[n];
+  }
+} }
 
 #endif
