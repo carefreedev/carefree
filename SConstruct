@@ -109,8 +109,8 @@ for path in INCLUDE_SOURCE_PATH.walkfiles():
 
 
 OBJECTS = []
-for path in SOURCE_PATH.files():
-    if path.ext == '.cpp':
+for path in SOURCE_PATH.walkfiles():
+    if not 'python' in path and path.ext == '.cpp':
         OBJECTS.append(env.Requires(
           env.SharedObject(
             env.Jinja(
