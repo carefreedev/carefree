@@ -54,21 +54,31 @@ namespace cfo
      const bool value = false)
     {
       const std::size_t len = bitstring.length();
-      //- Initialize bits with default `value`:
-      this->resize(nbits ? nbits : (len * 8), value);
+      if (nbits)
+        if (nbits < len * 8)
+          {
+            this->resize(nbits);
+            std::size_t bitn = 0u;
+            for (const uint8_t byte : bitstring)
+              for (int n = 7; n >= 0; --n, ++bitn)
+                {
+                  if (bitn == nbits)
+                    return;
 
-      for (std::size_t byten = 0u, bitn = 0u; byten < len; ++byten)
-        {
-          const uint8_t byte = bitstring[byten];
-          for (int n = 7; n >= 0; --n, ++bitn)
-            {
-              if (bitn == nbits)
-                return;
+                  (*this)[bitn] = bool(byte & (0x1 << n));
+                }
+            return;
+          }
+        else
+          //- Initialize bits with default `value`:
+          this->resize(nbits, value);
+      else
+        this->resize(len * 8);
 
-              if (bool bit = bool(byte & (0x1 << n)))
-                this->operator[](bitn) = bit;
-            }
-        }
+      std::size_t bitn = 0u;
+      for (const uint8_t byte : bitstring)
+        for (int n = 7; n >= 0; --n, ++bitn)
+          (*this)[bitn] = bool(byte & (0x1 << n));
     }
 
     template<typename... N>
