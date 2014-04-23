@@ -31,7 +31,7 @@ namespace cfo { namespace mac
    ) :
     array_type()
   {
-    if (bytes.size() == 6u)
+    if (bytes.size() != 6u)
       {
         error = true;
         return;
