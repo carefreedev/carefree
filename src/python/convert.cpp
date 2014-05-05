@@ -32,23 +32,27 @@ namespace cfo { namespace python
   std::int{{ BITS }}_t to_int{{ BITS }}
   (const cfo::python::object &py_obj)
   {
-    const cfo::python::object py_int = cfo::python::import::int_(py_obj);
-    cfo::python::extract<std::int{{ BITS }}_t> _int(py_obj);
+    const cfo::python::object py_int = cfo::python::import::int_
+      (static_cast<const boost::python::object&>(py_obj));
+
+    cfo::python::extract<std::int{{ BITS }}_t> _int(py_int);
     if (!_int.check())
       throw std::invalid_argument("Can't convert to int{{ BITS }}");
 
-    return 0;
+    return _int();
   }
 
   std::uint{{ BITS }}_t to_uint{{ BITS }}
   (const cfo::python::object &py_obj)
   {
-    const cfo::python::object py_int = cfo::python::import::int_(py_obj);
-    cfo::python::extract<std::uint{{ BITS }}_t> _uint(py_obj);
+    const cfo::python::object py_int = cfo::python::import::int_
+      (static_cast<const boost::python::object&>(py_obj));
+
+    cfo::python::extract<std::uint{{ BITS }}_t> _uint(py_int);
     if (!_uint.check())
       throw std::invalid_argument("Can't convert to uint{{ BITS }}");
 
-    return 0u;
+    return _uint();
   }
 
 {% endfor %}
