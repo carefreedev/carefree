@@ -20,15 +20,30 @@ REQUIRES = OrderedDict(
   (req.unsafe_name, req) for req in parse_requirements(REQUIREMENTS_TXT))
 
 
-names = os.listdir('..')
-if 'pip-delete-this-directory.txt' in names:
-    paths = (os.path.join('..', name) for name in names)
-    paths = [os.path.abspath(p) for p in paths if os.path.isdir(p)]
-    for path in paths:
+# fnames = os.listdir('..')
+sysbuildpath = os.path.join(sys.prefix, 'build')
+try:
+    fnames = os.listdir(sysbuildpath)
+except OSError:
+    fnames = []
+if 'pip-delete-this-directory.txt' in fnames:
+    pkgpaths = []
+    for fn in fnames:
+        path = os.path.join(sysbuildpath, fn)
+        if not os.path.isdir(path):
+            continue
+        path = os.path.abspath(path)
+        pkgpaths.append(path)
+
+        srcpath = os.path.join(path, 'src')
+        if os.path.isdir(srcpath):
+            pkgpaths.append(srcpath)
+
+    for path in pkgpaths:
         sys.path.insert(0, path)
 
     PYTHONPATH = os.environ.get('PYTHONPATH')
-    PATH = ':'.join(paths)
+    PATH = ':'.join(pkgpaths)
     if PYTHONPATH is None:
         os.environ['PYTHONPATH'] = PATH
     else:
