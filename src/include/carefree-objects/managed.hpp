@@ -171,7 +171,9 @@ namespace cfo { namespace intern
     }
 
   public:
-    inline managed<T, true, EXC, INIT_T, false, COPY> copy() const;
+    template<typename ...ARGS>
+    inline managed<T, true, EXC, INIT_T, false, COPY> copy(ARGS &...args)
+      const;
 
   public:
     inline const_accessor caccess() const
@@ -204,13 +206,14 @@ namespace cfo { namespace intern
 
   template
   <typename T, bool EXC, typename INIT_T, bool INIT_NULL, typename COPY>
+  template<typename ...ARGS>
   inline
   managed<T, true, EXC, INIT_T, false, COPY>
-  managed<T, true, EXC, INIT_T, INIT_NULL, COPY>::copy()
+  managed<T, true, EXC, INIT_T, INIT_NULL, COPY>::copy(ARGS &...args)
     const
   {
     return managed<T, true, EXC, INIT_T, false, COPY>
-      (this->obj ? COPY()(*this->obj) : NULL);
+      (this->obj ? COPY()(*this->obj, args...) : NULL);
   }
 
   template
@@ -495,7 +498,9 @@ namespace cfo { namespace intern
     }
 
   public:
-    inline managed<T, false, EXC, INIT_T, false, COPY> copy() const;
+    template<typename ...ARGS>
+    inline managed<T, false, EXC, INIT_T, false, COPY> copy(ARGS &...args)
+      const;
 
   public:
     inline except except_() const
@@ -564,13 +569,14 @@ namespace cfo { namespace intern
 
   template
   <typename T, bool EXC, typename INIT_T, bool INIT_NULL, typename COPY>
+  template<typename ...ARGS>
   inline
   managed<T, false, EXC, INIT_T, false, COPY>
-  managed<T, false, EXC, INIT_T, INIT_NULL, COPY>::copy()
+  managed<T, false, EXC, INIT_T, INIT_NULL, COPY>::copy(ARGS &...args)
     const
   {
     return managed<T, false, EXC, INIT_T, false, COPY>
-      (this->get() ? COPY()(*this->get()) : NULL);
+      (this->get() ? COPY()(*this->get(), args...) : NULL);
   }
 } }
 
