@@ -10,3 +10,5 @@ recursive-include src *.cpp *.hpp *.inl *.py
 include test.cpp
 
 include SConstruct
+
+include tox.ini
