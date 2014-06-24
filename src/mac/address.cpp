@@ -51,7 +51,7 @@ namespace cfo { namespace mac
     error = false;
     if (address.length() == 6)
       {
-        std::memcpy(&(*this)[0], &address[0], 6u);
+        std::memcpy(&(*this)[0u], &address[0u], 6u);
         return;
       }
     for (const char &c : address)

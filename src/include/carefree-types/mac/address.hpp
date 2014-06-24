@@ -25,7 +25,7 @@
 
 namespace cfo { namespace mac
 {
-  class address : public std::array<std::uint8_t, 6>
+  class address : public std::array<std::uint8_t, 6u>
   {
   public:
     typedef std::array<std::uint8_t, 6u> array_type;
