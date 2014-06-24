@@ -35,12 +35,16 @@ namespace cfo { namespace intern
   <typename I, typename T, bool SYNC, bool EXC, typename M, typename... E>
   class basic_manager::map
     // : private std::map<I, managed<T, SYNC>*, E...>
-    : private std::map<I, M*, E...>
+    : public std::map<I, M*, E...>
   {
   private:
     // typedef managed<T, SYNC> manager_type;
     typedef M manager_type;
+
+  public:
     typedef std::map<I, manager_type*, E...> map_type;
+
+  private:
     typedef std::map<I, manager_type*, E...> _base_map_type;
 
     M nullmanager;
