@@ -187,9 +187,11 @@ PYTHON = env['PYTHON']
 if PYTHON is True:
   PYTHON = 'python'
 for pybin in PYTHON and PYTHON.split(',') or []:
-  pyversion = Popen(
-    [pybin, '--version'], stderr = PIPE, universal_newlines=True
-    ).communicate()[1].split()[-1].split('.', 2)
+  out = Popen(
+    [pybin, '--version'], stdout=PIPE, stderr=PIPE, universal_newlines=True
+    ).communicate()
+  out = out[0] or out[1]
+  pyversion = out.split()[-1].split('.', 2)
 
   pyversionsuffix = ''.join(pyversion[:2])
 
