@@ -31,19 +31,19 @@ namespace cfo
   class bits : public std::vector<bool>
   {
   private:
-    inline void _bits()
-    {}
+    // inline void _bits()
+    // {}
 
-    template<typename... N>
-    inline void _bits(const std::size_t num, const N &...numbers)
-    {
-      if (num >= this->size())
-        this->resize(num + 1, false);
+    // template<typename... N>
+    // inline void _bits(const std::size_t num, const N &...numbers)
+    // {
+    //   if (num >= this->size())
+    //     this->resize(num + 1, false);
 
-      (*this)[num] = true;
+    //   (*this)[num] = true;
 
-      this->_bits(numbers...);
-    }
+    //   this->_bits(numbers...);
+    // }
 
   public:
     inline bits()
@@ -51,7 +51,7 @@ namespace cfo
 
     inline bits
     (const std::string &bitstring, const std::size_t nbits = 0u,
-     const bool value = false)
+     const bool fill = false)
     {
       const std::size_t len = bitstring.length();
       if (nbits)
@@ -70,8 +70,8 @@ namespace cfo
             return;
           }
         else
-          //- Initialize bits with default `value`:
-          this->resize(nbits, value);
+          //- Initialize extra bits with default `fill` value:
+          this->resize(nbits, fill);
       else
         this->resize(len * 8);
 
@@ -81,12 +81,35 @@ namespace cfo
           (*this)[bitn] = bool(byte & (0x1 << n));
     }
 
-    template<typename... N>
-    inline bits(const N &...numbers)
-    {
-      this->_bits(numbers...);
-    }
+    // template<typename... N>
+    // inline bits(const N &...numbers)
+    // {
+    //   this->_bits(numbers...);
+    // }
 
+{% for INT in [INT_TYPES, UINT_TYPES]|chain %}
+    inline bits
+    (const {{ INT }} bits, std::size_t nbits = 0u, const bool fill = false)
+    {
+      if (nbits)
+        {
+          if (nbits > {{ INT.bits }})
+            //- Initialize extra bits with default `fill` value:
+            this->resize(nbits, fill);
+          else
+            this->resize(nbits);
+        }
+      else
+        {
+          nbits = {{ INT.bits }};
+          this->resize({{ INT.bits }});
+        }
+      for (std::size_t n = 0u; n < nbits; ++n)
+        (*this)[n] = bits & (0x1L << n);
+    }
+{% endfor %}
+
+  public:
     inline bool operator[](const std::size_t bit) const
     {
       return (bit < this->size()) ?
