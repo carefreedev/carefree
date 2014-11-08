@@ -18,23 +18,42 @@
  * along with carefree-objects.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __CFO_TOOLS_COMMON_HPP
-#define __CFO_TOOLS_COMMON_HPP
+#ifndef __CAREFREE_TYPES_BYTE_ORDER_INL
+#define __CAREFREE_TYPES_BYTE_ORDER_INL
 
-#include <iostream>
-#include <iomanip>
+namespace cfo
+{
+{% for INT in [INT_TYPES, UINT_TYPES]|chain %}
+  inline {{ INT }} hton(const {{ INT }} value)
+  {
+#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+    return value;
+#endif
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+  {% if INT.bits == 8 %}
+    return value;
+  {% endif %}
+  {% if INT.bits == 16 %}
+    return ({{ INT }})::htons(value);
+  {% endif %}
+  {% if INT.bits == 32 %}
+    return ({{ INT }})::htonl(value);
+  {% endif %}
+  {% if INT.bits == 64 %}
+    const std::uint32_t
+      low = std::uint32_t(value),
+      high = std::uint32_t(value >> 32);
 
-#include <locale>
-// #include <codecvt>
+    return ({{ INT }})(std::uint64_t(htonl(low)) << 32) + htonl(high);
+  {% endif %}
+#endif
+  }
 
-#include <array_ptr.hpp>
-
-#include <carefree-objects.hpp>
-
-#include <boost/asio.hpp>
-
-#include <boost/tokenizer.hpp>
-
-#include "./byteorder.inl"
+  inline {{ INT }} ntoh(const {{ INT }} value)
+  {
+    return hton(value);
+  }
+{% endfor %}
+}
 
 #endif
