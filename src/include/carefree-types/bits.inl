@@ -30,7 +30,7 @@ namespace cfo
     const
   {
     if (bit < this->size())
-      return this->std::vector<bool>::operator[](bit);
+      return this->_bits::super_vector::operator[](bit);
 
     return false;
   }
@@ -41,7 +41,7 @@ namespace cfo
     if (bit >= this->size())
       this->resize(bit + 1, false);
 
-    return this->std::vector<bool>::operator[](bit);
+    return this->_bits::super_vector::operator[](bit);
   }
 }
 

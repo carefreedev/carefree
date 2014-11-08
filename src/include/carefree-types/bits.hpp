@@ -25,10 +25,14 @@
 
 namespace cfo
 {
+  namespace _bits
+  {
+    typedef std::vector<bool> super_vector;
+  }
   /**
    * A bit field of dynamic size.
    */
-  class bits : public std::vector<bool>
+  class bits : public _bits::super_vector
   {
   private:
     // inline void _bits()
@@ -76,7 +80,7 @@ namespace cfo
       const;
 
     inline
-    std::vector<bool>::reference operator[](const std::size_t bit);
+    _bits::super_vector::reference operator[](const std::size_t bit);
   };
 }
 

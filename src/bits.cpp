@@ -23,7 +23,9 @@
 namespace cfo
 {
   bits::bits
-  (const std::string &bitstring, const std::size_t nbits, const bool fill)
+  (const std::string &bitstring, const std::size_t nbits, const bool fill
+   ) :
+    _bits::super_vector()
   {
     const std::size_t len = bitstring.length();
     if (nbits)
@@ -32,35 +34,45 @@ namespace cfo
           this->resize(nbits);
           std::size_t bitn = 0u;
           for (const uint8_t byte : bitstring)
+            //- reverse index range because bits are read from left to right
+            //  but numerical bit order is right to left
             for (int n = 7; n >= 0; --n, ++bitn)
               {
                 if (bitn == nbits)
                   return;
 
-                (*this)[bitn] = bool(byte & (0x1 << n));
+                //- use basic operator to avoid size check in bits::operator[]
+                this->_bits::super_vector::operator[](bitn)
+                  = bool(byte & (0x1 << n));
               }
           return;
         }
       else
-        //- Initialize extra bits with default `fill` value:
+        //- initialize extra bits with default `fill` value
         this->resize(nbits, fill);
     else
       this->resize(len * 8);
 
     std::size_t bitn = 0u;
     for (const uint8_t byte : bitstring)
+      //- reverse index range because bits are read from left to right
+      //  but numerical bit order is right to left
       for (int n = 7; n >= 0; --n, ++bitn)
-        (*this)[bitn] = bool(byte & (0x1 << n));
+        //- use basic operator to avoid size check in bits::operator[]
+        this->_bits::super_vector::operator[](bitn)
+          = bool(byte & (0x1 << n));
   }
 
 {% for INT in [INT_TYPES, UINT_TYPES]|chain %}
   bits::bits
-  (const {{ INT }} bits, std::size_t nbits, const bool fill)
+  (const {{ INT }} bits, std::size_t nbits, const bool fill
+   ) :
+    _bits::super_vector()
   {
     if (nbits)
       {
         if (nbits > {{ INT.bits }})
-          //- Initialize extra bits with default `fill` value:
+          //- initialize extra bits with default `fill` value
           this->resize(nbits, fill);
         else
           this->resize(nbits);
@@ -71,7 +83,8 @@ namespace cfo
         this->resize({{ INT.bits }});
       }
     for (std::size_t n = 0u; n < nbits; ++n)
-      (*this)[n] = bits & (0x1L << n);
+      //- use basic operator to avoid size check in bits::operator[]
+      this->_bits::super_vector::operator[](n) = bits & (0x1L << n);
   }
 {% endfor %}
 }
