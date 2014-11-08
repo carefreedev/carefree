@@ -22,6 +22,7 @@
 
 namespace cfo
 {
+  /*public*/
   bits::bits
   (const std::string &bitstring, const std::size_t nbits, const bool fill
    ) :
@@ -64,6 +65,7 @@ namespace cfo
   }
 
 {% for INT in [INT_TYPES, UINT_TYPES]|chain %}
+  /*public*/
   bits::bits
   (const {{ INT }} bits, std::size_t nbits, const bool fill
    ) :

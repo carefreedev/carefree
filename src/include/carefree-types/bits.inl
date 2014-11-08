@@ -25,6 +25,7 @@
 
 namespace cfo
 {
+  /*public*/
   inline
   bool bits::operator[](const std::size_t bit)
     const
@@ -35,6 +36,7 @@ namespace cfo
     return false;
   }
 
+  /*public*/
   inline
   std::vector<bool>::reference bits::operator[](const std::size_t bit)
   {
