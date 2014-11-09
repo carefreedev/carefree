@@ -32,15 +32,17 @@ namespace cfo { namespace python
    */
   class object : public boost::python::object
   {
-    using boost::python::object::object;
-
   public:
-    typedef object value_type;
+    typedef object value_type; //- needed for iteration
 
-    class iterator;
+    class iterator; //--> ./object/iterator.hpp
     typedef iterator const_iterator;
 
-  public: //- Default and copy contructor.
+  public: //- inherit base class constructors
+    using boost::python::object::object;
+
+  public: //------------------------------------------------------------------
+    //                                             Default and copy contructor
 
     inline object() :
       boost::python::object()
@@ -50,7 +52,8 @@ namespace cfo { namespace python
       boost::python::object(static_cast<const boost::python::object&>(obj))
     {}
 
-  public: //- Construct from boost::python::object.
+  public: //------------------------------------------------------------------
+    //                                    Construct from boost::python::object
 
     inline object(const boost::python::object &obj) :
       boost::python::object(obj)
@@ -64,7 +67,8 @@ namespace cfo { namespace python
       boost::python::object(obj)
     {}
 
-  public: //- Construct from Python C API Object pointers.
+  public: //------------------------------------------------------------------
+    //                             Construct from Python C API Object pointers
 
     inline object(PyObject *obj) :
       boost::python::object
@@ -72,7 +76,8 @@ namespace cfo { namespace python
        : boost::python::object())
     {}
 
-  public: //- Construct from byte/character.
+  public: //------------------------------------------------------------------
+    //                                      Construct from cfo::byte/character
 
     inline object(const cfo::byte &byte) :
       boost::python::object(int(byte.value))
@@ -82,7 +87,8 @@ namespace cfo { namespace python
       boost::python::object(std::wstring(&chr.value, 1u))
     {}
 
-  public: //-Construct from IP addresses.
+  public: //------------------------------------------------------------------
+    //                                             Construct from IP addresses
 
     inline object(const cfo::ip::v4::address &addr) :
       boost::python::object
@@ -94,7 +100,8 @@ namespace cfo { namespace python
       (cfo::python::import::netaddr::IPAddress(std::string(addr)))
     {}
 
-  public: //- Assignment operators.
+  public: //------------------------------------------------------------------
+    //                                                    Assignment operators
 
     using boost::python::object::operator=;
 
@@ -111,7 +118,8 @@ namespace cfo { namespace python
       return *this;
     }
 
-  public: //- Implicit boost::python::object converters.
+  public: //------------------------------------------------------------------
+    //                               Implicit boost::python::object converters
 
     inline operator const boost::python::object&() const
     {
@@ -128,8 +136,10 @@ namespace cfo { namespace python
       return static_cast<const boost::python::object&>(*this);
     }
 
-  public: //- Additional conversion operators using cfo::python::* converters.
-    // (#include "object.inl").
+  public: //------------------------------------------------------------------
+    //         Additional conversion operators using cfo::python::* converters
+
+    //--> ./object.inl (not directly included in this header)
 
 {% for INT in [INT_TYPES, UINT_TYPES]|chain %}
     inline operator {{ INT }}() const;
@@ -137,8 +147,8 @@ namespace cfo { namespace python
 
     inline operator std::string() const;
 
-  public:
-    //--> ./object.inl
+  public: //------------------------------------------------------------------
+    //--> ./object.inl                                       Iteration methods
 
     inline iterator begin();
 
@@ -147,6 +157,7 @@ namespace cfo { namespace python
     inline iterator end();
 
     inline const_iterator cend() const;
+
   }; /* class object */
 } } /* namespace cfo::python */
 
