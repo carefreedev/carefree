@@ -1,0 +1,19 @@
+[carefree-objects]
+
+description =
+    A managed object framework for C++ and Python extensions
+
+author = Stefan Zimmermann <zimmermann.code@gmail.com>
+url = http://bitbucket.org/userzimmermann/carefree-objects
+
+license = LGPLv3
+
+python = 2.7
+
+packages =
+    cfo
+
+zetup_config module = yes
+
+setup hooks =
+    libcfo:setup_keywords
