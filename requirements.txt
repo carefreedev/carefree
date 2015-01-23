@@ -1,5 +1,4 @@
-path.py
-moretools >= 0.1a34
-Jinja2
-jinjatools >= 0.1a14
-libarray_ptr >= 0.7
+path.py >= 7.0 #import path
+moretools >= 0.1.5
+jinjatools >= 0.1.4
+libarray_ptr >= 0.10
