@@ -72,8 +72,8 @@ namespace cfo { namespace python
 
     inline object(PyObject *obj) :
       boost::python::object
-      (obj ? boost::python::object(boost::python::borrowed(obj))
-       : boost::python::object())
+        (obj ? boost::python::object(boost::python::borrowed(obj))
+         : boost::python::object())
     {}
 
   public: //------------------------------------------------------------------
@@ -85,6 +85,11 @@ namespace cfo { namespace python
 
     inline object(const cfo::character &chr) :
       boost::python::object(std::wstring(&chr.value, 1u))
+    {}
+
+    inline object(const cfo::bytes &bytes) :
+      boost::python::object
+        (reinterpret_cast<const char*>(bytes.unmanaged()->data()))
     {}
 
   public: //------------------------------------------------------------------
