@@ -54,17 +54,72 @@ namespace cfo
     {}
 {% endfor %}
   };
+}
 
+namespace cfo { namespace unmanaged
+{
   namespace _bytes
   {
     //- Using cfo::byte as template arg raises C2620 in VC++
     //  (union member with constructor)
-    typedef std::basic_string<cfo::byte::value_type> base;
+    typedef std::basic_string<cfo::byte::value_type> super;
   }
-  class bytes : public _bytes::base
+  class bytes : public _bytes::super
   {
-    using _bytes::base::base;
+  public: //---------------------------------------------------------------
+    //                                                         Constructors
+    using _bytes::super::super;
+
+  public: //---------------------------------------------------------------
+    //                                                      Managed methods
+    cfo_MANAGED_BASIC_CONST_METHODS
+    (bytes,
+
+     public:
+
+     inline
+     bytes::value_type operator[](const std::size_t &index)
+       const
+       noexcept(!cfo_EXC)
+     {
+       if (cfo_EXC && index >= (*this)->length())
+         throw std::out_of_range(std::to_string(index));
+
+       return (*this)->operator[](index);
+     }
+     )
+
+    cfo_MANAGED_BASIC_METHODS
+    (bytes,
+
+     public:
+
+     inline
+     bytes::value_type operator[](const std::size_t &index)
+       const
+       noexcept(!cfo_EXC)
+     {
+       return this->const_methods::operator[](index);
+     }
+
+     inline
+     bytes::reference operator[](const std::size_t &index)
+       noexcept(!cfo_EXC)
+     {
+       if (cfo_EXC && index >= (*this)->length())
+         throw std::out_of_range(std::to_string(index));
+
+       return (*this)->operator[](index);
+     }
+     )
   };
+} }
+
+namespace cfo
+{
+  typedef cfo::managed<cfo::unmanaged::bytes> bytes;
+
+  void bytes_test();
 }
 
 #endif
