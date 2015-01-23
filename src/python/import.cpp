@@ -43,10 +43,12 @@ namespace cfo { namespace python { namespace import
     static const boost::python::object module = _module();
 
     const boost::python::object
+      object = module.attr("object"),
       type = module.attr("type"),
 
       property = module.attr("property"),
 
+      bool_ = module.attr("bool"),
       int_ = module.attr("int"),
       hash = module.attr("hash"),
       iter = module.attr("iter"),
