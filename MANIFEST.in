@@ -1,8 +1,10 @@
 include COPYING*
 
-include VERSION
+include zetuprc
 
+include VERSION
 include requirements.txt
+include requirements.setup.txt
 
 include cfo/jinja/macros/cfo
 
