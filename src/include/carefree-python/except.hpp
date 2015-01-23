@@ -54,6 +54,8 @@ namespace cfo { namespace python
      'TypeError',
      'LookupError',
      'IndexError',
+     'AttributeError',
+     'KeyError',
      ] %}
     template<typename... ARGS>
     static inline void {{ EXC_NAME }}(const ARGS &...args)
