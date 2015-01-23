@@ -1,6 +1,7 @@
 ~$
 \.orig$
 \.rej$
+\.bkp$
 
 ^\.sconsign\.dblite
 ^\.sconf_temp/
@@ -26,6 +27,7 @@
 ^MANIFEST$
 ^python/MANIFEST$
 
+^\.tox/
 ^test$
 
 \.sln$
