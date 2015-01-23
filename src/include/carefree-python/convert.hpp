@@ -28,6 +28,8 @@
 
 namespace cfo { namespace python
 {
+  bool to_bool(const cfo::python::object &py_obj);
+
 {% for BITS in [8, 16, 32, 64] %}
 
   std::int{{ BITS }}_t to_int{{ BITS }}

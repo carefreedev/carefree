@@ -27,6 +27,15 @@
 
 namespace cfo { namespace python
 {
+  bool to_bool(const cfo::python::object &py_obj)
+  {
+    const cfo::python::object py_bool = cfo::python::import::bool_
+      (static_cast<const boost::python::object&>(py_obj));
+
+    cfo::python::extract<bool> _bool(py_bool);
+    return _bool();
+  }
+
 {% for BITS in [8, 16, 32, 64] %}
 
   std::int{{ BITS }}_t to_int{{ BITS }}
