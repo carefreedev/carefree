@@ -185,59 +185,59 @@ CAREFREE_PYTHON_SOURCES = [
 
 PYTHON = env['PYTHON']
 if PYTHON is True:
-  PYTHON = 'python'
+    PYTHON = 'python'
 for pybin in PYTHON and PYTHON.split(',') or []:
-  out = Popen(
-    [pybin, '--version'], stdout=PIPE, stderr=PIPE, universal_newlines=True
-    ).communicate()
-  out = out[0] or out[1]
-  pyversion = out.split()[1].split('.', 2)
+    out = Popen([pybin, '--version'],
+      stdout=PIPE, stderr=PIPE, universal_newlines=True
+      ).communicate()
+    out = out[0] or out[1]
+    pyversion = out.split()[1].split('.', 2)
 
-  pyversionsuffix = ''.join(pyversion[:2])
+    pyversionsuffix = ''.join(pyversion[:2])
 
-  pybuildpath = 'build/python' + pyversionsuffix
-  Mkdir(pybuildpath)
+    pybuildpath = 'build/python' + pyversionsuffix
+    Mkdir(pybuildpath)
 
-  pyenv = env.Clone()
-  pyenv.MergeFlags(
-    Popen(
-      [pybin + '-config', '--includes', '--libs'],
-      stdout = PIPE, universal_newlines=True
-      ).communicate()[0])
-  pyconf = Configure(pyenv)
+    pyenv = env.Clone()
+    pyenv.MergeFlags(
+      Popen([pybin + '-config', '--includes', '--libs'],
+        stdout = PIPE, universal_newlines=True
+        ).communicate()[0])
+    pyconf = Configure(pyenv)
 
-  BOOST_PYTHON_LIB = 'boost_python'
+    BOOST_PYTHON_LIB = 'boost_python'
 
-  libname_with_pyversion = '%s-py%s' % (
-    BOOST_PYTHON_LIB, pyversionsuffix)
-  if pyconf.CheckLib(libname_with_pyversion):
-    BOOST_PYTHON_LIB = libname_with_pyversion
+    libname_with_pyversion = '%s-py%s' % (
+      BOOST_PYTHON_LIB, pyversionsuffix)
+    if pyconf.CheckLib(libname_with_pyversion):
+        BOOST_PYTHON_LIB = libname_with_pyversion
 
-  pyenv = pyconf.Finish()
+    pyenv = pyconf.Finish()
 
-  pyenv.Append(
-    LIBS=BOOST_LIBS + [
-      BOOST_PYTHON_LIB,
-      ],
-    )
-
-  OBJECTS = [
-    env.Requires(
-      pyenv.SharedObject(
-        '%s/%s' % (pybuildpath, name),
-        source = ['build/python/%s.cpp' % name],
-        ),
-      [CAREFREE_PYTHON_SOURCES, INCLUDES,
-       ])
-    for name in CAREFREE_PYTHON_SOURCE_NAMES],
-
-  if env['SHARED']:
-    pyenv.SharedLibrary(
-      'lib/carefree-python-py' + pyversionsuffix,
-      source = OBJECTS,
+    pyenv.Append(
+      LIBS=BOOST_LIBS + [
+        BOOST_PYTHON_LIB,
+        ],
       )
-  if env['STATIC']:
-    pyenv.StaticLibrary(
-      'lib/carefree-python-py' + pyversionsuffix,
-      source = OBJECTS,
-      )
+
+    OBJECTS = [
+      env.Requires(
+        pyenv.SharedObject(
+          '%s/%s' % (pybuildpath, name),
+          source=['build/python/%s.cpp' % name],
+          ),
+        [CAREFREE_PYTHON_SOURCES,
+         INCLUDES,
+         ])
+      for name in CAREFREE_PYTHON_SOURCE_NAMES]
+
+    if env['SHARED']:
+        pyenv.SharedLibrary(
+          'lib/carefree-python-py' + pyversionsuffix,
+          source=OBJECTS,
+          )
+    if env['STATIC']:
+        pyenv.StaticLibrary(
+          'lib/carefree-python-py' + pyversionsuffix,
+          source=OBJECTS,
+          )
