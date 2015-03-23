@@ -30,19 +30,29 @@ namespace cfo { namespace python
     return object::iterator(*this);
   }
 
-  inline object::const_iterator object::cbegin() const
+  inline object::const_iterator object::begin() const
   {
     return object::const_iterator(*this);
   }
 
+  inline object::const_iterator object::cbegin() const
+  {
+    return this->begin();
+  }
+
   inline object::iterator object::end()
   {
-    return iterator();
+    return object::iterator();
+  }
+
+  inline object::const_iterator object::end() const
+  {
+    return object::const_iterator();
   }
 
   inline object::const_iterator object::cend() const
   {
-    return const_iterator();
+    return this->end();
   }
 
 {% for INT in [INT_TYPES, UINT_TYPES]|chain %}

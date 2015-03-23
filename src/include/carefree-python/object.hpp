@@ -157,9 +157,13 @@ namespace cfo { namespace python
 
     inline iterator begin();
 
+    inline const_iterator begin() const;
+
     inline const_iterator cbegin() const;
 
     inline iterator end();
+
+    inline const_iterator end() const;
 
     inline const_iterator cend() const;
 
