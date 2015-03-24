@@ -49,7 +49,24 @@ namespace cfo { namespace python { namespace import
       property = module.attr("property"),
 
       bool_ = module.attr("bool"),
+
       int_ = module.attr("int"),
+      float_ = module.attr("float"),
+      complex = module.attr("complex"),
+      number_types = boost::python::make_tuple(int_, float_, complex),
+
+      bytes = module.attr("bytes"),
+      str = module.attr("str"),
+      string_types = boost::python::make_tuple(str),
+
+      tuple = module.attr("tuple"),
+      list = module.attr("list"),
+      list_types = boost::python::make_tuple(list),
+
+      set = module.attr("set"),
+      dict = module.attr("dict"),
+      dict_types = boost::python::make_tuple(dict),
+
       hash = module.attr("hash"),
       iter = module.attr("iter"),
       next = module.attr("next"),
