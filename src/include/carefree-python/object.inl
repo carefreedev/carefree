@@ -68,4 +68,12 @@ namespace cfo { namespace python
   }
 } }
 
+namespace std
+{
+  inline std::string to_string(const cfo::python::object &obj)
+  {
+    return obj.operator std::string();
+  }
+}
+
 #endif

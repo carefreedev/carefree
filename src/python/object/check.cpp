@@ -22,30 +22,12 @@
 
 namespace cfo { namespace python
 {
-  {% for TYPE, IMPORT in [
-       ('bool', 'bool_'),
-       ('integer', 'int_'),
-       ('float', 'float_'),
-       ('complex', 'complex'),
-       ('number', 'number_types'),
-       ('bytes', 'bytes'),
-       ('string', 'string_types'),
-       ('tuple', 'tuple'),
-       ('list', 'list_types'),
-       ('set', 'set'),
-       ('dict', 'dict_types'),
-       ] %}
-
-  bool object::is_{{ TYPE }}() const
+  bool object::is_instance(PyObject *py_type) const
   {
-    const int status = PyObject_IsInstance
-      (this->ptr(), import::{{ IMPORT }}.ptr());
-
+    const int status = PyObject_IsInstance(this->ptr(), py_type);
     if (status != -1)
       return bool(status);
 
     throw boost::python::error_already_set();
   }
-
-  {% endfor %}
 } }

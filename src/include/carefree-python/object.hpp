@@ -149,20 +149,34 @@ namespace cfo { namespace python
     //                                                             Type checks
     //--> src/python/object/check.cpp
 
-    bool is_bool() const;
 
-    bool is_integer() const;
-    bool is_float() const;
-    bool is_complex() const;
-    bool is_number() const;
+    bool is_instance(PyObject *py_type) const;
 
-    bool is_bytes() const;
-    bool is_string() const;
+    inline bool is_instance(const cfo::python::object &py_type) const
+    {
+      return this->is_instance(py_type.ptr());
+    }
 
-    bool is_tuple() const;
-    bool is_list() const;
-    bool is_set() const;
-    bool is_dict() const;
+  {% for TYPE, IMPORT in [
+       ('bool', 'bool_'),
+       ('integer', 'int_'),
+       ('float', 'float_'),
+       ('complex', 'complex'),
+       ('number', 'number_types'),
+       ('bytes', 'bytes'),
+       ('string', 'string_types'),
+       ('tuple', 'tuple'),
+       ('list', 'list_types'),
+       ('set', 'set'),
+       ('dict', 'dict_types'),
+       ] %}
+
+    inline bool is_{{ TYPE }}() const
+    {
+      return this->is_instance(import::{{ IMPORT }}.ptr());
+    }
+
+  {% endfor %}
 
   public: //------------------------------------------------------------------
     //         Additional conversion operators using cfo::python::* converters
@@ -190,11 +204,6 @@ namespace cfo { namespace python
 
   }; /* class object */
 } } /* namespace cfo::python */
-
-inline std::string std::to_string(const cfo::python::object &obj) const
-{
-  return obj.operator std::string();
-}
 
 #include "./object/iterator.hpp"
 
