@@ -18,16 +18,13 @@
  * along with carefree-objects.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <carefree-python/object/iterator.hpp>
+#include <carefree-python/object.hpp>
+#include <carefree-python/functions.hpp>
 
 namespace cfo { namespace python
 {
   bool object::is_instance(PyObject *py_type) const
   {
-    const int status = PyObject_IsInstance(this->ptr(), py_type);
-    if (status != -1)
-      return bool(status);
-
-    throw boost::python::error_already_set();
+    return cfo::python::is_instance(this->ptr(), py_type);
   }
 } }

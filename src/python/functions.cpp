@@ -34,6 +34,15 @@ namespace cfo { namespace python
     return left_obj.ptr() == right_obj.ptr();
   }
 
+  bool is_instance(PyObject *py_obj, PyObject *py_type)
+  {
+    const int status = PyObject_IsInstance(py_obj, py_type);
+    if (status != -1)
+      return bool(status);
+
+    throw boost::python::error_already_set();
+  }
+
 {% for INT in CFO_PYTHON_INT_TYPES %}
   {{ INT }} {{ INT.cfo }}
   (const boost::python::object &py_value, const unsigned int base /*= 0u*/)

@@ -32,11 +32,34 @@ namespace cfo { namespace python
   (const boost::python::object &left_obj,
    const boost::python::object &right_obj);
 
+  bool is_instance(PyObject *py_obj, PyObject *py_type);
+
+  inline bool is_instance
+    (const cfo::python::object &py_obj, PyObject *py_type)
+  {
+    return is_instance(py_obj.ptr(), py_type);
+  }
+
+  inline bool is_instance
+    (PyObject *py_obj, const cfo::python::object &py_type)
+  {
+    return is_instance(py_obj, py_type.ptr());
+  }
+
+  inline bool is_instance
+    (const cfo::python::object &py_obj,
+     const cfo::python::object &py_type)
+  {
+    return is_instance(py_obj.ptr(), py_type.ptr());
+  }
+
   std::string str(const boost::python::object &obj);
 
 {% for INT in CFO_PYTHON_INT_TYPES %}
+
   {{ INT }} {{ INT.cfo }}
-  (const boost::python::object &py_value, const unsigned int base = 0u);
+    (const boost::python::object &py_value, const unsigned int base = 0u);
+
 {% endfor %}
 
   std::string repr(const boost::python::object &obj);

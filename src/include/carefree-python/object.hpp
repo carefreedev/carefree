@@ -149,7 +149,6 @@ namespace cfo { namespace python
     //                                                             Type checks
     //--> src/python/object/check.cpp
 
-
     bool is_instance(PyObject *py_type) const;
 
     inline bool is_instance(const cfo::python::object &py_type) const
