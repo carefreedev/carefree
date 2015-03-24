@@ -177,17 +177,20 @@ namespace cfo { namespace python
     inline iterator begin();
 
     inline const_iterator begin() const;
-
     inline const_iterator cbegin() const;
 
     inline iterator end();
 
     inline const_iterator end() const;
-
     inline const_iterator cend() const;
 
   }; /* class object */
 } } /* namespace cfo::python */
+
+inline std::string std::to_string(const cfo::python::object &obj) const
+{
+  return obj.operator std::string();
+}
 
 #include "./object/iterator.hpp"
 
