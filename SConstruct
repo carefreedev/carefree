@@ -175,6 +175,7 @@ CAREFREE_PYTHON_SOURCE_NAMES = [
   'functions',
   'convert',
   'object/iterator',
+  'object/check',
   ]
 CAREFREE_PYTHON_SOURCES = [
   env.Jinja(

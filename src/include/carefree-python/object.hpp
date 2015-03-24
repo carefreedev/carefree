@@ -142,6 +142,25 @@ namespace cfo { namespace python
     }
 
   public: //------------------------------------------------------------------
+    //                                                             Type checks
+    //--> src/python/object/check.cpp
+
+    bool is_bool() const;
+
+    bool is_integer() const;
+    bool is_float() const;
+    bool is_complex() const;
+    bool is_number() const;
+
+    bool is_bytes() const;
+    bool is_string() const;
+
+    bool is_tuple() const;
+    bool is_list() const;
+    bool is_set() const;
+    bool is_dict() const;
+
+  public: //------------------------------------------------------------------
     //         Additional conversion operators using cfo::python::* converters
 
     //--> ./object.inl (not directly included in this header)
