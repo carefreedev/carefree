@@ -63,6 +63,10 @@ namespace cfo { namespace python
       boost::python::object(obj)
     {}
 
+    inline object(const boost::python::api::object_item &obj) :
+      boost::python::object(obj)
+    {}
+
     inline object(const boost::python::api::const_object_item &obj) :
       boost::python::object(obj)
     {}
