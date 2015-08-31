@@ -103,7 +103,7 @@ def setup_keywords(dist):
 
     LIB_PACKAGE_DIR = Path(LIB_PACKAGE_DIR)
 
-    if 'bdist_egg' not in sys.argv:
+    if 'install' in sys.argv:
         PREFIX = Path(sys.prefix).abspath()
         # Store sys.prefix location (where data_files are installed)
         # as part of package_data.
@@ -131,7 +131,7 @@ def setup_keywords(dist):
                    ).abspath()
               for ext in ('a', 'so'))
 
-    if 'bdist_egg' not in sys.argv:
+    if 'install' in sys.argv:
         # Install libs/headers as data_files to sys.prefix
         for dirpath, filenames in INCLUDE_FILES:
             LIB_DATA_FILES.append(
@@ -146,12 +146,13 @@ def setup_keywords(dist):
             LIB_PACKAGE_DATA.append(LIB_PACKAGE_DIR.relpathto(path))
 
     dist.package_dir[LIB_PACKAGE] = LIB_PACKAGE_DIR
-    dist.packages += LIB_PACKAGES
+    dist.packages = list(dist.packages) + LIB_PACKAGES
 
-    dist.package_data = {
-      'cfo.jinja.macros': [
-        'cfo',
-        ],
-      LIB_PACKAGE: LIB_PACKAGE_DATA,
-      }
-    dist.data_files = LIB_DATA_FILES
+    if 'sdist' not in sys.argv:
+        dist.package_data = {
+          'cfo.jinja.macros': [
+            'cfo',
+            ],
+          LIB_PACKAGE: LIB_PACKAGE_DATA,
+          }
+        dist.data_files = LIB_DATA_FILES
