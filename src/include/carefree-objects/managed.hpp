@@ -397,14 +397,13 @@ namespace cfo { namespace intern
     inline bool is_() const
     {
       if (!this->unmanaged())
-        return false;
-
+        {
+          return false;
+        }
       try
         {
-          dynamic_cast<const typename MGR::unmanaged_type&>
-            (*this->unmanaged());
-
-          return true;
+          return bool(&dynamic_cast<const typename MGR::unmanaged_type&>
+                      (*this->unmanaged()));
         }
       catch (const std::bad_cast &)
         {
@@ -416,12 +415,12 @@ namespace cfo { namespace intern
     inline bool is_managed() const
     {
       if (!this->unmanaged())
-        return false;
-
+        {
+          return false;
+        }
       try
         {
-          dynamic_cast<const T_&>(*this->unmanaged());
-          return true;
+          return bool(&dynamic_cast<const T_&>(*this->unmanaged()));
         }
       catch (const std::bad_cast &)
         {
@@ -440,9 +439,8 @@ namespace cfo { namespace intern
     (const managed<T, false, EXC, INIT_T, INIT_NULL, COPY> &other)
       const
     {
-      assert
-        (this->std::shared_ptr<T>::get()
-         && other.std::shared_ptr<T>::get());
+      assert(this->std::shared_ptr<T>::get()
+             && other.std::shared_ptr<T>::get());
 
       return this->std::shared_ptr<T>::get()
         == other.std::shared_ptr<T>::get()
@@ -455,9 +453,8 @@ namespace cfo { namespace intern
     (const managed<T, false, EXC, INIT_T, INIT_NULL, COPY> &other)
       const
     {
-      assert
-        (this->std::shared_ptr<T>::get()
-         && other.std::shared_ptr<T>::get());
+      assert(this->std::shared_ptr<T>::get()
+             && other.std::shared_ptr<T>::get());
 
       return this->std::shared_ptr<T>::get()
         != other.std::shared_ptr<T>::get()
