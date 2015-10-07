@@ -55,8 +55,10 @@ with PREFIX:
             pass
         else:
             env['CPPFLAGS'] = '-I%s %s' % (
-              str(libarray_ptr.INCLUDE_PATH), env.get('CPPFLAGS', ''))
-        if Popen(['scons', 'DEBUG=yes'], env=env).wait():
+                str(libarray_ptr.INCLUDE_PATH), env.get('CPPFLAGS', ''))
+        if Popen(['scons', 'DEBUG=yes', 'SHARED=yes', 'STATIC=yes',
+                  'TESTS=yes'],
+                 env=env).wait():
             raise RuntimeError
         del env
 
@@ -93,10 +95,10 @@ def setup_keywords(dist):
     # Process the header templates and compile the libs
     env = dict(os.environ, PYTHONPATH=os.pathsep.join(sys.path))
     for cmd in [
-      ## ['scons', '-c', 'SHARED=yes', 'STATIC=yes'],
-      ['scons', 'DEBUG=yes', 'SHARED=yes', 'STATIC=yes'],
-       ## 'PYTHON=%s' % sys.executable],
-      ]:
+            ## ['scons', '-c', 'SHARED=yes', 'STATIC=yes'],
+            ['scons', 'DEBUG=yes', 'SHARED=yes', 'STATIC=yes', 'TESTS=yes'],
+            ## 'PYTHON=%s' % sys.executable],
+    ]:
         print(' '.join(cmd))
         if Popen(cmd, env=env).wait():
             sys.exit(1)
