@@ -301,6 +301,35 @@ namespace cfo { namespace intern
       friend class _cfo_managed_const_methods;                          \
                                                                         \
   private:                                                              \
+    template<typename cfo_V = void>                                     \
+    class property                                                      \
+    {                                                                   \
+    public:                                                             \
+      typedef _cfo_managed_const_methods                                \
+        <cfo_T, cfo_SYNC, cfo_EXC, cfo_INIT_T, cfo_COPY, cfo_BASE>      \
+        methods_type;                                                   \
+                                                                        \
+      methods_type *methods;                                            \
+                                                                        \
+    protected:                                                          \
+      inline const TYPE* operator->() const                             \
+      {                                                                 \
+        return static_cast<const methods_type*>(this->methods)          \
+          ->operator->();                                               \
+      }                                                                 \
+                                                                        \
+      inline TYPE* operator->()                                         \
+      {                                                                 \
+        return this->methods->operator->();                             \
+      }                                                                 \
+                                                                        \
+      inline operator const cfo_V() const                               \
+      {                                                                 \
+        return this->operator()();                                      \
+      }                                                                 \
+    };                                                                  \
+                                                                        \
+  private:                                                              \
     _cfo_managed_const_methods                                          \
       (const _cfo_managed_const_methods                                 \
        <cfo_T, true, cfo_EXC, cfo_INIT_T, cfo_COPY, cfo_BASE>&);        \
@@ -317,13 +346,17 @@ namespace cfo { namespace intern
                                                                         \
     inline _cfo_managed_const_methods(cfo_T *obj) :                     \
       cfo_basic_type<false>(obj)                                        \
-    {}                                                                  \
+    {                                                                   \
+      this->_property.methods = this;                                   \
+    }                                                                   \
                                                                         \
     inline _cfo_managed_const_methods                                   \
       (const std::shared_ptr<cfo_T> &manager                            \
        ) :                                                              \
       cfo_basic_type<false>(manager)                                    \
-    {}                                                                  \
+    {                                                                   \
+      this->_property.methods = this;                                   \
+    }                                                                   \
                                                                         \
     inline _cfo_managed_const_methods                                   \
       (const _cfo_managed_const_methods                                 \
@@ -331,7 +364,9 @@ namespace cfo { namespace intern
        &methods                                                         \
        ) :                                                              \
       cfo_basic_type<false>(methods)                                    \
-    {}                                                                  \
+    {                                                                   \
+      this->_property.methods = this;                                   \
+    }                                                                   \
                                                                         \
     inline _cfo_managed_const_methods                                   \
       (const cfo::intern::managed                                       \
@@ -340,7 +375,9 @@ namespace cfo { namespace intern
        , bool shared) :                                                 \
                                                                         \
       cfo_basic_type<true>(manager, shared)                             \
-    {}                                                                  \
+    {                                                                   \
+      this->_property.methods = this;                                   \
+    }                                                                   \
                                                                         \
   public:                                                               \
     inline _cfo_managed_const_methods                                   \
@@ -349,7 +386,9 @@ namespace cfo { namespace intern
        &manager                                                         \
        ) :                                                              \
       cfo_basic_type<true>(manager)                                     \
-    {}                                                                  \
+    {                                                                   \
+      this->_property.methods = this;                                   \
+    }                                                                   \
                                                                         \
     inline _cfo_managed_const_methods                                   \
       (_cfo_managed_const_methods                                       \
@@ -358,7 +397,9 @@ namespace cfo { namespace intern
        ) :                                                              \
       cfo_basic_type<true>                                              \
       (static_cast<cfo_basic_type<true>&&>(methods))                    \
-    {}                                                                  \
+    {                                                                   \
+      this->_property.methods = this;                                   \
+    }                                                                   \
                                                                         \
     template<typename cfo_M>                                            \
     inline typename cfo_M::managed_type                                 \
@@ -389,7 +430,19 @@ namespace cfo { namespace intern
     {                                                                   \
       return static_cast<TYPE*>(this->cfo_basic_type<>::operator->());  \
     }                                                                   \
+                                                                        \
+  private:                                                              \
 
+#define cfo_DEFINE_MANAGED_PROPERTIES                                   \
+  public:                                                               \
+    union                                                               \
+    {                                                                   \
+      property<> _property;                                             \
+
+#define cfo_END_MANAGED_PROPERTIES                                      \
+    };                                                                  \
+                                                                        \
+  private:                                                              \
 
 #define cfo_END_MANAGED_BASIC_CONST_METHODS                             \
   };                                                                    \
@@ -563,6 +616,34 @@ namespace cfo { namespace intern
       friend class _cfo_managed_const_methods;                          \
                                                                         \
   private:                                                              \
+    template<typename cfo_V = void>                                     \
+    class property                                                      \
+    {                                                                   \
+    public:                                                             \
+      typedef _cfo_managed_const_methods                                \
+        <cfo_T, cfo_SYNC, cfo_EXC, cfo_INIT_T, cfo_COPY, cfo_BASE>      \
+        methods_type;                                                   \
+                                                                        \
+      methods_type *methods;                                            \
+                                                                        \
+    protected:                                                          \
+      inline const TYPE* operator->() const                             \
+      {                                                                 \
+        return static_cast<const methods_type*>(this->methods)          \
+          ->operator->();                                               \
+      }                                                                 \
+                                                                        \
+      inline TYPE* operator->()                                         \
+      {                                                                 \
+        return this->methods->operator->();                             \
+      }                                                                 \
+                                                                        \
+      inline operator const cfo_V() const                               \
+      {                                                                 \
+        return this->operator()();                                      \
+      }                                                                 \
+    };                                                                  \
+                                                                        \
     template<bool cfo_SYNC_ = cfo_SYNC>                                 \
       using cfo_basic_type                                              \
       = typename cfo_BASE::template cfo_sync<cfo_SYNC_>;                \
@@ -579,13 +660,17 @@ namespace cfo { namespace intern
                                                                         \
     inline _cfo_managed_const_methods(cfo_T *obj) :                     \
       cfo_basic_type<false>(obj)                                        \
-    {}                                                                  \
+    {                                                                   \
+      this->_property.methods = this;                                   \
+    }                                                                   \
                                                                         \
     inline _cfo_managed_const_methods                                   \
       (const std::shared_ptr<cfo_T> &manager) :                         \
                                                                         \
       cfo_basic_type<false>(manager)                                    \
-    {}                                                                  \
+    {                                                                   \
+      this->_property.methods = this;                                   \
+    }                                                                   \
                                                                         \
     inline _cfo_managed_const_methods                                   \
       (const _cfo_managed_const_methods                                 \
@@ -593,7 +678,9 @@ namespace cfo { namespace intern
        &methods                                                         \
        ) :                                                              \
       cfo_basic_type<false>(methods)                                    \
-    {}                                                                  \
+    {                                                                   \
+      this->_property.methods = this;                                   \
+    }                                                                   \
                                                                         \
     inline _cfo_managed_const_methods                                   \
       (const cfo::intern::managed                                       \
@@ -602,7 +689,9 @@ namespace cfo { namespace intern
        , bool shared) :                                                 \
                                                                         \
       cfo_basic_type<true>(manager, shared)                             \
-    {}                                                                  \
+    {                                                                   \
+      this->_property.methods = this;                                   \
+    }                                                                   \
                                                                         \
   public:                                                               \
     inline _cfo_managed_const_methods                                   \
@@ -611,7 +700,9 @@ namespace cfo { namespace intern
        &manager                                                         \
        ) :                                                              \
       cfo_basic_type<true>(manager)                                     \
-    {}                                                                  \
+    {                                                                   \
+      this->_property.methods = this;                                   \
+    }                                                                   \
                                                                         \
     inline _cfo_managed_const_methods                                   \
       (_cfo_managed_const_methods                                       \
@@ -620,7 +711,9 @@ namespace cfo { namespace intern
        ) :                                                              \
       cfo_basic_type<true>                                              \
       (static_cast<cfo_basic_type<true>&&>(methods))                    \
-    {}                                                                  \
+    {                                                                   \
+      this->_property.methods = this;                                   \
+    }                                                                   \
                                                                         \
     template<typename cfo_MGR>                                          \
     inline                                                              \
