@@ -18,10 +18,10 @@
 # along with carefree-objects.  If not, see <http://www.gnu.org/licenses/>.
 
 all:
-	scons DEBUG=no SHARED=yes STATIC=yes PYTHON=yes
+	scons DEBUG=no SHARED=yes STATIC=yes PYTHON=yes TESTS=yes
 
 debug:
-	scons DEBUG=yes SHARED=yes STATIC=yes PYTHON=yes
+	scons DEBUG=yes SHARED=yes STATIC=yes PYTHON=yes TESTS=yes
 
 clean:
-	scons -c DEBUG=yes SHARED=yes STATIC=yes PYTHON=yes
+	scons -c DEBUG=yes SHARED=yes STATIC=yes PYTHON=yes TESTS=yes
