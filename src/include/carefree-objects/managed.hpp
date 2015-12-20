@@ -157,7 +157,7 @@ namespace cfo { namespace intern
       obj(this->cnl ? static_cast<T*>(other.unmanaged()) : NULL)
     {}
 
-    inline ~managed()
+    virtual ~managed()
     {
       this->basic_manager::destroy();
       if (!this->cnl)
