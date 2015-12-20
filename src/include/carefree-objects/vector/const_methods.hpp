@@ -38,7 +38,20 @@ namespace cfo { namespace intern
   (basic_manager::vector<_cfo_MANAGED_VECTOR_TEMPLATE_ARGS>,
    vector<_cfo_MANAGED_VECTOR_TEMPLATE_ARGS>)
 
-     public:
+   cfo_DEFINE_MANAGED_PROPERTIES
+
+     struct : property<std::size_t>
+     {
+       inline std::size_t operator()() const
+       {
+         return (*this)->size();
+       }
+     }
+       size;
+
+   cfo_END_MANAGED_PROPERTIES
+
+   public:
 
      typedef MGR value_type;
 
@@ -49,10 +62,10 @@ namespace cfo { namespace intern
        typename vector<_cfo_MANAGED_VECTOR_TEMPLATE_ARGS>::const_iterator
        const_iterator;
 
-     inline std::size_t size() const
-     {
-       return (*this)->size();
-     }
+     // inline std::size_t size() const
+     // {
+     //   return (*this)->size();
+     // }
 
      inline const MGR& operator[](std::size_t index) const
      noexcept(!cfo_EXC)
