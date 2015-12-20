@@ -17,3 +17,6 @@ zetup_config module = yes
 
 setup hooks =
     libcfo:setup_keywords
+
+keep made =
+    setup.py
