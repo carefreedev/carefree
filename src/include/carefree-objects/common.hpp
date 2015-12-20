@@ -57,16 +57,28 @@ namespace cfo { namespace intern
 {
   class count_and_lock;
 
-  template<typename T, bool EXC = false, typename INIT_T = T, typename COPY = cfo::copy<T> >
+  template<typename T, bool EXC = false, typename INIT_T = T,
+           typename COPY = cfo::copy<T>
+           >
   class const_accessor;
 
-  template<typename T, bool EXC = false, typename INIT_T = T, typename COPY = cfo::copy<T> >
+  template<typename T, bool EXC = false, typename INIT_T = T,
+           typename COPY = cfo::copy<T>, // >
+           typename CONST_METHODS_T
+             = typename T::template cfo_managed_const_methods
+                 <T, true, EXC, INIT_T, COPY>
+           >
   class accessor;
 
   template<typename T, bool SYNC = true, bool EXC = false, typename INIT_T = T, typename COPY = cfo::copy<T> >
   class const_methods;
 
-  template<typename T, bool SYNC = true, bool EXC = false, typename INIT_T = T, typename COPY = cfo::copy<T> >
+  template<typename T, bool SYNC = true, bool EXC = false,
+           typename INIT_T = T, typename COPY = cfo::copy<T>, // >
+           typename CONST_METHODS_T
+             = typename T::template cfo_managed_const_methods
+                 <T, true, EXC, INIT_T, COPY>
+           >
   class methods;
 
   class basic_manager;

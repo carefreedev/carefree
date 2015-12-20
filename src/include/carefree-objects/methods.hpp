@@ -27,9 +27,13 @@
 
 namespace cfo { namespace intern
 {
-  template<typename T, bool EXC, typename INIT_T, typename COPY>
-  class methods<T, true, EXC, INIT_T, COPY> :
-    public accessor<T, EXC, INIT_T, COPY>
+  template<typename T, bool EXC, typename INIT_T, typename COPY,
+           typename CONST_METHODS_T
+           /* = typename T::template cfo_managed_const_methods
+              <T, true, EXC, INIT_T, COPY> */
+           >
+  class methods<T, true, EXC, INIT_T, COPY, CONST_METHODS_T> :
+    public accessor<T, EXC, INIT_T, COPY, CONST_METHODS_T>
   {
   private:
     methods(const methods<T, true, EXC, INIT_T, COPY>&);
