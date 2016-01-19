@@ -24,6 +24,8 @@
 #include "common.hpp"
 
 #include "object.hpp"
+#include "static_object.hpp"
+
 #include "extract.hpp"
 
 namespace cfo { namespace python
@@ -35,9 +37,9 @@ namespace cfo { namespace python
   bool is_instance(PyObject *py_obj, PyObject *py_type);
 
   inline bool is_instance
-    (const cfo::python::object &py_obj, PyObject *py_type)
+    (PyObject *py_obj, const boost::python::object &py_type)
   {
-    return is_instance(py_obj.ptr(), py_type);
+    return is_instance(py_obj, py_type.ptr());
   }
 
   inline bool is_instance
@@ -47,8 +49,88 @@ namespace cfo { namespace python
   }
 
   inline bool is_instance
+    (PyObject *py_obj, const cfo::python::static_object &py_type)
+  {
+    return is_instance(py_obj, py_type.ptr());
+  }
+
+  inline bool is_instance
+    (const boost::python::object &py_obj, PyObject *py_type)
+  {
+    return is_instance(py_obj.ptr(), py_type);
+  }
+
+  inline bool is_instance
+    (const boost::python::object &py_obj,
+     const boost::python::object &py_type)
+  {
+    return is_instance(py_obj.ptr(), py_type.ptr());
+  }
+
+  inline bool is_instance
+    (const boost::python::object &py_obj,
+     const cfo::python::object &py_type)
+  {
+    return is_instance(py_obj.ptr(), py_type.ptr());
+  }
+
+  inline bool is_instance
+    (const boost::python::object &py_obj,
+     const cfo::python::static_object &py_type)
+  {
+    return is_instance(py_obj.ptr(), py_type.ptr());
+  }
+
+  inline bool is_instance
+    (const cfo::python::object &py_obj, PyObject *py_type)
+  {
+    return is_instance(py_obj.ptr(), py_type);
+  }
+
+  inline bool is_instance
+    (const cfo::python::object &py_obj,
+     const boost::python::object &py_type)
+  {
+    return is_instance(py_obj.ptr(), py_type.ptr());
+  }
+
+  inline bool is_instance
     (const cfo::python::object &py_obj,
      const cfo::python::object &py_type)
+  {
+    return is_instance(py_obj.ptr(), py_type.ptr());
+  }
+
+  inline bool is_instance
+    (const cfo::python::object &py_obj,
+     const cfo::python::static_object &py_type)
+  {
+    return is_instance(py_obj.ptr(), py_type.ptr());
+  }
+
+  inline bool is_instance
+    (const cfo::python::static_object &py_obj, PyObject *py_type)
+  {
+    return is_instance(py_obj.ptr(), py_type);
+  }
+
+  inline bool is_instance
+    (const cfo::python::static_object &py_obj,
+     const boost::python::object &py_type)
+  {
+    return is_instance(py_obj.ptr(), py_type.ptr());
+  }
+
+  inline bool is_instance
+    (const cfo::python::static_object &py_obj,
+     const cfo::python::object &py_type)
+  {
+    return is_instance(py_obj.ptr(), py_type.ptr());
+  }
+
+  inline bool is_instance
+    (const cfo::python::static_object &py_obj,
+     const cfo::python::static_object &py_type)
   {
     return is_instance(py_obj.ptr(), py_type.ptr());
   }
