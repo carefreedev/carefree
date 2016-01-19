@@ -40,9 +40,9 @@ namespace cfo { namespace python { namespace import
       return boost::python::import("builtins");
     }
 
-    static const boost::python::object module = _module();
+    static cfo::python::static_object module = _module();
 
-    const boost::python::object
+    cfo::python::static_object
       object = module.attr("object"),
       type = module.attr("type"),
 
@@ -75,19 +75,19 @@ namespace cfo { namespace python { namespace import
 
   namespace functools
   {
-    static const boost::python::object module
+    static cfo::python::static_object module
     = boost::python::import("functools");
 
-    const boost::python::object
+    cfo::python::static_object
       partial = module.attr("partial");
   }
 
   namespace datetime
   {
-    static const boost::python::object module
+    static cfo::python::static_object module
     = boost::python::import("datetime");
 
-    const boost::python::object
+    cfo::python::static_object
       timedelta = module.attr("timedelta"),
       tzinfo = module.attr("tzinfo"),
       datetime = module.attr("datetime");
@@ -95,11 +95,82 @@ namespace cfo { namespace python { namespace import
 
   namespace netaddr
   {
-    static const boost::python::object module
+    static cfo::python::static_object module
     = boost::python::import("netaddr");
 
-    const boost::python::object
+    cfo::python::static_object
       IPAddress = module.attr("IPAddress"),
       EUI = module.attr("EUI");
+  }
+
+  namespace atexit
+  {
+    static cfo::python::static_object module
+      = boost::python::import("atexit");
+  }
+
+  static void cleanup()
+  {
+    __builtin__::module.release();
+
+    __builtin__::object.release();
+    __builtin__::type.release();
+
+    __builtin__::property.release();
+
+    __builtin__::bool_.release();
+
+    __builtin__::int_.release();
+    __builtin__::float_.release();
+    __builtin__::complex.release();
+    __builtin__::number_types.release();
+
+    __builtin__::bytes.release();
+    __builtin__::str.release();
+    __builtin__::string_types.release();
+
+    __builtin__::tuple.release();
+    __builtin__::list.release();
+    __builtin__::list_types.release();
+
+    __builtin__::set.release();
+    __builtin__::dict.release();
+    __builtin__::dict_types.release();
+
+    __builtin__::hash.release();
+    __builtin__::iter.release();
+    __builtin__::next.release();
+    __builtin__::repr.release();
+
+    functools::module.release();
+
+    functools::partial.release();
+
+    datetime::module.release();
+
+    datetime::timedelta.release();
+    datetime::tzinfo.release();
+    datetime::datetime.release();
+
+    netaddr::module.release();
+
+    netaddr::IPAddress.release();
+    netaddr::EUI.release();
+
+    atexit::module.release();
+
+    atexit::register_.release();
+  }
+
+  namespace atexit
+  {
+    static boost::python::object _register()
+    {
+      boost::python::object register_ = atexit::module.attr("register");
+      register_(boost::python::make_function(&import::cleanup));
+      return register_;
+    }
+
+    cfo::python::static_object register_ = _register();
   }
 } } }

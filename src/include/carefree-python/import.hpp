@@ -23,11 +23,13 @@
 
 #include "common.hpp"
 
+#include "static_object.hpp"
+
 namespace cfo { namespace python { namespace import
 {
   namespace __builtin__
   {
-    extern const boost::python::object
+    extern cfo::python::static_object
       object, type,
       property,
       bool_,
@@ -43,14 +45,14 @@ namespace cfo { namespace python { namespace import
 
   namespace functools
   {
-    extern const boost::python::object
+    extern cfo::python::static_object
       partial;
   }
   using namespace functools;
 
   namespace datetime
   {
-    extern const boost::python::object
+    extern cfo::python::static_object
       timedelta,
       tzinfo,
       datetime;
@@ -58,9 +60,15 @@ namespace cfo { namespace python { namespace import
 
   namespace netaddr
   {
-    extern const boost::python::object
+    extern cfo::python::static_object
       IPAddress,
       EUI;
+  }
+
+  namespace atexit
+  {
+    extern cfo::python::static_object
+      register_;
   }
 } } }
 
