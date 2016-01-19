@@ -18,7 +18,10 @@
  * along with carefree-objects.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <carefree-python/common.hpp>
+
 #include <carefree-python/object.hpp>
+
 #include <carefree-python/functions.hpp>
 
 namespace cfo { namespace python

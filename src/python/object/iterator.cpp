@@ -18,6 +18,8 @@
  * along with carefree-objects.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <carefree-python/common.hpp>
+
 #include <carefree-python/object/iterator.hpp>
 
 #include <carefree-python/except.hpp>
