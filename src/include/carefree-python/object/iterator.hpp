@@ -1,4 +1,3 @@
-
 /* carefree-objects
  *
  * a thread-safe object manager extension for c++
@@ -36,13 +35,7 @@ namespace cfo { namespace python
       _item_ptr()
     {}
 
-    inline iterator(const cfo::python::object& obj) :
-      object
-      (cfo::python::import::iter
-       (static_cast<const boost::python::object&>(obj)))
-    {
-      ++*this;
-    }
+    inline iterator(const cfo::python::object& obj);
 
     // inline iterator(const iterator&& iter) :
     //   object(cfo::python::import::iter(obj))

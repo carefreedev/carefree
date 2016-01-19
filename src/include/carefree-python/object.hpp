@@ -25,6 +25,8 @@
 
 namespace cfo { namespace python
 {
+  class static_object;
+
   /**
    * A wrapper for `boost::python::object`.
    *
@@ -99,15 +101,9 @@ namespace cfo { namespace python
   public: //------------------------------------------------------------------
     //                                             Construct from IP addresses
 
-    inline object(const cfo::ip::v4::address &addr) :
-      boost::python::object
-      (cfo::python::import::netaddr::IPAddress(std::uint32_t(addr)))
-    {}
+    inline object(const cfo::ip::v4::address &addr);
 
-    inline object(const cfo::ip::v6::address &addr) :
-      boost::python::object
-      (cfo::python::import::netaddr::IPAddress(std::string(addr)))
-    {}
+    inline object(const cfo::ip::v6::address &addr);
 
   public: //------------------------------------------------------------------
     //                                                    Assignment operators
@@ -170,10 +166,7 @@ namespace cfo { namespace python
        ('dict', 'dict_types'),
        ] %}
 
-    inline bool is_{{ TYPE }}() const
-    {
-      return this->is_instance(import::{{ IMPORT }}.ptr());
-    }
+    inline bool is_{{ TYPE }}() const;
 
   {% endfor %}
 

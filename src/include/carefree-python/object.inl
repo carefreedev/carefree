@@ -25,6 +25,36 @@
 
 namespace cfo { namespace python
 {
+  inline object::object(const cfo::ip::v4::address &addr) :
+    boost::python::object
+    (cfo::python::import::netaddr::IPAddress(std::uint32_t(addr)))
+  {}
+
+  inline object::object(const cfo::ip::v6::address &addr) :
+    boost::python::object
+    (cfo::python::import::netaddr::IPAddress(std::string(addr)))
+  {}
+
+  {% for TYPE, IMPORT in [
+       ('bool', 'bool_'),
+       ('integer', 'int_'),
+       ('float', 'float_'),
+       ('complex', 'complex'),
+       ('number', 'number_types'),
+       ('bytes', 'bytes'),
+       ('string', 'string_types'),
+       ('tuple', 'tuple'),
+       ('list', 'list_types'),
+       ('set', 'set'),
+       ('dict', 'dict_types'),
+       ] %}
+
+  inline bool object::is_{{ TYPE }}() const
+  {
+    return this->is_instance(import::{{ IMPORT }}.ptr());
+  }
+  {% endfor %}
+
   inline object::iterator object::begin()
   {
     return object::iterator(*this);
@@ -53,6 +83,13 @@ namespace cfo { namespace python
   inline object::const_iterator object::cend() const
   {
     return this->end();
+  }
+
+  inline object::iterator::iterator(const cfo::python::object& obj) :
+    object(cfo::python::import::iter
+           (static_cast<const boost::python::object&>(obj)))
+  {
+    ++*this;
   }
 
 {% for INT in [INT_TYPES, UINT_TYPES]|chain %}
