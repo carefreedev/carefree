@@ -28,6 +28,8 @@
 #include "./carefree-python/import.hpp"
 
 #include "./carefree-python/object.hpp"
+#include "./carefree-python/static_object.hpp"
+
 #include "./carefree-python/functions.hpp"
 #include "./carefree-python/except.hpp"
 #include "./carefree-python/extract.hpp"

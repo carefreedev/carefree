@@ -28,6 +28,9 @@
 #include <boost/python/slice.hpp>
 #include <boost/python/raw_function.hpp>
 
+#include "./object.hpp"
+#include "./static_object.hpp"
+
 #include "./import.hpp"
 
 #endif
