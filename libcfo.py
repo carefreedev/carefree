@@ -48,6 +48,8 @@ with PREFIX:
     __requires__ = list(parse_requirements(__requires__))
 
     if Path('SConstruct').exists():
+        import zcons
+
         env = dict(os.environ, PYTHONPATH=os.pathsep.join(sys.path))
         try:
             import libarray_ptr
@@ -56,10 +58,11 @@ with PREFIX:
         else:
             env['CPPFLAGS'] = '-I%s %s' % (
                 str(libarray_ptr.INCLUDE_PATH), env.get('CPPFLAGS', ''))
-        if Popen(['scons', 'DEBUG=yes', 'SHARED=yes', 'STATIC=yes',
-                  'TESTS=yes'],
-                 env=env).wait():
-            raise RuntimeError
+        # if Popen(['scons', 'DEBUG=yes', 'SHARED=yes', 'STATIC=yes',
+        #           'TESTS=yes'],
+        #          env=env).wait():
+        #     raise RuntimeError
+        zcons.scons(env_update=env, DEBUG=True, SHARED=True, STATIC=True)
         del env
 
 
@@ -72,6 +75,8 @@ def setup_keywords(dist):
     """Create libcarefree_objects data file lists
        and add to setup keywords.
     """
+    import zcons
+
     PYTHON_SHORT_VERSION = '%i%i' % tuple(sys.version_info[:2])
 
     LIB_PACKAGE = 'libcfo'
@@ -94,14 +99,15 @@ def setup_keywords(dist):
 
     # Process the header templates and compile the libs
     env = dict(os.environ, PYTHONPATH=os.pathsep.join(sys.path))
-    for cmd in [
-            ## ['scons', '-c', 'SHARED=yes', 'STATIC=yes'],
-            ['scons', 'DEBUG=yes', 'SHARED=yes', 'STATIC=yes', 'TESTS=yes'],
-            ## 'PYTHON=%s' % sys.executable],
-    ]:
-        print(' '.join(cmd))
-        if Popen(cmd, env=env).wait():
-            sys.exit(1)
+    # for cmd in [
+    #         ## ['scons', '-c', 'SHARED=yes', 'STATIC=yes'],
+    #         ['scons', 'DEBUG=yes', 'SHARED=yes', 'STATIC=yes', 'TESTS=yes'],
+    #         ## 'PYTHON=%s' % sys.executable],
+    # ]:
+    #     print(' '.join(cmd))
+    #     if Popen(cmd, env=env).wait():
+    #         sys.exit(1)
+    zcons.scons(env_update=env, DEBUG=True, SHARED=True, STATIC=True)
 
     LIB_PACKAGE_DIR = Path(LIB_PACKAGE_DIR)
 
