@@ -1,4 +1,4 @@
 zcons
-path.py >= 7.7 #import path
+path.py >= 8.0 #import path
 jinjatools >= 0.1.6
 libarray_ptr >= 0.11
