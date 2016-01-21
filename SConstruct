@@ -208,10 +208,10 @@ for pybin in PYTHON and PYTHON.split(',') or []:
 
     BOOST_PYTHON_LIB = 'boost_python'
 
-    libname_with_pyversion = '%s-py%s' % (
-      BOOST_PYTHON_LIB, pyversionsuffix)
-    if pyconf.CheckLib(libname_with_pyversion):
-        BOOST_PYTHON_LIB = libname_with_pyversion
+    for suffix in ['-py%s' % pyversionsuffix, str(pyversion[0])]:
+        if pyconf.CheckLib(BOOST_PYTHON_LIB + suffix):
+            BOOST_PYTHON_LIB += suffix
+            break
 
     pyenv = pyconf.Finish()
 
