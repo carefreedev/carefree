@@ -50,10 +50,26 @@ env.Append(
     ],
   )
 
-BOOST_LIBS = [
-  'boost_system',
-  'boost_thread',
-  ]
+conf = Configure(env)
+
+BOOST_LIBS = []
+for lib in [
+        'boost_system',
+        'boost_thread',
+]:
+    lib_mt = lib + '-mt'
+    if conf.CheckLib(lib_mt):
+        BOOST_LIBS.append(lib_mt)
+        break
+    if not conf.CheckLib(lib):
+        raise RuntimeError("Can't find %s or %s library."
+                           % (repr(lib_mt), repr(lib)))
+    BOOST_LIBS.append(lib)
+del lib
+
+env = conf.Finish()
+del conf
+
 
 SOURCE_PATH = Path('src')
 INCLUDE_SOURCE_PATH = SOURCE_PATH / 'include'
@@ -208,10 +224,17 @@ for pybin in PYTHON and PYTHON.split(',') or []:
 
     BOOST_PYTHON_LIB = 'boost_python'
 
-    for suffix in ['-py%s' % pyversionsuffix, str(pyversion[0])]:
+    suffixes = [
+        '-py%s' % pyversionsuffix,
+        str(pyversion[0]) + '-mt', str(pyversion[0]),
+    ]
+    for suffix in suffixes:
         if pyconf.CheckLib(BOOST_PYTHON_LIB + suffix):
             BOOST_PYTHON_LIB += suffix
             break
+    else:
+        raise RuntimeError("Can't find %s library."
+                           % ' or '.join(map(repr(suffixes))))
 
     pyenv = pyconf.Finish()
 
