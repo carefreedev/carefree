@@ -23,7 +23,7 @@ import os
 import imp
 from subprocess import Popen, PIPE
 
-from path import path as Path
+from path import Path
 
 import jinja2
 from jinjatools.scons import JinjaBuilder
