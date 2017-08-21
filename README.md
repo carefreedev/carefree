@@ -1,8 +1,8 @@
 CareFREE-objects
 ================
 
-Managed C++ with Python integration
------------------------------------
+Managed C++ w/Python @<3
+------------------------
 
 > CareFREE shall thy objects be!
 >
@@ -10,4 +10,4 @@ Managed C++ with Python integration
 >
 > For the MOST reliability
 
-MORE information coming very soon...
+MORE information coming really soon...
