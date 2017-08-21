@@ -23,7 +23,7 @@
 """
 __all__ = 'PREFIX', 'INCLUDE_PATH', 'LIB_PATH',
 
-from path import path as Path
+from path import Path
 
 from .libcfo import __version__, __requires__
 

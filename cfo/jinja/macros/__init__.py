@@ -24,7 +24,7 @@
 
 __all__ = ['SEARCH_PATH', 'LOADER', 'CFO']
 
-from path import path as Path
+from path import Path
 
 import jinja2
 

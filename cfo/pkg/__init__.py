@@ -25,7 +25,7 @@
 import os
 import re
 
-from path import path as Path
+from path import Path
 
 class Source(list):
     def __init__(self, rootpath, ignore = [r'\.pyc$']):
