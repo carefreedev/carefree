@@ -227,14 +227,14 @@ for pybin in PYTHON and PYTHON.split(',') or []:
     suffixes = [
         '-py%s' % pyversionsuffix,
         str(pyversion[0]) + '-mt', str(pyversion[0]),
-    ]
+        '']
     for suffix in suffixes:
         if pyconf.CheckLib(BOOST_PYTHON_LIB + suffix):
             BOOST_PYTHON_LIB += suffix
             break
     else:
         raise RuntimeError("Can't find %s library."
-                           % ' or '.join(map(repr(suffixes))))
+                           % ' or '.join(map(repr, suffixes)))
 
     pyenv = pyconf.Finish()
 
