@@ -17,38 +17,38 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with carefree-objects.  If not, see <http://www.gnu.org/licenses/>.
 
-import sys
-import re
-import os
 import imp
+import os
+import re
+import sys
 from subprocess import Popen, PIPE
-
-from path import Path
 
 import jinja2
 from jinjatools.scons import JinjaBuilder
+from path import Path
 
-sys.path.insert(0, '')
+sys.path.insert(0, Path(__file__).realpath().dirname())
+
 import cfo.jinja
 import cfo.jinja.macros
-
 from cfo.scons import Environment
 
 
 env = Environment('carefree-objects')
 
 env.Prepend(
-  CPPPATH = [
-    'include',
+    CPPPATH = [
+        'include',
     ],
-  )
+)
 env.Append(
-  JINJACONTEXT = cfo.jinja.CONTEXT,
+    JINJACONTEXT = cfo.jinja.CONTEXT,
 
-  CPPDEFINES = [
-    env['DEBUG'] and 'DEBUG' or 'NDEBUG',
+    CPPDEFINES = [
+        env['DEBUG'] and 'DEBUG' or 'NDEBUG',
     ],
-  )
+)
+
 
 conf = Configure(env)
 
@@ -72,8 +72,8 @@ del conf
 
 
 SOURCE_PATH = Path('src')
-INCLUDE_SOURCE_PATH = SOURCE_PATH / 'include'
 
+INCLUDE_SOURCE_PATH = SOURCE_PATH / 'include'
 INCLUDE_PATH = Path('include')
 
 BUILD_PATH = Path('build')
@@ -105,108 +105,114 @@ for path in INCLUDE_SOURCE_PATH.walkfiles():
             context = {name: getattr(context, name)
                        for name in context.__all__}
             incenv.Append(
-              JINJACONTEXT=context,
-              )
+                JINJACONTEXT=context,
+            )
 
         loader = jinja2.ChoiceLoader([
-          incenv['JINJALOADER'],
-          jinja2.FileSystemLoader(subpath),
-          ])
+            incenv['JINJALOADER'],
+            jinja2.FileSystemLoader(subpath),
+        ])
         target = INCLUDE_PATH / INCLUDE_SOURCE_PATH.relpathto(path)
 
         INCLUDES.append(
-          incenv.Depends(
-            incenv.Jinja(
-              target, source=path,
+            incenv.Depends(
+                incenv.Jinja(
+                    target, source=path,
 
-              JINJALOADER=loader,
-              ),
-            SOURCE_DEPENDS + depends))
+                    JINJALOADER=loader,
+                ),
+                SOURCE_DEPENDS + depends))
 
 
 OBJECTS = []
 for path in SOURCE_PATH.walkfiles():
     if not 'python' in path and path.ext == '.cpp':
         OBJECTS.append(env.Requires(
-          env.SharedObject(
-            env.Jinja(
-              BUILD_PATH / SOURCE_PATH.relpathto(path),
-              source=path,
-              )),
-          INCLUDES))
+            env.SharedObject(
+                env.Jinja(
+                    BUILD_PATH / SOURCE_PATH.relpathto(path),
+                    source=path,
+                )),
+            INCLUDES))
 
 
 if env['SHARED']:
     LIB_CAREFREE_TYPES = env.SharedLibrary(
-      LIB_PATH / 'carefree-types',
-      source=OBJECTS,
+        LIB_PATH / 'carefree-types',
+        source=OBJECTS,
 
-      LIBS=BOOST_LIBS,
-      )
+        LIBS=BOOST_LIBS,
+    )
+
 if env['STATIC']:
     env.StaticLibrary(
-      LIB_PATH / 'carefree-types',
-      source=OBJECTS,
-      )
+        LIB_PATH / 'carefree-types',
+        source=OBJECTS,
+    )
+
 
 if env['TESTS']:
     TEST_OBJECTS = []
     for path in (SOURCE_PATH / 'test').walkfiles():
         if path.ext == '.cpp':
             TEST_OBJECTS.append(env.Requires(
-              env.SharedObject(
-                env.Jinja(
-                  BUILD_PATH / SOURCE_PATH.relpathto(path),
-                  source=path,
-                  )),
-              INCLUDES))
+                env.SharedObject(
+                    env.Jinja(
+                        BUILD_PATH / SOURCE_PATH.relpathto(path),
+                        source=path,
+                    )),
+                INCLUDES))
 
     if env['SHARED']:
         LIB_CAREFREE_TYPES_TEST = env.SharedLibrary(
-          LIB_PATH / 'carefree-types-test',
-          source=TEST_OBJECTS,
-          )
+            LIB_PATH / 'carefree-types-test',
+            source=TEST_OBJECTS,
+        )
+
     if env['STATIC']:
         env.StaticLibrary(
-          LIB_PATH / 'carefree-types-test',
-          source=TEST_OBJECTS,
-          )
+            LIB_PATH / 'carefree-types-test',
+            source=TEST_OBJECTS,
+        )
 
     env.Requires(
-      env.Program(
-        'test', source='test.cpp',
+        env.Program(
+            'test', source='test.cpp',
 
-        LIBPATH=[LIB_PATH],
-        LIBS=BOOST_LIBS + [
-          LIB_CAREFREE_TYPES,
-          LIB_CAREFREE_TYPES_TEST,
-          ],
+            LIBPATH=[LIB_PATH],
+            LIBS=BOOST_LIBS + [
+                LIB_CAREFREE_TYPES,
+                LIB_CAREFREE_TYPES_TEST,
+            ],
         ),
-      [LIB_CAREFREE_TYPES,
-       LIB_CAREFREE_TYPES_TEST,
-       ])
+        [LIB_CAREFREE_TYPES,
+         LIB_CAREFREE_TYPES_TEST,
+        ])
+
 
 CAREFREE_PYTHON_SOURCE_NAMES = [
-  'import',
-  'functions',
-  'convert',
-  'object/iterator',
-  'object/check',
-  ]
+    'import',
+    'functions',
+    'convert',
+    'object/iterator',
+    'object/check',
+]
+
 CAREFREE_PYTHON_SOURCES = [
-  env.Jinja(
-    'build/python/%s.cpp' % name,
-    source = ['src/python/%s.cpp' % name]
+    env.Jinja(
+        'build/python/%s.cpp' % name,
+        source = ['src/python/%s.cpp' % name]
     )
-  for name in CAREFREE_PYTHON_SOURCE_NAMES]
+    for name in CAREFREE_PYTHON_SOURCE_NAMES]
 
 PYTHON = env['PYTHON']
 if PYTHON is True:
     PYTHON = 'python'
+
 for pybin in PYTHON and PYTHON.split(',') or []:
-    out = Popen([pybin, '--version'],
-      stdout=PIPE, stderr=PIPE, universal_newlines=True
-      ).communicate()
+    out = (Popen([pybin, '--version'],
+                 stdout=PIPE, stderr=PIPE, universal_newlines=True)
+           .communicate())
     out = out[0] or out[1]
     pyversion = out.split()[1].split('.', 2)
 
@@ -217,16 +223,17 @@ for pybin in PYTHON and PYTHON.split(',') or []:
 
     pyenv = env.Clone()
     pyenv.MergeFlags(
-      Popen([pybin + '-config', '--includes', '--libs'],
-        stdout = PIPE, universal_newlines=True
-        ).communicate()[0])
+        Popen([pybin + '-config', '--includes', '--libs'],
+              stdout = PIPE, universal_newlines=True)
+        .communicate()[0])
     pyconf = Configure(pyenv)
 
     BOOST_PYTHON_LIB = 'boost_python'
 
     suffixes = [
         '-py%s' % pyversionsuffix,
-        str(pyversion[0]) + '-mt', str(pyversion[0]),
+        str(pyversion[0]) + '-mt',
+        str(pyversion[0]),
         '']
     for suffix in suffixes:
         if pyconf.CheckLib(BOOST_PYTHON_LIB + suffix):
@@ -239,29 +246,29 @@ for pybin in PYTHON and PYTHON.split(',') or []:
     pyenv = pyconf.Finish()
 
     pyenv.Append(
-      LIBS=BOOST_LIBS + [
-        BOOST_PYTHON_LIB,
+        LIBS=BOOST_LIBS + [
+            BOOST_PYTHON_LIB,
         ],
-      )
+    )
 
     OBJECTS = [
-      env.Requires(
-        pyenv.SharedObject(
-          '%s/%s' % (pybuildpath, name),
-          source=['build/python/%s.cpp' % name],
-          ),
-        [CAREFREE_PYTHON_SOURCES,
-         INCLUDES,
-         ])
-      for name in CAREFREE_PYTHON_SOURCE_NAMES]
+        env.Requires(
+            pyenv.SharedObject(
+                '%s/%s' % (pybuildpath, name),
+                source=['build/python/%s.cpp' % name],
+            ),
+            [CAREFREE_PYTHON_SOURCES,
+             INCLUDES,
+            ])
+        for name in CAREFREE_PYTHON_SOURCE_NAMES]
 
     if env['SHARED']:
         pyenv.SharedLibrary(
-          'lib/carefree-python-py' + pyversionsuffix,
-          source=OBJECTS,
-          )
+            'lib/carefree-python-py' + pyversionsuffix,
+            source=OBJECTS,
+        )
     if env['STATIC']:
         pyenv.StaticLibrary(
-          'lib/carefree-python-py' + pyversionsuffix,
-          source=OBJECTS,
-          )
+            'lib/carefree-python-py' + pyversionsuffix,
+            source=OBJECTS,
+        )
