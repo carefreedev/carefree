@@ -1,10 +1,10 @@
 [carefree-objects]
 
 description =
-    A managed object framework for C++ and Python extensions
+    MODELED C++ w/Python @<3
 
-author = Stefan Zimmermann <zimmermann.code@gmail.com>
-url = http://bitbucket.org/userzimmermann/carefree-objects
+author = Stefan Zimmermann <user@zimmermann.co>
+url = http://github.com/carefreedev/carefree-objects
 
 license = LGPLv3
 
