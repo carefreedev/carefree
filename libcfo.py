@@ -62,7 +62,8 @@ with PREFIX:
         #           'TESTS=yes'],
         #          env=env).wait():
         #     raise RuntimeError
-        zcons.scons(env_update=env, DEBUG=True, SHARED=True, STATIC=True)
+        zcons.scons(env_update=env, stdout=sys.__stderr__,
+                    DEBUG=True, SHARED=True, STATIC=True)
         del env
 
 
@@ -107,7 +108,8 @@ def setup_keywords(dist):
     #     print(' '.join(cmd))
     #     if Popen(cmd, env=env).wait():
     #         sys.exit(1)
-    zcons.scons(env_update=env, DEBUG=True, SHARED=True, STATIC=True)
+    zcons.scons(env_update=env, stdout=sys.__stderr__,
+                DEBUG=True, SHARED=True, STATIC=True)
 
     LIB_PACKAGE_DIR = Path(LIB_PACKAGE_DIR)
 
