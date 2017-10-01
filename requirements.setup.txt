@@ -1,4 +1,4 @@
 zcons
-path.py >= 8.0 #import path
-jinjatools >= 0.1.6
-libarray_ptr >= 0.11
+path.py >= 10.4 #import path
+jinjatools >= 0.1.7
+libarray_ptr >= 0.12
