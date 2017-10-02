@@ -27,7 +27,7 @@ import jinja2
 from jinjatools.scons import JinjaBuilder
 from path import Path
 
-sys.path.insert(0, Path(__file__).realpath().dirname())
+sys.path.insert(0, Path('.').realpath().dirname())
 
 import cfo.jinja
 import cfo.jinja.macros
