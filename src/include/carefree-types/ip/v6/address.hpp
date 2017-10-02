@@ -23,7 +23,7 @@
 
 #include <carefree-types/common.hpp>
 
-#include <carefree-types/ip/address.hpp>
+#include "../address.hpp"
 
 namespace cfo { namespace ip
 {
