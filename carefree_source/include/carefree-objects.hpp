@@ -1,8 +1,8 @@
 /* carefree-objects
  *
- * a thread-safe object manager extension for c++
+ * MODELED C++ w/Python @<3
  *
- * Copyright (C) 2011-2015 Stefan Zimmermann <zimmermann.code@gmail.com>
+ * Copyright (C) 2011-2017 Stefan Zimmermann <user@zimmermann.co>
  *
  * carefree-objects is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -23,6 +23,8 @@
 
 #include "./carefree-objects/managed.hpp"
 #include "./carefree-objects/forward.hpp"
+
+#include "./carefree-objects/modeled.hpp"
 
 namespace cfo
 {
