@@ -56,6 +56,9 @@ class Variables(SConsVariables):
         self.Add(BoolVariable(
           'DEBUG', "build %s with debugging symbols" % project,
           'no'))
+        self.Add(PathVariable(
+          'PREFIX', "install %s in given directory" % project,
+          '.'))
         self.Add(BoolVariable(
           'SHARED', "build shared %s libraries" % project,
           'yes'))
