@@ -26,6 +26,7 @@ Tools for building carefree-objects based C++ projects with SCons.
 __all__ = ['Environment']
 
 import os
+import sysconfig
 
 import Boost.Cons
 
@@ -67,6 +68,9 @@ class Environment(Boost.Cons.Environment):
         self['PROJECT'] = project
         self['JINJALOADER'] = jinja_loader
 
+        self.Prepend(
+            CPPPATH=[sysconfig.get_path('include')],
+        )
         self.Append(
             CPPDEFINES=[self['DEBUG'] and 'DEBUG' or 'NDEBUG'],
             JINJACONTEXT=cfo.jinja.CONTEXT,
