@@ -1,22 +1,21 @@
-[carefree-objects]
+[carefree]
 
 description =
     MODELED C++ w/Python @<3
 
 author = Stefan Zimmermann <user@zimmermann.co>
-url = http://github.com/carefreedev/carefree-objects
+url = https://github.com/carefreedev/carefree
 
 license = LGPLv3
 
-python = 2.7
+python = 3.3 3.4 3.5 3.6
 
 packages =
+    carefree
+    carefree_source
     cfo
 
 zetup_config module = yes
-
-setup hooks =
-    libcfo:setup_keywords
 
 keep made =
     setup.py
