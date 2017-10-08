@@ -27,45 +27,46 @@ import jinja2
 from jinjatools.scons import JinjaBuilder
 from path import Path
 
+import Boost
+
 sys.path.insert(0, Path('.').realpath().dirname())
 
-import cfo.jinja
-import cfo.jinja.macros
-from cfo.scons import Environment
+import cfo.scons
 
 
-env = Environment('carefree-objects')
+env = cfo.scons.Environment('carefree-objects')
 
-env.Prepend(
-    CPPPATH = [
-        'include',
-    ],
-)
-env.Append(
-    JINJACONTEXT = cfo.jinja.CONTEXT,
+env.Prepend(CPPPATH=['include'])
 
-    CPPDEFINES = [
-        env['DEBUG'] and 'DEBUG' or 'NDEBUG',
-    ],
-)
+
+try:
+    import libarray_ptr
+except ImportError:
+    pass
+else:
+    env.Prepend(CPPPATH=[libarray_ptr.INCLUDE_PATH])
 
 
 conf = Configure(env)
 
-BOOST_LIBS = []
-for lib in [
-        'boost_system',
-        'boost_thread',
-]:
-    lib_mt = lib + '-mt'
-    if conf.CheckLib(lib_mt):
-        BOOST_LIBS.append(lib_mt)
-        break
-    if not conf.CheckLib(lib):
-        raise RuntimeError("Can't find %s or %s library."
-                           % (repr(lib_mt), repr(lib)))
-    BOOST_LIBS.append(lib)
-del lib
+BOOST_LIBS = [Boost.LIB[name] for name in (
+    'system',
+    'thread',
+)]
+# for lib in BOOST_LIBS:
+# #         'boost_system',
+# #         'boost_thread',
+# # ]:
+#     lib_mt = lib + '-mt'
+#     if conf.CheckLib(lib_mt):
+#         BOOST_LIBS.append(lib_mt)
+#         break
+#     if not conf.CheckLib(lib):
+#         raise RuntimeError("Can't find %s or %s library."
+#                            % (repr(lib_mt), repr(lib)))
+#     # BOOST_LIBS.append(lib)
+# del lib
+BOOST_LIBS.append('msvcrtd')
 
 env = conf.Finish()
 del conf
@@ -144,14 +145,14 @@ if env['SHARED']:
         LIBS=BOOST_LIBS,
     )
 
-if env['STATIC']:
-    env.StaticLibrary(
-        LIB_PATH / 'carefree-types',
-        source=OBJECTS,
-    )
+# if env['STATIC']:
+#     env.StaticLibrary(
+#         LIB_PATH / 'carefree-types',
+#         source=OBJECTS,
+#     )
 
 
-if env['TESTS']:
+if False and env['TESTS']:
     TEST_OBJECTS = []
     for path in (SOURCE_PATH / 'test').walkfiles():
         if path.ext == '.cpp':
@@ -169,11 +170,11 @@ if env['TESTS']:
             source=TEST_OBJECTS,
         )
 
-    if env['STATIC']:
-        env.StaticLibrary(
-            LIB_PATH / 'carefree-types-test',
-            source=TEST_OBJECTS,
-        )
+    # if env['STATIC']:
+    #     env.StaticLibrary(
+    #         LIB_PATH / 'carefree-types-test',
+    #         source=TEST_OBJECTS,
+    #     )
 
     env.Requires(
         env.Program(
@@ -209,6 +210,7 @@ PYTHON = env['PYTHON']
 if PYTHON is True:
     PYTHON = 'python'
 
+PYTHON = False
 for pybin in PYTHON and PYTHON.split(',') or []:
     out = (Popen([pybin, '--version'],
                  stdout=PIPE, stderr=PIPE, universal_newlines=True)

@@ -27,7 +27,7 @@ __all__ = ['Environment']
 
 import os
 
-from SCons.Environment import Environment as SConsEnvironment
+import Boost.Cons
 
 import jinja2
 from jinjatools.scons import JinjaBuilder
@@ -39,40 +39,55 @@ import cfo.jinja.macros
 from .vars import Variables
 
 
-class Environment(SConsEnvironment):
+class Environment(Boost.Cons.Environment):
     """
+    CareFREE SCons environment.
+
+    Based on pyboost's ``Boost.Cons.Environment``
+
+    Reads common system environment variables for C++ compiler/linker
+
+    Adds a ``Jinja`` template builder with pre-loaded ``cfo.jinja.macros``
+    and a ``jinja2.FileSystemLoader`` based on current working directory
     """
+
     def __init__(self, project, python=True, **options):
         jinja_loader = jinja2.ChoiceLoader([
-          cfo.jinja.macros.LOADER,
-          jinja2.FileSystemLoader('.'),
-          ])
+            cfo.jinja.macros.LOADER,
+            jinja2.FileSystemLoader('.'),
+        ])
         options.setdefault('BUILDERS', {}).update(
-          Jinja=JinjaBuilder(jinja_loader),
-          )
+            Jinja=JinjaBuilder(jinja_loader),
+        )
+        super(Environment, self).__init__(**options)
 
-        SConsEnvironment.__init__(self, **options)
-        # Add the common carefree-objects Variables:
+        # add the common carefree-objects variables
         Variables(project, python).Update(self)
 
         self['PROJECT'] = project
         self['JINJALOADER'] = jinja_loader
 
-        # Add Linux/GCC style flags from os.environ or custom overrides:
-        for var in ['CPPFLAGS', 'CXXFLAGS', 'LDFLAGS']:
-            flags = self.get(var) or os.environ.get(var)
-            if flags:
-                self.MergeFlags(flags)
+        self.Append(
+            CPPDEFINES=[self['DEBUG'] and 'DEBUG' or 'NDEBUG'],
+            JINJACONTEXT=cfo.jinja.CONTEXT,
+        )
 
-        # Add Windows/VC style search paths from os.environ
-        # or custom overrides:
-        # (Explicitly setting PATH is often needed to find VC binaries)
-        for var in ['PATH', 'INCLUDE', 'LIB']:
-            paths = self.get(var) or os.environ.get(var)
-            if paths:
-                self.Append(ENV = {var: paths})
+        if cfo.TOOLSET == 'gcc':
+            # add Linux/GCC style flags from os.environ or custom overrides
+            for var in ['CPPFLAGS', 'CXXFLAGS', 'LDFLAGS']:
+                flags = self.get(var) or os.environ.get(var)
+                if flags:
+                    self.MergeFlags(flags)
 
-        # Look for custom C++ compiler binary:
+        elif cfo.TOOLSET == 'msvc':
+            # add VC style search paths from os.environ or custom overrides
+            # (explicitly setting PATH is often needed to find VC binaries)
+            for var in ['PATH', 'INCLUDE', 'LIB']:
+                paths = self.get(var) or os.environ.get(var)
+                if paths:
+                    self.Append(ENV={var: paths})
+
+        # look for custom C++ compiler binary
         cxx = self.get('CXX') or os.environ.get('CXX')
         if cxx:
             self.Replace(CXX=cxx)

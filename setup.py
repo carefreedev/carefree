@@ -16,7 +16,7 @@ except ImportError:
 
 
 SETUP_REQUIRES = [
-    'zetup >= 0.2.42',
+    'zetup >= 0.2.43.dev1',
 ]
 
 

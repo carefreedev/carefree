@@ -32,3 +32,5 @@ __description__ = zfg.DESCRIPTION
 __version__ = zfg.VERSION
 
 __requires__ = zfg.REQUIRES.checked
+
+from Boost import TOOLSET
