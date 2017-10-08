@@ -1,4 +1,5 @@
 ~$
+\.\#
 \.orig$
 \.rej$
 \.bkp$
@@ -8,6 +9,7 @@
 
 ^include/
 ^build/
+^lib/
 
 \.diff$
 
@@ -19,6 +21,11 @@
 ^dist/
 ^python/dist/
 
+\.zip$
+\.tar$
+\.gz$
+
+^\.eggs/
 \.egg-info/
 \.egg/
 
