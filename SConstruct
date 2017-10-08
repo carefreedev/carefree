@@ -29,12 +29,10 @@ from path import Path
 
 import Boost
 
-sys.path.insert(0, Path('.').realpath().dirname())
-
 import cfo.scons
 
 
-env = cfo.scons.Environment('carefree-objects')
+env = cfo.scons.Environment('carefree')
 
 env.Prepend(CPPPATH=['include'])
 
@@ -47,44 +45,29 @@ else:
     env.Prepend(CPPPATH=[libarray_ptr.INCLUDE_PATH])
 
 
-conf = Configure(env)
-
 BOOST_LIBS = [Boost.LIB[name] for name in (
     'system',
     'thread',
 )]
-# for lib in BOOST_LIBS:
-# #         'boost_system',
-# #         'boost_thread',
-# # ]:
-#     lib_mt = lib + '-mt'
-#     if conf.CheckLib(lib_mt):
-#         BOOST_LIBS.append(lib_mt)
-#         break
-#     if not conf.CheckLib(lib):
-#         raise RuntimeError("Can't find %s or %s library."
-#                            % (repr(lib_mt), repr(lib)))
-#     # BOOST_LIBS.append(lib)
-# del lib
+
 BOOST_LIBS.append('msvcrtd')
 
-env = conf.Finish()
-del conf
 
+PREFIX = Path(env['PREFIX'])
 
-SOURCE_PATH = Path('src')
+SOURCE_PATH = Path('carefree_source')
 
 INCLUDE_SOURCE_PATH = SOURCE_PATH / 'include'
-INCLUDE_PATH = Path('include')
+INCLUDE_PATH = PREFIX / 'include'
 
 BUILD_PATH = Path('build')
 
-LIB_PATH = Path('lib')
+LIB_PATH = PREFIX / 'lib'
 
 
 SOURCE_DEPENDS = [SOURCE_PATH / 'context.py']
 
-from src import context
+from carefree_source import context
 context = {name: getattr(context, name) for name in context.__all__}
 env.Append(JINJACONTEXT=context)
 
@@ -145,12 +128,6 @@ if env['SHARED']:
         LIBS=BOOST_LIBS,
     )
 
-# if env['STATIC']:
-#     env.StaticLibrary(
-#         LIB_PATH / 'carefree-types',
-#         source=OBJECTS,
-#     )
-
 
 if False and env['TESTS']:
     TEST_OBJECTS = []
@@ -169,12 +146,6 @@ if False and env['TESTS']:
             LIB_PATH / 'carefree-types-test',
             source=TEST_OBJECTS,
         )
-
-    # if env['STATIC']:
-    #     env.StaticLibrary(
-    #         LIB_PATH / 'carefree-types-test',
-    #         source=TEST_OBJECTS,
-    #     )
 
     env.Requires(
         env.Program(
@@ -202,7 +173,7 @@ CAREFREE_PYTHON_SOURCE_NAMES = [
 CAREFREE_PYTHON_SOURCES = [
     env.Jinja(
         'build/python/%s.cpp' % name,
-        source = ['src/python/%s.cpp' % name]
+        source = ['carefree_source/python/%s.cpp' % name]
     )
     for name in CAREFREE_PYTHON_SOURCE_NAMES]
 
@@ -210,47 +181,16 @@ PYTHON = env['PYTHON']
 if PYTHON is True:
     PYTHON = 'python'
 
-PYTHON = False
 for pybin in PYTHON and PYTHON.split(',') or []:
-    out = (Popen([pybin, '--version'],
-                 stdout=PIPE, stderr=PIPE, universal_newlines=True)
-           .communicate())
-    out = out[0] or out[1]
-    pyversion = out.split()[1].split('.', 2)
+    pyversionsuffix = '{}{}'.format(*sys.version_info[:2])
 
-    pyversionsuffix = ''.join(pyversion[:2])
-
-    pybuildpath = 'build/python' + pyversionsuffix
+    pybuildpath = BUILD_PATH / 'python' + pyversionsuffix
     Mkdir(pybuildpath)
 
     pyenv = env.Clone()
-    pyenv.MergeFlags(
-        Popen([pybin + '-config', '--includes', '--libs'],
-              stdout = PIPE, universal_newlines=True)
-        .communicate()[0])
-    pyconf = Configure(pyenv)
-
-    BOOST_PYTHON_LIB = 'boost_python'
-
-    suffixes = [
-        '-py%s' % pyversionsuffix,
-        str(pyversion[0]) + '-mt',
-        str(pyversion[0]),
-        '']
-    for suffix in suffixes:
-        if pyconf.CheckLib(BOOST_PYTHON_LIB + suffix):
-            BOOST_PYTHON_LIB += suffix
-            break
-    else:
-        raise RuntimeError("Can't find %s library."
-                           % ' or '.join(map(repr, suffixes)))
-
-    pyenv = pyconf.Finish()
 
     pyenv.Append(
-        LIBS=BOOST_LIBS + [
-            BOOST_PYTHON_LIB,
-        ],
+        LIBS=BOOST_LIBS + [Boost.LIB['python']],
     )
 
     OBJECTS = [
@@ -266,11 +206,6 @@ for pybin in PYTHON and PYTHON.split(',') or []:
 
     if env['SHARED']:
         pyenv.SharedLibrary(
-            'lib/carefree-python-py' + pyversionsuffix,
-            source=OBJECTS,
-        )
-    if env['STATIC']:
-        pyenv.StaticLibrary(
-            'lib/carefree-python-py' + pyversionsuffix,
+            'lib/carefree_python-py' + pyversionsuffix,
             source=OBJECTS,
         )
