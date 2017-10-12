@@ -33,7 +33,6 @@ import Boost.Cons
 import jinja2
 from jinjatools.scons import JinjaBuilder
 
-
 import cfo.jinja
 import cfo.jinja.macros
 
