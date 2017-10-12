@@ -34,8 +34,6 @@ import cfo.scons
 
 env = cfo.scons.Environment('carefree')
 
-env.Prepend(CPPPATH=['include'])
-
 
 try:
     import libarray_ptr
@@ -63,6 +61,9 @@ INCLUDE_PATH = PREFIX / 'include'
 BUILD_PATH = Path('build')
 
 LIB_PATH = PREFIX / 'lib'
+
+
+env.Prepend(CPPPATH=[INCLUDE_PATH])
 
 
 SOURCE_DEPENDS = [SOURCE_PATH / 'context.py']
@@ -181,6 +182,7 @@ PYTHON = env['PYTHON']
 if PYTHON is True:
     PYTHON = 'python'
 
+PYTHON = False
 for pybin in PYTHON and PYTHON.split(',') or []:
     pyversionsuffix = '{}{}'.format(*sys.version_info[:2])
 
