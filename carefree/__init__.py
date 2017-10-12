@@ -42,14 +42,14 @@ def resolve():
     source = Source(Path(carefree_source.__file__).dirname())
     prefix = (CAREFREE_HOME / __carefree.__version__.replace('.', '_') /
               TOOLSET)
-    if prefix.exists():
+    if prefix.exists() and not __carefree.__version__.parsed.is_prerelease:
         return prefix
 
     source.build(prefix=prefix.makedirs_p())
     return prefix, source
 
 
-PREFIX = resolve()
+PREFIX, SOURCE = resolve()
 
 INCLUDE = [PREFIX / 'include']
 
