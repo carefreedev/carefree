@@ -21,3 +21,5 @@
 
 .. moduleauthor:: Stefan Zimmermann <zimmermann.code@gmail.com>
 """
+
+from Boost import TOOLSET
