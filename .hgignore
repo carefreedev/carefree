@@ -25,7 +25,7 @@
 \.tar$
 \.gz$
 
-^\.eggs/
+\.eggs/
 \.egg-info/
 \.egg/
 
