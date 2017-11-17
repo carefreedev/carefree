@@ -9,6 +9,7 @@ import carefree
 
 
 def program(cppfile):
+    carefree_prefix, _ = carefree.resolve()
     name = str(Path(cppfile).splitext()[0])
     builddir = Path(cppfile).realpath().dirname()
     SConstruct = builddir / cppfile + '.scons'
@@ -24,5 +25,5 @@ def program(cppfile):
     env.Append(LIBS=['msvcrtd'])
 
     env.Program({!r}, {!r})
-    """.format(name, carefree.INCLUDE, name, cppfile)))
+    """.format(name, carefree_prefix / 'include', name, cppfile)))
     zcons.scons(['-f', SConstruct], DEBUG=True)
