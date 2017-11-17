@@ -17,37 +17,38 @@
  * along with CareFREE_objects.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __CAREFREE_OBJECTS_MANAGED_ACCESSOR_HPP
-#define __CAREFREE_OBJECTS_MANAGED_ACCESSOR_HPP
+#ifndef __CAREFREE_OBJECTS_REF_ACCESSOR_HPP
+#define __CAREFREE_OBJECTS_REF_ACCESSOR_HPP
 
-#include "../managed.hpp"
+#include "../ref.hpp"
 
 namespace cfo
 {
 
   template<typename T>
-  class managed<T>::accessor :
+  class ref<T>::accessor :
     private cfo::unique_sync_lock,
-    public managed<T>::methods<accessor>,
-    public managed<T>::const_methods<accessor>
+    public cfo::managed<T, accessor>
   {
 
   public:
-    using managed_ = managed<T>;
+    using ref_type = cfo::ref<T>;
+    using members_type = cfo::managed<T, accessor>;
 
   public:
     using ptr_type = T*;
+    using const_ptr_type = const T*;
 
-  private:
-    managed_ _instance;
-    T* _ptr;
+  protected:
+    ref_type _ref;
+    ptr_type _ptr;
 
   public:
     inline
-    accessor(const managed_ &instance) :
-      cfo::unique_sync_lock(*instance._ptr),
-      _instance(instance),
-      _ptr(_instance._ptr->get())
+    accessor(const ref_type &ref) :
+      cfo::unique_sync_lock(*ref._ptr),
+      _ref(ref),
+      _ptr(_ref._ptr->get())
     {}
 
   private:
@@ -56,53 +57,60 @@ namespace cfo
   public:
     accessor(accessor &&acs) :
       cfo::unique_sync_lock(static_cast<cfo::unique_sync_lock&&>(acs)),
-      _instance(acs._instance),
+      _ref(acs._ref),
       _ptr(acs._ptr)
     {}
 
   public:
     inline
-    auto operator->()
+    ptr_type operator->()
+    {
+      return this->_ptr;
+    }
+
+    inline
+    const_ptr_type operator->()
+      const
     {
       return this->_ptr;
     }
 
   public:
-    template<typename ACS>
+    template<typename U>
     static
     inline
-    auto ptr(ACS &acs)
+    ptr_type ptr(cfo::managed<U, accessor> &members)
     {
-      return static_cast<accessor&>(acs)._ptr;
+      return static_cast<accessor&>(members)._ptr;
     }
 
-    template<typename ACS>
+    template<typename U>
     static
     inline
-    auto ptr(const ACS &acs)
+    const_ptr_type ptr(const cfo::managed<U, accessor> &members)
     {
-      return static_cast<const accessor&>(acs)._ptr;
+      return static_cast<const accessor&>(members)._ptr;
     }
 
   public:
-    template<typename ACS>
+    template<typename U>
     static
     inline
-    auto self(ACS &acs)
+    ref_type ref(cfo::managed<U, accessor> &members)
     {
-      return static_cast<accessor&>(acs)._instance;
+      return static_cast<accessor&>(acs)._ref;
     }
 
-    template<typename ACS>
+    template<typename U>
     static
     inline
-    auto self(const ACS &acs)
+    ref_type ref(const cfo::managed<U, accessor> &members)
     {
-      return static_cast<const accessor&>(acs)._instance;
+      return static_cast<const accessor&>(acs)._ref;
     }
 
-  }; /* class managed<T>::accessor */
+  }; /* class ref<T>::accessor */
 
 } /* namespace cfo */
 
-#endif  /* __CAREFREE_OBJECTS_MANAGED_ACCESSOR_HPP */
+#endif  /* __CAREFREE_OBJECTS_REF_ACCESSOR_HPP */

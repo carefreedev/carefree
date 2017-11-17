@@ -26,6 +26,7 @@
 #include <shared_mutex>
 #include <string>
 #include <type_traits>
+#include <typeinfo>
 #include <vector>
 
 #endif /* __CAREFREE_OBJECTS_COMMON_HPP */

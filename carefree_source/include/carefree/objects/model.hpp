@@ -17,18 +17,27 @@
  * along with CareFREE_objects.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __CAREFREE_OBJECTS_MODELED_MODEL_HPP
-#define __CAREFREE_OBJECTS_MODELED_MODEL_HPP
+#ifndef __CAREFREE_OBJECTS_MODEL_HPP
+#define __CAREFREE_OBJECTS_MODEL_HPP
 
-#include "../modeled.hpp"
+#include "./data.hpp"
+
+#include "./ref.hpp"
 
 namespace cfo
 {
 
   template<typename T>
-  class modeled<T>::model
+  using membersof = typename cfo::ref<T>::members_type;
+
+  template<typename T>
+  class modelof
   {
 
+  public:
+    using members_type = cfo::managed<T, cfo::ref<T>>;
+
+  public:
     template<typename V = void>
     struct data;
 
@@ -43,22 +52,41 @@ namespace cfo
     {};
 
   private:
-    std::vector<data<>*> _data;
+    std::vector<data<>> _data;
 
   private:
-    static model& _instance()
+    static modelof<T>& _instance()
     {
-      static model instance;
+      static modelof<T> instance;
       return instance;
     }
 
   public:
-    class add;
+    static
+    const std::vector<data<>> members()
+    {
+      return cfo::modelof<T>::_instance()._data;
+    }
+
+  public:
+    struct add
+    {
+      template<typename DATA>
+      inline
+      add(const DATA members_type::*data)
+      {
+        const std::string name = typeid(DATA).name();
+        cfo::modelof<T>::_instance()._data.push_back
+          (cfo::modelof<T>::data<> { name.substr(name.rfind(':') + 1) });
+      }
+    };
+
+    friend struct add;
 
     class remove;
 
-  }; /* class modeled<T>::model */
+  }; /* class modelof<T> */
 
 } /* namespace cfo */
 
-#endif /* __CAREFREE_OBJECTS_MODELED_MODEL_HPP */
+#endif /* __CAREFREE_OBJECTS_MODEL_HPP */

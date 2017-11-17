@@ -33,7 +33,7 @@ namespace cfo
     inline
     auto operator->()
     {
-      return ACS::ptr(reinterpret_cast<ACS::data&>(*this));
+      return ACS::ptr(reinterpret_cast<ACS::members_type&>(*this));
         // (reinterpret_cast<modeled<T>::properties&>(*this));
     }
 
@@ -41,7 +41,7 @@ namespace cfo
     auto operator->()
       const
     {
-      return ACS::ptr(reinterpret_cast<const ACS::data&>(*this));
+      return ACS::ptr(reinterpret_cast<const ACS::members_type&>(*this));
         // (reinterpret_cast<const modeled<T>::properties&>(*this));
     }
 

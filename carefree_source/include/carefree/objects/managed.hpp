@@ -27,97 +27,157 @@
 namespace cfo
 {
 
-  template<typename T>
+  template<typename T, typename ACS>
   class managed
-  {
+  {};
 
-  public:
-    using managed_ = managed<T>;
+  // template<typename T>
+  // class managed
+  // {
 
-  private:
-    cfo::shared_sync_ptr<T> _ptr;
+  // public:
+  //   using managed_ = managed<T>;
 
-  protected:
-    inline
-    managed(T *ptr) :
-      _ptr(new cfo::sync_ptr<T>(ptr))
-    {}
+  // private:
+  //   cfo::shared_sync_ptr<T> _ptr;
 
-  public:
-    inline
-    managed(const managed_ &other) :
-      _ptr(other._ptr)
-    {}
+  // protected:
+  //   inline
+  //   managed(T *ptr) :
+  //     _ptr(new cfo::sync_ptr<T>(ptr))
+  //   {}
 
-    inline
-    managed(const managed_ &&other) :
-      _ptr(other._ptr)
-    {}
+  // public:
+  //   inline
+  //   managed(const managed_ &other) :
+  //     _ptr(other._ptr)
+  //   {}
 
-  public:
-    class model;
+  //   inline
+  //   managed(managed_ &&other) :
+  //     _ptr(other._ptr)
+  //   {}
 
-  public:
-    class make;
-    class make_const;
+  // public:
+  //   class model;
 
-    friend class make;
-    friend class make_const;
+  // public:
+  //   class make;
+  //   class make_const;
 
-  public:
-    class accessor;
-    class const_accessor;
+  //   friend class make;
+  //   friend class make_const;
 
-  public:
-    inline
-    accessor access()
-    {
-      return accessor(*this);
-    }
+  //   inline
+  //   managed(const make &made);
 
-    inline
-    const_accessor caccess()
-      const
-    {
-      return const_accessor(*this);
-    }
+  //   inline
+  //   managed(make &&made);
 
-  public:
-    template<typename F>
-    inline
-    // typename std::invoke_result<F, accessor &>::type
-    typename std::result_of<F(accessor &)>::type
-    access(F func)
-    {
-      auto acs = this->access();
-      return func(acs);
-    }
+  // public:
+  //   class sync :
+  //     private cfo::unique_sync_lock
+  //   {
 
-    template<typename F>
-    inline
-    // typename std::invoke_result<F, const const_accessor &>::type
-    typename std::result_of<F(const const_accessor &)>::type
-    caccess(F func)
-      const
-    {
-      auto acs = this->caccess();
-      return func(acs);
-    }
+  //   private:
+  //     T* _ptr;
 
-  public:
-    template<typename ACS>
-    class methods;
+  //   public:
+  //     sync(managed_ &instance) :
+  //       cfo::unique_sync_lock(*instance._ptr),
+  //       _ptr(instance._ptr->get())
+  //     {}
 
-    template<typename ACS>
-    class const_methods;
+  //   public:
+  //     inline
+  //     T* operator->()
+  //     {
+  //       return this->_ptr;
+  //     }
 
-  }; /* class managed<T> */
+  //   };
+
+  //   friend class sync;
+
+  //   class const_sync :
+  //     private cfo::shared_sync_lock
+  //   {
+
+  //   private:
+  //     const T* _ptr;
+
+  //   public:
+  //     const_sync(const managed_ &instance) :
+  //       cfo::shared_sync_lock(*instance._ptr),
+  //       _ptr(instance._ptr->get())
+  //     {}
+
+  //   public:
+  //     inline
+  //     const T* operator->()
+  //       const
+  //     {
+  //       return this->_ptr;
+  //     }
+
+  //   };
+
+  //   friend class const_sync;
+
+  // public:
+  //   class accessor;
+  //   class const_accessor;
+
+  // public:
+  //   inline
+  //   accessor access()
+  //   {
+  //     return accessor(*this);
+  //   }
+
+  //   inline
+  //   const_accessor caccess()
+  //     const
+  //   {
+  //     return const_accessor(*this);
+  //   }
+
+  // public:
+  //   template<typename F>
+  //   inline
+  //   // typename std::invoke_result<F, accessor &>::type
+  //   typename std::result_of<F(accessor &)>::type
+  //   access(F func)
+  //   {
+  //     auto acs = this->access();
+  //     return func(acs);
+  //   }
+
+  //   template<typename F>
+  //   inline
+  //   // typename std::invoke_result<F, const const_accessor &>::type
+  //   typename std::result_of<F(const const_accessor &)>::type
+  //   caccess(F func)
+  //     const
+  //   {
+  //     auto acs = this->caccess();
+  //     return func(acs);
+  //   }
+
+  // public:
+  //   template<typename ACS>
+  //   class methods;
+
+  //   template<typename ACS>
+  //   class const_methods;
+
+  // }; /* class managed<T> */
 
 } /* namespace cfo */
 
-#include "./managed/make.hpp"
+// #include "./managed/make.hpp"
 
-#include "./managed/accessor.hpp"
-#include "./managed/const_accessor.hpp"
+// #include "./managed/accessor.hpp"
+// #include "./managed/const_accessor.hpp"
 
 #endif /* __CAREFREE_OBJECTS_MANAGED_HPP */

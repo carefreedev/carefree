@@ -17,27 +17,28 @@
  * along with CareFREE_objects.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __CAREFREE_OBJECTS_MANAGED_MAKE_HPP
-#define __CAREFREE_OBJECTS_MANAGED_MAKE_HPP
+#ifndef __CAREFREE_OBJECTS_MAKE_HPP
+#define __CAREFREE_OBJECTS_MAKE_HPP
 
-#include "../managed.hpp"
+#include "./ref.hpp"
 
 namespace cfo
 {
 
   template<typename T>
-  class managed<T>::make : public managed<T>
+  class make :
+    public cfo::ref<T>
   {
 
   public:
     template<typename ...ARGS>
     inline
     make(const ARGS &...args) :
-      managed<T>(new T(args...))
+      cfo::ref<T>(typename cfo::ref<T>::make(args...))
     {}
 
-  }; /* class managed<T>::make */
+  }; /* class make<T> */
 
 } /* namespace cfo */
 
-#endif __CAREFREE_OBJECTS_MANAGED_MAKE_HPP
+#endif __CAREFREE_OBJECTS_MAKE_HPP

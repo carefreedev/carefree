@@ -20,8 +20,11 @@
 #ifndef __CAREFREE_OBJECTS_HPP
 #define __CAREFREE_OBJECTS_HPP
 
-#include "./objects/managed.hpp"
-#include "./objects/modeled.hpp"
 #include "./objects/data.hpp"
+
+#include "./objects/ref.hpp"
+#include "./objects/make.hpp"
+
+#include "./objects/model.hpp"
 
 #endif /* __CAREFREE_OBJECTS_HPP */

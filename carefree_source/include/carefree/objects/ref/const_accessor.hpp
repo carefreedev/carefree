@@ -17,36 +17,38 @@
  * along with CareFREE_objects.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __CAREFREE_OBJECTS_MANAGED_CONST_ACCESSOR_HPP
-#define __CAREFREE_OBJECTS_MANAGED_CONST_ACCESSOR_HPP
+#ifndef __CAREFREE_OBJECTS_REF_CONST_ACCESSOR_HPP
+#define __CAREFREE_OBJECTS_REF_CONST_ACCESSOR_HPP
 
-#include "../managed.hpp"
+#include "../ref.hpp"
 
 namespace cfo
 {
 
   template<typename T>
-  class managed<T>::const_accessor :
+  class ref<T>::const_accessor :
     private cfo::shared_sync_lock,
-    public managed<T>::const_methods<const_accessor>
+    public cfo::managed<T, const_accessor>
   {
 
   public:
-    using managed_ = managed<T>;
+    using ref_type = cfo::ref<T>;
+    using members_type = cfo::managed<T, const_accessor>;
 
   public:
     using ptr_type = const T*;
+    using const_ptr_type = const T*;
 
-  private:
-    managed_ _instance;
-    ptr_type _ptr;
+  protected:
+    ref_type _ref;
+    const_ptr_type _ptr;
 
   public:
     inline
-    const_accessor(const managed_ &instance) :
-      cfo::shared_sync_lock(*instance._ptr),
-      _instance(instance),
-      _ptr(_instance._ptr->get())
+    const_accessor(const ref_type &ref) :
+      cfo::shared_sync_lock(*ref._ptr),
+      _ref(ref),
+      _ptr(_ref._ptr->get())
     {}
 
   private:
@@ -56,38 +58,38 @@ namespace cfo
     inline
     const_accessor(const_accessor &&acs) :
       cfo::shared_sync_lock(static_cast<cfo::shared_sync_lock&&>(acs)),
-      _instance(acs._instance),
+      _ref(acs._ref),
       _ptr(acs._ptr)
     {}
 
   public:
     inline
-    auto operator->()
+    const_ptr_type operator->()
       const
     {
       return this->_ptr;
     }
 
   public:
-    template<typename ACS>
+    template<typename U>
     static
     inline
-    auto ptr(const ACS &acs)
+    const_ptr_type ptr(const cfo::managed<U, const_accessor> &members)
     {
-      return static_cast<const const_accessor&>(acs)._ptr;
+      return static_cast<const const_accessor&>(members)._ptr;
     }
 
   public:
-    template<typename ACS>
+    template<typename U>
     static
     inline
-    auto self(const ACS &acs)
+    ref_type ref(const cfo::managed<U, const_accessor> &members)
     {
-      return static_cast<const const_accessor&>(acs)._instance;
+      return static_cast<const const_accessor&>(members)._ref;
     }
 
-  }; /* class managed<T>::const_accessor */
+  }; /* class ref<T>::const_accessor */
 
 } /* namespace cfo */
 
-#endif /* __CAREFREE_OBJECTS_MANAGED_CONST_ACCESSOR_HPP */
+#endif /* __CAREFREE_OBJECTS_REF_CONST_ACCESSOR_HPP */
